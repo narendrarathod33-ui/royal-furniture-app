@@ -24,7 +24,10 @@ import { catalogLeaves } from '../data/catalogLeaves';
 import { leafProducts } from '../data/leafProducts';
 import ProductDetails, { isMadeToOrderText } from '../ProductDetails';
 
-type Product = (typeof royalFurnitureData.products)[number];
+type WidenProduct<T> = T extends { id: string; n: string; o: number; l: number }
+  ? Omit<T, 'id' | 'n' | 'o' | 'l'> & { id: string; n: string; o: number; l: number }
+  : never;
+type Product = WidenProduct<(typeof royalFurnitureData.products)[number]>;
 type Tab = 'home' | 'shop' | 'arrivals' | 'categories' | 'search' | 'cart' | 'account';
 type OfficialDetailRow = { label?: string; value?: string };
 type OrderRecord = { id: string; purchasedAt: string; deliveryDate: string; status: string; total: number; items: { name: string; category: string }[] };
@@ -89,7 +92,7 @@ const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
 const categoryThumbnail = (category: string) => { const product = catalogData.find((item) => item.c === category); return product?.remoteImage ? { uri: product.remoteImage } : homeCategoryImages[category]; };
 
 const shortName = (name: string) => name.replace(/\s*-\s*\d+x\d+.*$/i, '');
-const photoFor = (product: Product) => liveCatalogImages[product.id] || catalogImages[product.id] || photoByProductId[product.id] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined);
+const photoFor = (product: Product) => { const sourceId = product.id.split('::size=')[0]; return liveCatalogImages[sourceId] || catalogImages[sourceId] || photoByProductId[sourceId] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined); };
 
 export default function HomeScreen() {
   const [tab, setTab] = useState<Tab>('home');
@@ -134,7 +137,9 @@ export default function HomeScreen() {
   }, [tab, selected?.id, pageMotion]);
 
   if (selected) {
-    return <ProductDetails product={selected} photoSource={photoFor(selected)} onBack={() => setSelected(null)} onSave={() => toggleSaved(selected)} onAdd={() => { addToCart(selected); setSelected(null); }} isSaved={saved.includes(selected.id)} />;
+    const sourceId = selected.id.split('::size=')[0];
+    const name = selected.n.replace(/\s+—\s+Size:\s+.*$/, '');
+    return <ProductDetails key={selected.id} product={selected} photoSource={photoFor(selected)} onBack={() => setSelected(null)} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const cartProduct = { ...selected, id: variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId, n: variant.size ? `${name} — Size: ${variant.size}` : name, o: variant.price, l: variant.listPrice ?? selected.l }; addToCart(cartProduct); setSelected(null); }} isSaved={saved.includes(sourceId)} />;
   }
 
   return (

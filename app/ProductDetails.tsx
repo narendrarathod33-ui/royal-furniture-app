@@ -49,10 +49,12 @@ type ApiProductDetail = {
     fabricsList?: Array<{ name?: string; colorsList?: ApiColor[] }>;
   }>;
 };
+type SizePriceOption = { name: string; price: number; listPrice?: number; optionKey: string };
 type ProductOptionData = {
   sizes: string[];
   fabrics: string[];
   colors: { name: string; hex?: string }[];
+  sizePrices: SizePriceOption[];
   rows: DetailRow[];
 };
 
@@ -84,21 +86,37 @@ function getLocalOptions(product: ProductDetailsProduct): ProductOptionData {
   const sizes: string[] = [];
   const fabrics: string[] = [];
   const colors = new Map<string, { name: string; hex?: string }>();
+  const sizeGroups: { name: string; options: SizePriceOption[] }[] = [];
   const rows: DetailRow[] = [];
 
   if (Array.isArray(product.z)) {
     for (const rawVariant of product.z) {
       if (!Array.isArray(rawVariant)) continue;
-      if (typeof rawVariant[0] === 'string') sizes.push(rawVariant[0]);
+      const sizeName = typeof rawVariant[0] === 'string' ? rawVariant[0] : '';
+      if (sizeName) sizes.push(sizeName);
       if (!Array.isArray(rawVariant[1])) continue;
+      const sizeOptions: SizePriceOption[] = [];
       for (const rawFabric of rawVariant[1]) {
         if (!Array.isArray(rawFabric)) continue;
-        if (typeof rawFabric[0] === 'string') fabrics.push(rawFabric[0]);
+        const fabricName = typeof rawFabric[0] === 'string' ? rawFabric[0] : '';
+        if (fabricName) fabrics.push(fabricName);
         if (!Array.isArray(rawFabric[2])) continue;
         for (const rawColor of rawFabric[2]) {
           if (Array.isArray(rawColor)) addColor(colors, typeof rawColor[0] === 'string' ? rawColor[0] : undefined, typeof rawColor[1] === 'string' ? rawColor[1] : undefined);
+          if (!sizeName || !Array.isArray(rawColor)) continue;
+          const price = Number(rawColor[2]);
+          if (!Number.isFinite(price) || price <= 0) continue;
+          const colorName = typeof rawColor[0] === 'string' ? rawColor[0] : '';
+          const listPrice = Number(rawColor[3]);
+          sizeOptions.push({
+            name: sizeName,
+            price,
+            listPrice: Number.isFinite(listPrice) && listPrice > 0 ? listPrice : undefined,
+            optionKey: `${fabricName.toLocaleLowerCase()}|${colorName.toLocaleLowerCase()}`,
+          });
         }
       }
+      if (sizeOptions.length) sizeGroups.push({ name: sizeName, options: sizeOptions });
     }
   }
 
@@ -113,7 +131,10 @@ function getLocalOptions(product: ProductDetailsProduct): ProductOptionData {
     }
   }
 
-  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], rows };
+  const allSizeOptions = sizeGroups.flatMap((group) => group.options);
+  const defaultOption = allSizeOptions.find((option) => option.price === product.o) || allSizeOptions[0];
+  const sizePrices = sizeGroups.map((group) => group.options.find((option) => option.optionKey === defaultOption?.optionKey) || group.options[0]);
+  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices, rows };
 }
 
 function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
@@ -142,7 +163,17 @@ function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
 
   const primaryColor = detail?.primary_images?.fabric_color_info;
   addColor(colors, primaryColor?.color_name, primaryColor?.color_hex);
-  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], rows };
+  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices: [], rows };
+}
+
+function sizeFromProductId(id: string) {
+  const encodedSize = id.split('::size=')[1];
+  if (!encodedSize) return '';
+  try {
+    return decodeURIComponent(encodedSize);
+  } catch {
+    return '';
+  }
 }
 
 function extractTitleColors(title: string) {
@@ -179,14 +210,27 @@ export default function ProductDetails({
   photoSource?: ImageSourcePropType;
   onBack: () => void;
   onSave: () => void;
-  onAdd: () => void;
+  onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
   isSaved: boolean;
 }) {
-  const slug = product.id.replace(/^\d+-/, '');
+  const sourceId = product.id.split('::size=')[0];
+  const slug = sourceId.replace(/^\d+-/, '');
   const [detail, setDetail] = useState<ApiProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [reload, setReload] = useState(0);
+  const local = useMemo(() => getLocalOptions(product), [product]);
+  const live = useMemo(() => extractApiOptions(detail), [detail]);
+  const cartSize = sizeFromProductId(product.id);
+  const defaultSizeOption = local.sizePrices.find((option) => option.name === cartSize)
+    || local.sizePrices.find((option) => option.price === product.o)
+    || local.sizePrices[0];
+  const hasDifferentSizePrices = new Set(local.sizePrices.map((option) => option.price)).size > 1;
+  const [selectedSize, setSelectedSize] = useState(defaultSizeOption?.name || '');
+  const selectedSizeOption = local.sizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
+  const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
+  const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice : undefined;
+  const productName = product.n.replace(/\s+—\s+Size:\s+.*$/, '');
 
   useEffect(() => {
     let active = true;
@@ -215,17 +259,15 @@ export default function ProductDetails({
     return () => { active = false; };
   }, [slug, reload]);
 
-  const local = useMemo(() => getLocalOptions(product), [product]);
-  const live = useMemo(() => extractApiOptions(detail), [detail]);
   const description = [product.d, detail?.general_information].filter(Boolean).join('\n\n');
   const sizes = unique([...live.sizes, ...local.sizes]);
-  const textSizes = extractTextSizes(`${product.n} ${description}`);
+  const textSizes = extractTextSizes(`${productName} ${description}`);
   const displaySizes = sizes.length ? sizes : textSizes;
   const fabrics = unique([...live.fabrics, ...local.fabrics]);
   const colorMap = new Map<string, { name: string; hex?: string }>();
   [...local.colors, ...live.colors].forEach((color) => addColor(colorMap, color.name, color.hex));
   const displayColors = [...colorMap.values()];
-  const titleColors = displayColors.length ? [] : extractTitleColors(product.n);
+  const titleColors = displayColors.length ? [] : extractTitleColors(productName);
   const detailRows = dedupeRows([...live.rows, ...local.rows]).slice(0, 10);
   const madeToOrder = isMadeToOrderText(description);
   const isCustomizable = detail?.product_info?.is_customizable;
@@ -240,13 +282,14 @@ export default function ProductDetails({
         </Pressable>
 
         <View style={styles.imageWrap}>
-          {photoSource ? <Image source={photoSource} style={styles.image} resizeMode="cover" /> : <Text style={styles.imageFallback}>{product.n.slice(0, 1)}</Text>}
+          {photoSource ? <Image source={photoSource} style={styles.image} resizeMode="cover" /> : <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>}
         </View>
 
         <View style={styles.productIntro}>
           {!!product.scn && <Text style={styles.category}>{product.scn}</Text>}
-          <Text style={styles.name}>{product.n}</Text>
-          <Text style={styles.price}>{money(product.o)}</Text>
+          <Text style={styles.name}>{productName}</Text>
+          <Text style={styles.price}>{money(selectedPrice)}</Text>
+          {!!selectedListPrice && selectedListPrice > selectedPrice && <Text style={styles.oldPrice}>{money(selectedListPrice)}</Text>}
         </View>
 
         <View style={styles.sourceStatus} accessibilityLiveRegion="polite">
@@ -275,11 +318,37 @@ export default function ProductDetails({
             label="Customization"
             value={isCustomizable === true ? 'Available' : isCustomizable === false ? 'Not available' : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : 'Not specified'}
           />
-          <FactRow
-            label="Size options"
-            value={displaySizes.length ? displaySizes.join(' · ') : 'Not listed'}
-            note={isSizeCustomizable === true ? 'Custom sizing is available.' : undefined}
-          />
+          {hasDifferentSizePrices ? (
+            <View style={styles.sizeSelection}>
+              <Text style={styles.sizeLabel}>Choose size</Text>
+              <View style={styles.sizeOptions}>
+                {local.sizePrices.map((option) => {
+                  const selectedOption = selectedSize === option.name;
+                  return (
+                    <Pressable
+                      key={option.name}
+                      accessibilityRole="radio"
+                      accessibilityLabel={`${option.name}, ${money(option.price)}`}
+                      accessibilityState={{ selected: selectedOption }}
+                      onPress={() => setSelectedSize(option.name)}
+                      style={[styles.sizeOption, selectedOption && styles.sizeOptionSelected]}
+                    >
+                      <Text style={[styles.sizeOptionName, selectedOption && styles.sizeOptionNameSelected]}>{option.name}</Text>
+                      <Text style={[styles.sizeOptionPrice, selectedOption && styles.sizeOptionNameSelected]}>{money(option.price)}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Text style={styles.sizeHint}>Price updates with your selected size.</Text>
+              {isSizeCustomizable === true && <Text style={styles.sizeHint}>Custom sizing is also available.</Text>}
+            </View>
+          ) : (
+            <FactRow
+              label="Size options"
+              value={displaySizes.length ? displaySizes.join(' · ') : 'Not listed'}
+              note={isSizeCustomizable === true ? 'Custom sizing is available.' : undefined}
+            />
+          )}
           <FactRow label="Fabrics" value={fabrics.length ? fabrics.join(' · ') : 'Not listed'} />
           <View style={styles.colorFact}>
             <Text style={styles.factLabel}>Colors</Text>
@@ -321,9 +390,9 @@ export default function ProductDetails({
         <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? 'Remove from saved items' : 'Save product'} onPress={onSave} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={onAdd} style={styles.addButton}>
+        <Pressable accessibilityRole="button" onPress={() => onAdd({ size: hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: selectedPrice, listPrice: selectedListPrice })} style={styles.addButton}>
           <ShoppingBag color={COLORS.white} size={18} />
-          <Text style={styles.addButtonText}>Add to bag · {money(product.o)}</Text>
+          <Text style={styles.addButtonText}>Add to bag · {money(selectedPrice)}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -355,6 +424,7 @@ const styles = StyleSheet.create({
   category: { color: COLORS.red, fontSize: 11, fontWeight: '800', letterSpacing: 1.1, textTransform: 'uppercase' },
   name: { color: COLORS.ink, fontSize: 25, lineHeight: 31, fontWeight: '800', marginTop: 5 },
   price: { color: COLORS.ink, fontSize: 21, fontWeight: '800', marginTop: 8 },
+  oldPrice: { color: COLORS.muted, fontSize: 13, textDecorationLine: 'line-through', marginTop: 3 },
   sourceStatus: { minHeight: 42, borderRadius: 12, backgroundColor: COLORS.white, paddingHorizontal: 12, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 14 },
   statusLoading: { color: COLORS.muted, fontSize: 12, flex: 1 },
   statusError: { color: COLORS.muted, fontSize: 12, lineHeight: 17, flex: 1 },
@@ -368,6 +438,15 @@ const styles = StyleSheet.create({
   factTextGroup: { flex: 1.2, alignItems: 'flex-end' },
   factValue: { color: COLORS.ink, fontSize: 13, lineHeight: 19, fontWeight: '600', textAlign: 'right' },
   mutedNote: { color: COLORS.muted, fontSize: 11, lineHeight: 16, textAlign: 'right' },
+  sizeSelection: { paddingTop: 12, paddingBottom: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.line, gap: 8 },
+  sizeLabel: { color: COLORS.muted, fontSize: 13, lineHeight: 19 },
+  sizeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  sizeOption: { width: '48%', minHeight: 58, justifyContent: 'center', gap: 3, borderWidth: 1, borderColor: COLORS.line, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 8, backgroundColor: COLORS.white },
+  sizeOptionSelected: { borderColor: COLORS.red, backgroundColor: '#FEF3F2' },
+  sizeOptionName: { color: COLORS.ink, fontSize: 11, lineHeight: 15, fontWeight: '600' },
+  sizeOptionPrice: { color: COLORS.muted, fontSize: 12, lineHeight: 16, fontWeight: '700' },
+  sizeOptionNameSelected: { color: COLORS.red },
+  sizeHint: { color: COLORS.muted, fontSize: 11, lineHeight: 15 },
   colorFact: { paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.line },
   colorList: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   colorPill: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32, borderRadius: 18, borderWidth: 1, borderColor: COLORS.line, paddingHorizontal: 9, paddingVertical: 5 },
