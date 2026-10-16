@@ -1,0 +1,98 @@
+name: harvest-images
+on:
+  push:
+    paths:
+      - '.github/workflows/harvest-images.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: harvest-images
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'arena/34ebe542-royal-furniture-app'
+      - name: Capture every gallery image per product
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, time, urllib.request
+          from concurrent.futures import ThreadPoolExecutor
+
+          BASE = 'https://rylqus.ae/api/products'
+          HEADERS = {'Accept': 'application/json', 'locale': 'en', 'country': 'ae', 'User-Agent': 'Mozilla/5.0'}
+          MAX_IMAGES = 8
+          DEADLINE = time.time() + 55 * 60
+
+          slugs = sorted((json.loads(pathlib.Path('harvest/product-details.json').read_text()).get('details') or {}).keys())
+          print('slugs', len(slugs), flush=True)
+
+          def web_path(node):
+              images = node.get('responsive_images') or node.get('images') or {}
+              for size in ('web', 'ipad', 'mobile'):
+                  entry = images.get(size) if isinstance(images, dict) else None
+                  url = entry.get('url') if isinstance(entry, dict) else None
+                  if isinstance(url, str) and url.startswith('http'):
+                      return url.split('.amazonaws.com/')[-1]
+              for key in ('image', 'thumbnail_image'):
+                  value = node.get(key)
+                  if isinstance(value, str) and value.startswith('http'):
+                      return value.split('.amazonaws.com/')[-1]
+              return None
+
+          def _guard(slug):
+              try:
+                  return gather(slug)
+              except Exception as error:  # noqa: BLE001
+                  print('failed', slug, error, flush=True)
+                  return slug, []
+
+          def gather(slug):
+              request = urllib.request.Request(f'{BASE}/product-detail/{slug}/?format=json', headers=HEADERS)
+              with urllib.request.urlopen(request, timeout=45) as response:
+                  detail = json.loads(response.read().decode('utf-8', 'replace'))
+              data = detail.get('data') if isinstance(detail, dict) else None
+              if not isinstance(data, dict):
+                  return slug, []
+              paths = []
+              for node in [data.get('primary_images')] + list(data.get('additional_images') or []):
+                  if not isinstance(node, dict):
+                      continue
+                  found = web_path(node)
+                  if found and found not in paths:
+                      paths.append(found)
+              return slug, paths[:MAX_IMAGES]
+
+          out = {}
+          done = 0
+          with ThreadPoolExecutor(max_workers=6) as pool:
+              for slug, paths in pool.map(lambda slug: _guard(slug), slugs):
+                  done += 1
+                  if paths:
+                      out[slug] = paths
+                  if done % 200 == 0:
+                      print('progress', done, 'with_images', len(out), flush=True)
+                      pathlib.Path('harvest/product-images.json').write_text(json.dumps(out))
+                  if time.time() > DEADLINE:
+                      print('BUDGET_STOP at', done, flush=True)
+                      break
+
+          pathlib.Path('harvest').mkdir(exist_ok=True)
+          pathlib.Path('harvest/product-images.json').write_text(json.dumps(out, separators=(',', ':')))
+          multi = sum(1 for v in out.values() if len(v) > 1)
+          print('products', len(out), 'multi_image', multi, 'bytes', pathlib.Path('harvest/product-images.json').stat().st_size, flush=True)
+          PY
+        env:
+          PYTHONUNBUFFERED: '1'
+      - name: Commit
+        run: |
+          git config user.name 'harvest-bot'
+          git config user.email 'harvest-bot@users.noreply.github.com'
+          git add harvest/product-images.json
+          git commit -m 'chore(harvest): product gallery images [skip ci]' || echo 'nothing to commit'
+          for attempt in 1 2 3; do
+            git pull --rebase origin arena/34ebe542-royal-furniture-app && git push origin HEAD:arena/34ebe542-royal-furniture-app && break || sleep 5
+          done
