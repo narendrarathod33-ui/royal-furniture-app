@@ -32,8 +32,10 @@ jobs:
 
           BASE = 'https://rylqus.ae/api/products'
           UA = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'}
-          PRICEISH = ('price', 'amount', 'mrp', 'value', 'cost', 'rate', 'selling', 'sale', 'list', 'discount', 'total')
-          SKIP = ('info_section', 'similar_products', 'responsive_images', 'blur_url', 'image', 'thumbnail')
+          # Explicit price-ish keys only — a loose 'list' token wrongly matched is_wishlist.
+          PRICE_HINTS = ('price', 'mrp', 'amount', 'cost', 'sale', 'selling', 'discount', 'mrp_value')
+          PRICE_EXACT = ('value', 'rate', 'sp', 'mrp')
+          SKIP = ('info_section', 'similar_products', 'responsive_images', 'blur_url', 'image', 'thumbnail', 'wishlist', 'display_order')
 
           def get(url, extra=None):
               headers = dict(UA)
@@ -44,7 +46,6 @@ jobs:
                   return json.loads(response.read().decode('utf-8'))
 
           def price_paths(node, out=None, path='', depth=0):
-              """Every numeric value sitting under a price-ish key, keyed by path."""
               if out is None:
                   out = {}
               if depth > 6 or len(out) > 40:
@@ -57,7 +58,7 @@ jobs:
                       child = f'{path}.{key}' if path else key
                       if isinstance(value, (dict, list)):
                           price_paths(value, out, child, depth + 1)
-                      elif isinstance(value, (int, float, str)) and any(token in low for token in PRICEISH):
+                      elif isinstance(value, (int, float, str)) and (any(hint in low for hint in PRICE_HINTS) or low in PRICE_EXACT):
                           text = str(value).strip()
                           if text and text not in ('0', '0.0', 'None') and len(text) < 24:
                               try:
@@ -69,8 +70,19 @@ jobs:
                       price_paths(item, out, f'{path}[]', depth + 1)
               return out
 
+          def trim(node, depth=0):
+              """Small, image-free view of an object so its field names can be seen."""
+              if depth > 3:
+                  return '...'
+              if isinstance(node, dict):
+                  return {k: trim(v, depth + 1) for k, v in node.items() if not any(s in k.lower() for s in SKIP)}
+              if isinstance(node, list):
+                  return [trim(item, depth + 1) for item in node[:2]]
+              if isinstance(node, str) and len(node) > 60:
+                  return node[:60] + '...'
+              return node
+
           def size_rows(detail):
-              """One entry per Size dropdown option, with every price path found."""
               rows = []
               for variant in (detail or {}).get('variants') or []:
                   entry = {'n': (variant.get('name') or '').strip(),
@@ -84,16 +96,30 @@ jobs:
                   rows.append(entry)
               return rows
 
+          def shape(detail):
+              variant = (detail.get('variants') or [{}])[0]
+              fabric = ((variant.get('fabricsList') or [{}])[0])
+              color = ((fabric.get('colorsList') or [{}])[0])
+              return {
+                  'variant_keys': sorted(variant.keys()),
+                  'fabric_keys': sorted(fabric.keys()),
+                  'color_keys': sorted(color.keys()),
+                  'color_sample': trim(color),
+                  'variant_sample': trim({k: v for k, v in variant.items() if k != 'fabricsList'}),
+              }
+
           out = {'harvested_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
+          write = lambda: json.dump(out, open('harvest/raw-sizes.json', 'w'))
 
           try:
               out['categories'] = get(f'{BASE}/categories/?format=json')
           except Exception as error:
               out['categories'] = f'failed: {error!r}'
 
-          slugs = ['furniture', 'sofas', 'bedroom', 'household', 'cooltech-mattress', 'kids-and-teens']
+          # Mattresses and kids/bedroom first: those are where size lists live.
+          order = ['cooltech-mattress', 'kids-and-teens', 'bedroom', 'household', 'sofas', 'furniture']
           rows = []
-          for category in slugs:
+          for category in order:
               page = 1
               while page <= 30:
                   try:
@@ -114,14 +140,15 @@ jobs:
                   if not data.get('next'):
                       break
                   page += 1
-                  time.sleep(0.2)
+                  time.sleep(0.15)
+          out['listing'] = rows
           out['listing_total'] = len(rows)
           print('LISTING_TOTAL', len(rows), flush=True)
 
           def is_candidate(row):
               name = (row['name'] or '').lower()
-              keywords = ('bed', 'mattress', 'bunk', 'lounge', 'ottoman', 'sofa bed', 'cushion', 'pillow', 'protector', 'vase', 'lantern', 'candle')
-              return (row['cat'] == 'cooltech-mattress'
+              keywords = ('mattress', 'bed', 'bunk', 'sofa bed', 'ottoman', 'lounge', 'adjustable', 'cot ', 'recliner')
+              return (row['cat'] in ('cooltech-mattress', 'kids-and-teens')
                       or row['imgs'] > 1
                       or '---' in (row['sku'] or '')
                       or any(word in name for word in keywords))
@@ -129,17 +156,23 @@ jobs:
           candidates = [row for row in rows if is_candidate(row)]
           out['candidates'] = len(candidates)
           print('CANDIDATES', len(candidates), flush=True)
+          print('CANDIDATES_BY_CAT', json.dumps({c: sum(1 for r in candidates if r['cat'] == c) for c in order}), flush=True)
 
           results = []
-          header_question = None
-          for index, row in enumerate(candidates[:400]):
+          shape_done = False
+          header_probe = None
+          deadline = time.time() + 28 * 60
+          for index, row in enumerate(candidates):
+              if time.time() > deadline:
+                  print('BUDGET_STOP', index, flush=True)
+                  break
               slug = row['slug']
               try:
                   detail = get(f'{BASE}/product-detail/{slug}/?format=json').get('data') or {}
               except Exception as error:
                   results.append({'slug': slug, 'name': row['name'], 'cat': row['cat'], 'error': repr(error)[:140]})
-                  print(f'DETAIL_FAILED {slug} {error!r}', flush=True)
                   continue
+              variants = detail.get('variants') or []
               summary = {
                   'slug': slug,
                   'name': row['name'],
@@ -147,39 +180,48 @@ jobs:
                   'sub': row['sub'],
                   'sku': row['sku'],
                   'imgs': row['imgs'],
-                  'v': len(detail.get('variants') or []),
-                  'sizes': size_rows(detail),
+                  'v': len(variants),
               }
+              if len(variants) > 1:
+                  summary['sizes'] = size_rows(detail)
               results.append(summary)
 
-              # Does the locale/country header unlock prices the plain call hides?
-              if header_question is None and summary['v'] > 1 and not any(size['p'] for size in summary['sizes']):
+              # Once: learn the real field names, and whether the locale/country
+              # header is what unlocks prices, using the first multi-size product.
+              if not shape_done and len(variants) > 1:
+                  shape_done = True
+                  plain = shape(detail)
                   try:
                       with_headers = get(f'{BASE}/product-detail/{slug}/?format=json', {'locale': 'en', 'country': 'ae'}).get('data') or {}
-                      heard = size_rows(with_headers)
-                      header_question = {
+                      header_probe = {
                           'slug': slug,
-                          'plain_sizes': summary['v'],
+                          'plain_shape': plain,
+                          'header_shape': shape(with_headers),
+                          'plain_sizes': len(variants),
                           'header_sizes': len(with_headers.get('variants') or []),
-                          'header_prices': heard[:10],
-                          'unlocks': any(size['p'] for size in heard),
+                          'header_sizes_with_prices': size_rows(with_headers)[:12],
                       }
                   except Exception as error:
-                      header_question = {'slug': slug, 'error': repr(error)[:140]}
+                      header_probe = {'slug': slug, 'plain_shape': plain, 'error': repr(error)[:140]}
+                  out['header_probe'] = header_probe
+                  print('HEADER_PROBE_DONE', slug, flush=True)
 
               if index % 10 == 0:
-                  print(f'PROGRESS {index}/{min(len(candidates), 400)}', flush=True)
-              time.sleep(0.15)
+                  print(f'PROGRESS {index}', flush=True)
+              if index % 40 == 0:
+                  out['results'] = results
+                  write()
+              time.sleep(0.12)
 
-          out['header_question'] = header_question
           out['results'] = results
-          with open('harvest/raw-sizes.json', 'w') as handle:
-              json.dump(out, handle)
+          out['swept'] = len(results)
+          write()
           print('RESULT_TOTAL', len(results), flush=True)
           print('RESULT_END', flush=True)
           PY
 
       - name: Commit the raw harvest
+        if: always()
         run: |
           git config user.email "actions@github.com"
           git config user.name "harvest-bot"
