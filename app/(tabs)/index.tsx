@@ -13,6 +13,7 @@ import {
 import { ChevronRight, Heart, MapPin, Minus, Plus, Search, ShoppingBag, SlidersHorizontal, Star, Truck, X } from 'lucide-react-native';
 import { royalFurnitureData } from '../data/royalFurnitureData';
 import { catalogImages } from '../data/catalogImages';
+import { liveCatalogImages } from '../data/liveCatalogImages';
 
 type Product = (typeof royalFurnitureData.products)[number];
 type Tab = 'home' | 'shop' | 'stores' | 'saved' | 'cart';
@@ -52,7 +53,7 @@ const officialPhotos = [
 
 const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
 const shortName = (name: string) => name.replace(/\s*-\s*\d+x\d+.*$/i, '');
-const photoFor = (product: Product) => catalogImages[product.id] || photoByProductId[product.id] || officialPhotos[royalFurnitureData.products.indexOf(product) % officialPhotos.length];
+const photoFor = (product: Product) => liveCatalogImages[product.id] || catalogImages[product.id] || photoByProductId[product.id];
 
 export default function HomeScreen() {
   const [tab, setTab] = useState<Tab>('home');
