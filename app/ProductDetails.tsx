@@ -10,7 +10,21 @@ import {
   Text,
   View,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { ChevronRight, Heart, RefreshCw, ShoppingBag } from 'lucide-react-native';
+import { getOfficialSizes } from './data/officialSizes';
+
+/** A selectable size of the same product, sourced from the official catalogue. */
+export type SizeVariantOption = {
+  id: string;
+  label: string;
+  sizeType: string;
+  name: string;
+  price: number;
+  listPrice: number;
+  discount: number;
+  photo?: ImageSourcePropType;
+};
 
 type ProductDetailsProduct = {
   id: string;
@@ -19,6 +33,8 @@ type ProductDetailsProduct = {
   scn?: string;
   d?: string;
   o: number;
+  /** Original/list price from the catalogue, shown struck through. */
+  l?: number;
   z?: unknown;
   sp?: unknown;
 };
@@ -27,6 +43,9 @@ type DetailRow = { label?: string; value?: string };
 type ApiColor = {
   name?: string;
   hex?: string;
+  info_image?: unknown;
+  stock?: number;
+  region_prices?: Record<string, unknown>;
   fabric_color_info?: { color_name?: string; color_hex?: string; fabric_name?: string };
   info_section?: {
     material?: DetailRow[];
@@ -35,7 +54,12 @@ type ApiColor = {
     warranty?: DetailRow[];
     assembly?: DetailRow[];
   };
+  // Regional pricing is returned as additional numeric fields; the exact key
+  // varies, so the whole object is searched for a price (see priceFromEntry).
+  [key: string]: unknown;
 };
+type ApiFabric = { name?: string; colorsList?: ApiColor[]; [key: string]: unknown };
+type ApiVariant = { name?: string; fabricsList?: ApiFabric[]; [key: string]: unknown };
 type ApiProductDetail = {
   general_information?: string;
   product_info?: {
@@ -44,10 +68,8 @@ type ApiProductDetail = {
     delivery_estimate_days?: string;
   };
   primary_images?: { fabric_color_info?: { color_name?: string; color_hex?: string } };
-  variants?: Array<{
-    name?: string;
-    fabricsList?: Array<{ name?: string; colorsList?: ApiColor[] }>;
-  }>;
+  // Each variant is one entry of the official "### Size" dropdown.
+  variants?: ApiVariant[];
 };
 type SizePriceOption = { name: string; price: number; listPrice?: number; optionKey: string };
 type ProductOptionData = {
@@ -59,13 +81,15 @@ type ProductOptionData = {
 };
 
 const COLORS = {
-  ink: '#101828',
-  red: '#C0392B',
-  cream: '#F3F4F6',
-  line: '#E5E7EB',
-  muted: '#4A5565',
+  ink: '#050000',
+  red: '#DA1921',
+  redDeep: '#B61117',
+  navy: '#282984',
+  cream: '#F6F6F7',
+  line: '#E3E3E5',
+  muted: '#444444',
   white: '#FFFFFF',
-  green: '#24734A',
+  green: '#127A44',
 };
 
 const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
@@ -166,8 +190,87 @@ function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
   return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices: [], rows };
 }
 
-function sizeFromProductId(id: string) {
-  const encodedSize = id.split('::size=')[1];
+// Field names verified against the live API: a colour carries
+// `region_prices: { total_price, total_base_price, base_price, variant_price }`
+// (flat, not nested per country) once the locale/country headers are sent.
+const PRICE_KEYS = ['total_price', 'variant_price', 'price', 'selling_price', 'sale_price', 'offer_price', 'final_price', 'discounted_price', 'current_price', 'unit_price', 'amount', 'value'];
+const LIST_PRICE_KEYS = ['total_base_price', 'base_price', 'list_price', 'original_price', 'mrp', 'strike_price', 'compare_at_price', 'regular_price', 'was_price', 'max_price'];
+
+function numberFrom(value: unknown): number | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) && value > 0 ? value : undefined;
+  if (typeof value === 'string') {
+    const parsed = Number(value.replace(/[^0-9.]/g, ''));
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * Reads a price off an API node (colour / fabric / variant). Regional pricing
+ * arrives as extra numeric fields whose names differ between payloads, so every
+ * plausible key is probed, and a nested `region_prices` block is checked first.
+ */
+function priceFromEntry(entry: unknown, country: string): { price?: number; listPrice?: number } {
+  if (!entry || typeof entry !== 'object') return {};
+  const node = entry as Record<string, unknown>;
+
+  const read = (source: Record<string, unknown>) => ({
+    price: PRICE_KEYS.map((key) => numberFrom(source[key])).find((found) => found !== undefined),
+    listPrice: LIST_PRICE_KEYS.map((key) => numberFrom(source[key])).find((found) => found !== undefined),
+  });
+
+  const regions = node.region_prices || node.regional_prices || node.region_pricing;
+  if (regions && typeof regions === 'object') {
+    const map = regions as Record<string, unknown>;
+    // Either nested per country (`{ ae: { total_price } }`) or flat
+    // (`{ total_price }`) — the live payload uses the flat form.
+    const scoped = map[country] || map[country.toUpperCase()] || map.default;
+    if (scoped && typeof scoped === 'object') {
+      const nested = read(scoped as Record<string, unknown>);
+      if (nested.price !== undefined || nested.listPrice !== undefined) return nested;
+    }
+    const flat = read(map);
+    if (flat.price !== undefined || flat.listPrice !== undefined) return flat;
+  }
+
+  return read(node);
+}
+
+type ApiSizeOption = { label: string; price?: number; listPrice?: number };
+
+/**
+ * The official "### Size" dropdown: every `variants[].name` is one size, and the
+ * cheapest colour offering inside that variant supplies its price. This is how
+ * the site sells mattresses, adjustable beds and made-to-order pieces whose
+ * sizes are not separate catalog entries.
+ */
+function extractApiSizeOptions(detail: ApiProductDetail | null, country = 'ae'): ApiSizeOption[] {
+  const options: ApiSizeOption[] = [];
+  const seen = new Set<string>();
+
+  for (const variant of detail?.variants || []) {
+    const label = variant.name?.trim();
+    if (!label || seen.has(label.toLocaleLowerCase())) continue;
+    seen.add(label.toLocaleLowerCase());
+
+    let price: number | undefined;
+    let listPrice: number | undefined;
+    const consider = (found: { price?: number; listPrice?: number }) => {
+      if (found.price !== undefined && (price === undefined || found.price < price)) price = found.price;
+      if (found.listPrice !== undefined && (listPrice === undefined || found.listPrice > listPrice)) listPrice = found.listPrice;
+    };
+
+    consider(priceFromEntry(variant, country));
+    for (const fabric of variant.fabricsList || []) {
+      consider(priceFromEntry(fabric, country));
+      for (const color of fabric.colorsList || []) consider(priceFromEntry(color, country));
+    }
+    options.push({ label, price, listPrice: listPrice && price && listPrice > price ? listPrice : undefined });
+  }
+  return options;
+}
+
+function sizeFromProductId(id: string) {  const encodedSize = id.split('::size=')[1];
   if (!encodedSize) return '';
   try {
     return decodeURIComponent(encodedSize);
@@ -201,6 +304,7 @@ function dedupeRows(rows: DetailRow[]) {
 export default function ProductDetails({
   product,
   photoSource,
+  sizeVariants,
   onBack,
   onSave,
   onAdd,
@@ -208,13 +312,18 @@ export default function ProductDetails({
 }: {
   product: ProductDetailsProduct;
   photoSource?: ImageSourcePropType;
+  sizeVariants?: SizeVariantOption[];
   onBack: () => void;
   onSave: () => void;
   onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
   isSaved: boolean;
 }) {
   const sourceId = product.id.split('::size=')[0];
-  const slug = sourceId.replace(/^\d+-/, '');
+  // The API slug is the catalogue id minus its leading number. A trailing hash is
+  // part of the slug on some rows (e.g. `azilea-smart-pro-grid-mattress-56bb1d`) and
+  // absent on others, so both forms are tried.
+  const slugBase = sourceId.replace(/^\d+-/, '');
+  const slugHashless = slugBase.replace(/-[0-9a-f]{6}$/, '');
   const [detail, setDetail] = useState<ApiProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -229,8 +338,59 @@ export default function ProductDetails({
   const [selectedSize, setSelectedSize] = useState(defaultSizeOption?.name || '');
   const selectedSizeOption = local.sizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
   const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
-  const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice : undefined;
+  const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? product.l : product.l;
   const productName = product.n.replace(/\s+—\s+Size:\s+.*$/, '');
+
+  // Official size dropdown, in priority order:
+  //   1. sibling catalog entries (exact per-size prices + photos) — local families;
+  //   2. the harvested official size lists for this catalog (mattresses, beds and
+  //      other pieces the site keeps at one default size with a Size selector);
+  //   3. the live API's `variants` as a fallback when the browser can reach it.
+  // Either way, picking a size swaps the price, the struck-through original price
+  // and the photo together.
+  const variants = sizeVariants && sizeVariants.length > 1 ? sizeVariants : [];
+  const officialSizes = useMemo(() => getOfficialSizes(product.id), [product.id]);
+  const apiSizes = useMemo(() => extractApiSizeOptions(detail), [detail]);
+  const [selectedVariantId, setSelectedVariantId] = useState('');
+  const [sizeOpen, setSizeOpen] = useState(false);
+  const sourceVariant = variants.find((variant) => variant.id === sourceId);
+  const activeVariant = variants.find((variant) => variant.id === selectedVariantId) || sourceVariant || variants[0];
+  const usingSizeVariants = variants.length > 1 && !!activeVariant;
+  const usingOfficialSizes = !usingSizeVariants && officialSizes.length > 1;
+  const usingApiSizes = !usingSizeVariants && !usingOfficialSizes && apiSizes.length > 1;
+
+  type SizeOption = { key: string; label: string; price?: number; listPrice?: number; discount?: number; photo?: ImageSourcePropType };
+  const sizeOptions: SizeOption[] = usingSizeVariants
+    ? variants.map((variant) => ({
+        key: variant.id,
+        label: [variant.label, variant.sizeType].filter(Boolean).join(' · '),
+        price: variant.price,
+        listPrice: variant.listPrice,
+        discount: variant.discount,
+        photo: variant.photo,
+      }))
+    : usingOfficialSizes
+      ? officialSizes.map((option) => ({ key: option.label, label: option.label, price: option.price, listPrice: option.listPrice,
+          discount: option.price && option.listPrice && option.listPrice > option.price ? Math.round((1 - option.price / option.listPrice) * 100) : undefined }))
+      : usingApiSizes
+        ? apiSizes.map((option) => ({ key: option.label, label: option.label, price: option.price, listPrice: option.listPrice,
+            discount: option.price && option.listPrice && option.listPrice > option.price ? Math.round((1 - option.price / option.listPrice) * 100) : undefined }))
+        : [];
+  const activeSize = sizeOptions.find((option) => option.key === selectedVariantId)
+    || sizeOptions.find((option) => option.key === sourceId);
+  const hasSizeMenu = sizeOptions.length > 1;
+  const hasPricedSizes = sizeOptions.some((option) => option.price !== undefined);
+  // Until a size is chosen the catalog price stands, so opening the menu never
+  // silently changes what the customer is looking at.
+  const displayPrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
+  // A chosen size keeps its own original price; while the chosen size is unpriced
+  // the catalogue's original price stands.
+  const displayListPrice = activeSize?.price !== undefined
+    ? (activeSize.listPrice && activeSize.listPrice > activeSize.price ? activeSize.listPrice : undefined)
+    : selectedListPrice;
+  const displayPhoto = (usingSizeVariants && activeVariant?.photo) || photoSource;
+  const selectedSizeText = activeSize?.label || (usingOfficialSizes || usingApiSizes ? 'Select size' : '');
+  const savedAmount = displayListPrice && displayListPrice > displayPrice ? displayListPrice - displayPrice : 0;
 
   useEffect(() => {
     let active = true;
@@ -238,26 +398,42 @@ export default function ProductDetails({
     setError(false);
     setLoading(true);
 
-    fetch(`https://rylqus.ae/api/products/product-detail/${encodeURIComponent(slug)}/`, {
-      headers: { locale: 'en', country: 'ae' },
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error('Product details unavailable');
-        return response.json();
-      })
-      .then((payload: { data?: ApiProductDetail }) => {
-        if (!payload.data) throw new Error('Product details unavailable');
-        if (active) setDetail(payload.data);
-      })
-      .catch(() => {
-        if (active) setError(true);
+    const urls = [slugBase, slugHashless]
+      .filter((value, index, all) => !!value && all.indexOf(value) === index)
+      .map((value) => `https://rylqus.ae/api/products/product-detail/${encodeURIComponent(value)}/`);
+
+    // The locale/country headers are what make the API return prices, so they are
+    // tried first; the plain request is the fallback for when the CORS preflight
+    // they trigger is rejected.
+    const load = async () => {
+      for (const url of urls) {
+        for (const headers of [{ locale: 'en', country: 'ae' }, undefined]) {
+          try {
+            const response = await fetch(url, headers ? { headers } : undefined);
+            if (!response.ok) continue;
+            const payload = (await response.json()) as { data?: ApiProductDetail };
+            if (!payload.data) continue;
+            return payload.data;
+          } catch {
+            // try the next combination
+          }
+        }
+      }
+      return null;
+    };
+
+    load()
+      .then((data) => {
+        if (!active) return;
+        if (data) setDetail(data);
+        else setError(true);
       })
       .finally(() => {
         if (active) setLoading(false);
       });
 
     return () => { active = false; };
-  }, [slug, reload]);
+  }, [slugBase, slugHashless, reload]);
 
   const description = [product.d, detail?.general_information].filter(Boolean).join('\n\n');
   const sizes = unique([...live.sizes, ...local.sizes]);
@@ -282,15 +458,80 @@ export default function ProductDetails({
         </Pressable>
 
         <View style={styles.imageWrap}>
-          {photoSource ? <Image source={photoSource} style={styles.image} resizeMode="cover" /> : <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>}
+          {displayPhoto ? <Image source={displayPhoto} style={styles.image} resizeMode="cover" /> : <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>}
         </View>
 
         <View style={styles.productIntro}>
           {!!product.scn && <Text style={styles.category}>{product.scn}</Text>}
           <Text style={styles.name}>{productName}</Text>
-          <Text style={styles.price}>{money(selectedPrice)}</Text>
-          {!!selectedListPrice && selectedListPrice > selectedPrice && <Text style={styles.oldPrice}>{money(selectedListPrice)}</Text>}
+          <View style={styles.priceRow}>
+            <Text style={styles.price}>{money(displayPrice)}</Text>
+            {!!displayListPrice && displayListPrice > displayPrice && <Text style={styles.oldPrice}>{money(displayListPrice)}</Text>}
+          </View>
+          {savedAmount > 0 && <Text style={styles.savePill}>You save {money(savedAmount)}</Text>}
         </View>
+
+        {hasSizeMenu && (
+          <View style={styles.glassCard}>
+            <BlurView pointerEvents="none" intensity={42} tint="light" style={styles.glassBlur} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Size, ${selectedSizeText}${activeSize?.price !== undefined ? `, ${money(activeSize.price)}` : ''}. Tap to change size`}
+              accessibilityState={{ expanded: sizeOpen }}
+              onPress={() => setSizeOpen((open) => !open)}
+              style={styles.glassTrigger}
+            >
+              <View style={styles.glassTriggerCopy}>
+                <Text style={styles.glassEyebrow}>Size</Text>
+                <Text style={styles.glassValue}>{selectedSizeText}</Text>
+              </View>
+              <View style={styles.glassTriggerPrice}>
+                {activeSize?.price !== undefined ? (
+                  <>
+                    <Text style={styles.glassTriggerAmount}>{money(activeSize.price)}</Text>
+                    {!!activeSize.discount && <Text style={styles.glassTriggerSave}>{activeSize.discount}% off</Text>}
+                  </>
+                ) : (
+                  <Text style={styles.glassTriggerSave}>{sizeOptions.length} sizes</Text>
+                )}
+              </View>
+              <View style={styles.glassChevronWrap}>
+                <ChevronRight color={COLORS.ink} size={18} style={{ transform: [{ rotate: sizeOpen ? '90deg' : '0deg' }] }} />
+              </View>
+            </Pressable>
+            {sizeOpen && (
+              <View style={styles.glassList}>
+                {sizeOptions.map((option) => {
+                  const isActive = option.key === activeSize?.key;
+                  return (
+                    <Pressable
+                      key={option.key}
+                      accessibilityRole="radio"
+                      accessibilityLabel={option.price !== undefined ? `${option.label}, ${money(option.price)}` : option.label}
+                      accessibilityState={{ selected: isActive }}
+                      onPress={() => { setSelectedVariantId(option.key); setSizeOpen(false); }}
+                      style={[styles.glassOption, isActive && styles.glassOptionActive]}
+                    >
+                      <View style={[styles.glassRadio, isActive && styles.glassRadioOn]}>{isActive && <View style={styles.glassRadioDot} />}</View>
+                      <View style={styles.glassOptionCopy}>
+                        <Text style={styles.glassOptionLabel}>{option.label}</Text>
+                        {!!option.discount && option.listPrice !== undefined && option.price !== undefined && (
+                          <Text style={styles.glassOptionMeta}>{option.discount}% off · was {money(option.listPrice)}</Text>
+                        )}
+                      </View>
+                      {option.price !== undefined ? (
+                        <Text style={styles.glassOptionPrice}>{money(option.price)}</Text>
+                      ) : hasPricedSizes ? (
+                        <Text style={styles.glassOptionPrice}>Ask</Text>
+                      ) : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
+            {!hasPricedSizes && <Text style={styles.glassNote}>Official sizes for this piece. Prices for each size are confirmed by Royal Furniture on order.</Text>}
+          </View>
+        )}
 
         <View style={styles.sourceStatus} accessibilityLiveRegion="polite">
           {loading ? (
@@ -318,7 +559,7 @@ export default function ProductDetails({
             label="Customization"
             value={isCustomizable === true ? 'Available' : isCustomizable === false ? 'Not available' : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : 'Not specified'}
           />
-          {hasDifferentSizePrices ? (
+          {hasDifferentSizePrices && !hasSizeMenu ? (
             <View style={styles.sizeSelection}>
               <Text style={styles.sizeLabel}>Choose size</Text>
               <View style={styles.sizeOptions}>
@@ -390,9 +631,9 @@ export default function ProductDetails({
         <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? 'Remove from saved items' : 'Save product'} onPress={onSave} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => onAdd({ size: hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: selectedPrice, listPrice: selectedListPrice })} style={styles.addButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`Add to bag, ${activeSize ? selectedSizeText : 'one size'}, ${money(displayPrice)}`} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice })} style={styles.addButton}>
           <ShoppingBag color={COLORS.white} size={18} />
-          <Text style={styles.addButtonText}>Add to bag · {money(selectedPrice)}</Text>
+          <Text style={styles.addButtonText}>Add to bag · {money(displayPrice)}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -458,4 +699,29 @@ const styles = StyleSheet.create({
   saveButton: { minWidth: 50, minHeight: 50, alignItems: 'center', justifyContent: 'center', borderRadius: 14, borderWidth: 1, borderColor: COLORS.line },
   addButton: { minHeight: 50, flex: 1, borderRadius: 14, backgroundColor: COLORS.ink, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, paddingHorizontal: 12 },
   addButtonText: { color: COLORS.white, fontSize: 14, fontWeight: '800' },
+
+  // Glass size dropdown — frosted panel with a translucent blur backdrop.
+  priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+  savePill: { color: COLORS.red, fontSize: 12, fontWeight: '800', marginTop: 6 },
+  glassCard: { marginBottom: 14, borderRadius: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.78)', backgroundColor: 'rgba(255,255,255,0.38)', overflow: 'hidden', shadowColor: '#050000', shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 3 },
+  glassBlur: { ...StyleSheet.absoluteFillObject },
+  glassTrigger: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },
+  glassTriggerCopy: { flex: 1, minWidth: 0 },
+  glassEyebrow: { color: COLORS.muted, fontSize: 10, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
+  glassValue: { color: COLORS.ink, fontSize: 15, fontWeight: '800', marginTop: 3 },
+  glassTriggerPrice: { alignItems: 'flex-end' },
+  glassTriggerAmount: { color: COLORS.ink, fontSize: 14, fontWeight: '800' },
+  glassTriggerSave: { color: COLORS.red, fontSize: 10, fontWeight: '800', marginTop: 2 },
+  glassChevronWrap: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)' },
+  glassList: { backgroundColor: 'rgba(255,255,255,0.3)' },
+  glassOption: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 14, paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.8)' },
+  glassOptionActive: { backgroundColor: 'rgba(255,255,255,0.66)' },
+  glassRadio: { width: 18, height: 18, borderRadius: 9, borderWidth: 1.5, borderColor: 'rgba(16,24,40,0.3)', alignItems: 'center', justifyContent: 'center' },
+  glassRadioOn: { borderColor: COLORS.ink },
+  glassRadioDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.ink },
+  glassOptionCopy: { flex: 1, minWidth: 0 },
+  glassOptionLabel: { color: COLORS.ink, fontSize: 13, fontWeight: '800' },
+  glassOptionMeta: { color: COLORS.red, fontSize: 10, marginTop: 3 },
+  glassOptionPrice: { color: COLORS.ink, fontSize: 13, fontWeight: '800' },
+  glassNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, paddingHorizontal: 14, paddingBottom: 12 },
 });
