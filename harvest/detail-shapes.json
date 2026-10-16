@@ -1,0 +1,2101 @@
+{
+ "serafina-corner-sofa": {
+  "top_level_keys": [
+   "data",
+   "detail",
+   "message",
+   "meta",
+   "version"
+  ],
+  "image_fields": {
+   "data.product_info.thumbnail_image": null,
+   "data.product_info.description_image": null,
+   "data.primary_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "fabric_color": 286,
+    "fabric_color_info": {
+     "__keys__": [
+      "color_hex",
+      "color_name",
+      "fabric_color_image",
+      "fabric_name",
+      "id"
+     ]
+    }
+   },
+   "data.primary_images.fabric_color_info.fabric_color_image": "str(144)",
+   "data.additional_images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.additional_images[0].image": null,
+   "data.additional_images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[1].image": null,
+   "data.additional_images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[2].image": null,
+   "data.additional_images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].size_image": null,
+   "data.variants[0].fabricsList[0].image": "str(145)",
+   "data.variants[0].fabricsList[0].colorsList[0].variant_image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_image": "str(145)",
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_color_image": "str(144)",
+   "data.variants[0].fabricsList[1].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[1].colorsList[0].variant_image": null,
+   "data.variants[0].fabricsList[1].colorsList[0].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[0].images[0].image": null,
+   "data.variants[0].fabricsList[1].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[0].images[1].image": null,
+   "data.variants[0].fabricsList[1].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[0].images[2].image": null,
+   "data.variants[0].fabricsList[1].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[0].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[1].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[1].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[0].fabricsList[1].colorsList[1].variant_image": null,
+   "data.variants[0].fabricsList[1].colorsList[1].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[1].images[0].image": null,
+   "data.variants[0].fabricsList[1].colorsList[1].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[1].images[1].image": null,
+   "data.variants[0].fabricsList[1].colorsList[1].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[1].images[2].image": null,
+   "data.variants[0].fabricsList[1].colorsList[1].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[1].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[1].colorsList[1].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[1].colorsList[1].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[0].fabricsList[1].colorsList[2].variant_image": null,
+   "data.variants[0].fabricsList[1].colorsList[2].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[2].images[0].image": null,
+   "data.variants[0].fabricsList[1].colorsList[2].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[2].images[1].image": null,
+   "data.variants[0].fabricsList[1].colorsList[2].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[2].images[2].image": null,
+   "data.variants[0].fabricsList[1].colorsList[2].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[1].colorsList[2].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[1].colorsList[2].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[1].colorsList[2].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[0].fabricsList[2].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[2].colorsList[0].variant_image": null,
+   "data.variants[0].fabricsList[2].colorsList[0].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[0].images[0].image": null,
+   "data.variants[0].fabricsList[2].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[0].images[1].image": null,
+   "data.variants[0].fabricsList[2].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[0].images[2].image": null,
+   "data.variants[0].fabricsList[2].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[0].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[2].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[2].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[0].fabricsList[2].colorsList[1].variant_image": null,
+   "data.variants[0].fabricsList[2].colorsList[1].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[1].images[0].image": null,
+   "data.variants[0].fabricsList[2].colorsList[1].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[1].images[1].image": null,
+   "data.variants[0].fabricsList[2].colorsList[1].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[1].images[2].image": null,
+   "data.variants[0].fabricsList[2].colorsList[1].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[1].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[2].colorsList[1].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[2].colorsList[1].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[0].fabricsList[2].colorsList[2].variant_image": null,
+   "data.variants[0].fabricsList[2].colorsList[2].images": {
+    "__list__": 7,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[2].images[0].image": null,
+   "data.variants[0].fabricsList[2].colorsList[2].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[2].images[1].image": null,
+   "data.variants[0].fabricsList[2].colorsList[2].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[2].images[2].image": null,
+   "data.variants[0].fabricsList[2].colorsList[2].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[2].colorsList[2].info_image": {
+    "web": null,
+    "ipad": null,
+    "mobile": null
+   },
+   "data.variants[0].fabricsList[2].colorsList[2].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[2].colorsList[2].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.similar_products[0].thumbnail_image": "str(139)",
+   "data.similar_products[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[1].thumbnail_image": "str(128)",
+   "data.similar_products[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[2].thumbnail_image": "str(128)",
+   "data.similar_products[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[0].thumbnail_image": "str(139)",
+   "data.you_may_also_like[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[1].thumbnail_image": "str(128)",
+   "data.you_may_also_like[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[2].thumbnail_image": "str(128)",
+   "data.you_may_also_like[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   }
+  }
+ },
+ "kaspar-6-door-wardrobe": {
+  "top_level_keys": [
+   "data",
+   "detail",
+   "message",
+   "meta",
+   "version"
+  ],
+  "image_fields": {
+   "data.product_info.thumbnail_image": null,
+   "data.product_info.description_image": null,
+   "data.primary_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "fabric_color": null,
+    "fabric_color_info": null
+   },
+   "data.additional_images": {
+    "__list__": 21,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.additional_images[0].image": null,
+   "data.additional_images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[1].image": null,
+   "data.additional_images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[2].image": null,
+   "data.additional_images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].size_image": null,
+   "data.variants[0].fabricsList[0].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[0].colorsList[0].variant_image": "str(148)",
+   "data.variants[0].fabricsList[0].colorsList[0].images": {
+    "__list__": 21,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].image": null,
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].info_image": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.similar_products[0].thumbnail_image": "str(138)",
+   "data.similar_products[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[1].thumbnail_image": null,
+   "data.similar_products[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[2].thumbnail_image": "str(134)",
+   "data.similar_products[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[0].thumbnail_image": "str(138)",
+   "data.you_may_also_like[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[1].thumbnail_image": null,
+   "data.you_may_also_like[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[2].thumbnail_image": "str(134)",
+   "data.you_may_also_like[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   }
+  }
+ },
+ "shadow-latex-pocket-spring-mattress": {
+  "top_level_keys": [
+   "data",
+   "detail",
+   "message",
+   "meta",
+   "version"
+  ],
+  "image_fields": {
+   "data.product_info.thumbnail_image": "str(130)",
+   "data.product_info.description_image": null,
+   "data.primary_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "fabric_color": 233,
+    "fabric_color_info": {
+     "__keys__": [
+      "color_hex",
+      "color_name",
+      "fabric_color_image",
+      "fabric_name",
+      "id"
+     ]
+    }
+   },
+   "data.primary_images.fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.additional_images": {
+    "__list__": 9,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.additional_images[0].image": "str(132)",
+   "data.additional_images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[1].image": "str(132)",
+   "data.additional_images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.additional_images[2].image": "str(130)",
+   "data.additional_images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].size_image": null,
+   "data.variants[0].fabricsList[0].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[0].colorsList[0].variant_image": "str(148)",
+   "data.variants[0].fabricsList[0].colorsList[0].images": {
+    "__list__": 9,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].image": "str(132)",
+   "data.variants[0].fabricsList[0].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].image": "str(132)",
+   "data.variants[0].fabricsList[0].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].image": "str(130)",
+   "data.variants[0].fabricsList[0].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].info_image": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[0].fabricsList[0].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[1].size_image": null,
+   "data.variants[1].fabricsList[0].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[1].fabricsList[0].colorsList[0].variant_image": "str(156)",
+   "data.variants[1].fabricsList[0].colorsList[0].images": {
+    "__list__": 9,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[1].fabricsList[0].colorsList[0].images[0].image": "str(132)",
+   "data.variants[1].fabricsList[0].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[1].fabricsList[0].colorsList[0].images[1].image": "str(132)",
+   "data.variants[1].fabricsList[0].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[1].fabricsList[0].colorsList[0].images[2].image": "str(130)",
+   "data.variants[1].fabricsList[0].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[1].fabricsList[0].colorsList[0].info_image": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[1].fabricsList[0].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[1].fabricsList[0].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.variants[2].size_image": null,
+   "data.variants[2].fabricsList[0].image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[2].fabricsList[0].colorsList[0].variant_image": "str(156)",
+   "data.variants[2].fabricsList[0].colorsList[0].images": {
+    "__list__": 9,
+    "first": {
+     "__keys__": [
+      "display_order",
+      "id",
+      "image",
+      "responsive_images"
+     ]
+    }
+   },
+   "data.variants[2].fabricsList[0].colorsList[0].images[0].image": "str(132)",
+   "data.variants[2].fabricsList[0].colorsList[0].images[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[2].fabricsList[0].colorsList[0].images[1].image": "str(132)",
+   "data.variants[2].fabricsList[0].colorsList[0].images[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[2].fabricsList[0].colorsList[0].images[2].image": "str(130)",
+   "data.variants[2].fabricsList[0].colorsList[0].images[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[2].fabricsList[0].colorsList[0].info_image": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.variants[2].fabricsList[0].colorsList[0].fabric_color_info.fabric_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/p",
+   "data.variants[2].fabricsList[0].colorsList[0].fabric_color_info.fabric_color_image": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/f",
+   "data.similar_products[0].thumbnail_image": "str(125)",
+   "data.similar_products[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[1].thumbnail_image": "str(134)",
+   "data.similar_products[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.similar_products[2].thumbnail_image": "str(129)",
+   "data.similar_products[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[0].thumbnail_image": "str(125)",
+   "data.you_may_also_like[0].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[1].thumbnail_image": "str(134)",
+   "data.you_may_also_like[1].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   },
+   "data.you_may_also_like[2].thumbnail_image": "str(129)",
+   "data.you_may_also_like[2].responsive_images": {
+    "web": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "ipad": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    },
+    "mobile": {
+     "__keys__": [
+      "blur_url",
+      "height",
+      "url",
+      "width"
+     ]
+    }
+   }
+  }
+ }
+}
