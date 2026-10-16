@@ -11,8 +11,9 @@ import {
   View,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { ChevronRight, Heart, RefreshCw, ShoppingBag } from 'lucide-react-native';
+import { ChevronRight, Heart, RefreshCw, ShoppingBag, Star } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
+import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 
 /** A selectable size of the same product, sourced from the official catalogue. */
 export type SizeVariantOption = {
@@ -45,15 +46,15 @@ type ApiColor = {
   hex?: string;
   info_image?: unknown;
   stock?: number;
+  sku?: string;
+  stock_status?: { status?: string; stock_count?: number; message?: string };
+  variant_image?: string;
+  responsive_images?: Record<string, { url?: string }>;
   region_prices?: Record<string, unknown>;
   fabric_color_info?: { color_name?: string; color_hex?: string; fabric_name?: string };
-  info_section?: {
-    material?: DetailRow[];
-    dimensions?: DetailRow[];
-    specs?: DetailRow[];
-    warranty?: DetailRow[];
-    assembly?: DetailRow[];
-  };
+  // The page's General Information blocks: Material, Dimensions, Specs,
+  // Warranty, Assembly and any other section the API carries (e.g. care).
+  info_section?: { [section: string]: DetailRow[] | undefined };
   // Regional pricing is returned as additional numeric fields; the exact key
   // varies, so the whole object is searched for a price (see priceFromEntry).
   [key: string]: unknown;
@@ -66,19 +67,65 @@ type ApiProductDetail = {
     is_customizable?: boolean;
     is_size_customizable?: boolean;
     delivery_estimate_days?: string;
+    [key: string]: unknown;
   };
-  primary_images?: { fabric_color_info?: { color_name?: string; color_hex?: string } };
+  delivery_info?: { supports_free_assembly?: boolean; estimated_delivery?: string; [key: string]: unknown };
+  primary_images?: {
+    fabric_color_info?: { color_name?: string; color_hex?: string };
+    responsive_images?: Record<string, { url?: string }>;
+    image?: string;
+  }[];
+  variant_images?: { responsive_images?: Record<string, { url?: string }>; image?: string }[];
+  /** The product gallery: the page shows primary_images first, then these. */
+  additional_images?: { responsive_images?: Record<string, { url?: string }>; image?: string }[];
+  product_sku?: string;
+  stock_status?: { status?: string; stock_count?: number; message?: string };
+  view_count?: number;
+  average_rating?: number;
+  labels?: { name?: string }[];
   // Each variant is one entry of the official "### Size" dropdown.
   variants?: ApiVariant[];
 };
 type SizePriceOption = { name: string; price: number; listPrice?: number; optionKey: string };
+type SpecSection = { name: string; rows: DetailRow[] };
 type ProductOptionData = {
   sizes: string[];
   fabrics: string[];
-  colors: { name: string; hex?: string }[];
+  colors: { name: string; hex?: string; image?: string }[];
   sizePrices: SizePriceOption[];
+  /** Every General Information row, flattened (kept for older catalogues). */
   rows: DetailRow[];
+  /** The same rows grouped the way the product page groups them. */
+  sections: SpecSection[];
+  /** Gallery images, in page order. */
+  images: string[];
+  sku?: string;
+  stock?: { status?: string; count?: number };
+  views?: number;
+  rating?: number;
+  deliveryEstimate?: string;
+  freeAssembly?: boolean;
+  customizable?: boolean;
+  sizeCustomizable?: boolean;
 };
+
+/** Bare responsive-image URL from any API image node. */
+function imageFromNode(node: unknown): string | undefined {
+  if (!node || typeof node !== 'object') return undefined;
+  const record = node as Record<string, unknown>;
+  const responsive = (record.responsive_images || record.images) as Record<string, { url?: string }> | undefined;
+  if (responsive && typeof responsive === 'object') {
+    for (const size of ['web', 'ipad', 'mobile']) {
+      const found = responsive[size]?.url;
+      if (typeof found === 'string' && found.startsWith('http')) return found;
+    }
+  }
+  for (const key of ['image', 'variant_image', 'url']) {
+    const found = record[key];
+    if (typeof found === 'string' && found.startsWith('http')) return found;
+  }
+  return undefined;
+}
 
 const COLORS = {
   ink: '#050000',
@@ -90,26 +137,59 @@ const COLORS = {
   muted: '#444444',
   white: '#FFFFFF',
   green: '#127A44',
+  gold: '#B45309',
 };
 
 const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
+/** "2026-10-27" -> "27 Oct 2026"; anything unparseable is passed through. */
+const formatDate = (value: string) => {
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+/** Joins non-empty texts, dropping repeats that differ only in whitespace. */
+const dedupeText = (values: Array<string | undefined>) => {
+  const seen = new Set<string>();
+  const kept: string[] = [];
+  for (const value of values) {
+    const text = (value || '').replace(/\r\n?/g, '\n').trim();
+    if (!text) continue;
+    const key = text.replace(/\s+/g, ' ').toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    kept.push(text);
+  }
+  return kept;
+};
+
+/** "in_stock" / "care_instructions" -> "In stock" / "Care instructions". */
+const humanize = (value: string) => {
+  const text = String(value || '').replace(/[_-]+/g, ' ').trim();
+  return text ? text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() : '';
+};
 const unique = (values: string[]) => [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 
 export const isMadeToOrderText = (value?: string) => /\bmade[\s-]+to[\s-]+order\b/i.test(value || '');
 
-function addColor(colors: Map<string, { name: string; hex?: string }>, name?: string, hex?: string) {
+function addColor(
+  colors: Map<string, { name: string; hex?: string; image?: string }>,
+  name?: string,
+  hex?: string,
+  image?: string,
+) {
   const cleanName = name?.trim();
   if (!cleanName) return;
   const key = cleanName.toLocaleLowerCase();
   const existing = colors.get(key);
   const validHex = hex && /^#[\da-f]{6}$/i.test(hex) ? hex : undefined;
-  colors.set(key, { name: cleanName, hex: existing?.hex || validHex });
+  colors.set(key, { name: cleanName, hex: existing?.hex || validHex, image: existing?.image || image });
 }
 
 function getLocalOptions(product: ProductDetailsProduct): ProductOptionData {
   const sizes: string[] = [];
   const fabrics: string[] = [];
-  const colors = new Map<string, { name: string; hex?: string }>();
+  const colors = new Map<string, { name: string; hex?: string; image?: string }>();
   const sizeGroups: { name: string; options: SizePriceOption[] }[] = [];
   const rows: DetailRow[] = [];
 
@@ -158,14 +238,32 @@ function getLocalOptions(product: ProductDetailsProduct): ProductOptionData {
   const allSizeOptions = sizeGroups.flatMap((group) => group.options);
   const defaultOption = allSizeOptions.find((option) => option.price === product.o) || allSizeOptions[0];
   const sizePrices = sizeGroups.map((group) => group.options.find((option) => option.optionKey === defaultOption?.optionKey) || group.options[0]);
-  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices, rows };
+  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices, rows, sections: [], images: [] };
 }
 
 function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
   const sizes: string[] = [];
   const fabrics: string[] = [];
-  const colors = new Map<string, { name: string; hex?: string }>();
+  const colors = new Map<string, { name: string; hex?: string; image?: string }>();
   const rows: DetailRow[] = [];
+  const sections = new Map<string, DetailRow[]>();
+  const images: string[] = [];
+
+  const pushSection = (name: string, found?: DetailRow[]) => {
+    if (!found?.length) return;
+    const bucket = sections.get(name) || [];
+    for (const row of found) {
+      if (!row || (!row.label && !row.value)) continue;
+      if (bucket.some((existing) => existing.label === row.label && existing.value === row.value)) continue;
+      bucket.push(row);
+    }
+    if (bucket.length) sections.set(name, bucket);
+  };
+
+  for (const node of detail?.primary_images || []) {
+    const found = imageFromNode(node);
+    if (found && !images.includes(found)) images.push(found);
+  }
 
   for (const variant of detail?.variants || []) {
     if (variant.name) sizes.push(variant.name);
@@ -178,16 +276,51 @@ function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
           colors,
           colorName,
           color.fabric_color_info?.color_hex || color.hex,
+          imageFromNode(color),
         );
-        const info = color.info_section;
-        rows.push(...(info?.material || []), ...(info?.dimensions || []), ...(info?.specs || []), ...(info?.warranty || []), ...(info?.assembly || []));
+        for (const node of (color.images as { responsive_images?: Record<string, { url?: string }>; image?: string }[] | undefined) || []) {
+          const found = imageFromNode(node);
+          if (found && !images.includes(found)) images.push(found);
+        }
+        const info = color.info_section || {};
+        for (const [section, sectionRows] of Object.entries(info)) {
+          pushSection(section, sectionRows);
+          if (Array.isArray(sectionRows)) rows.push(...sectionRows);
+        }
       }
     }
   }
 
-  const primaryColor = detail?.primary_images?.fabric_color_info;
+  for (const node of [...(detail?.additional_images || []), ...(detail?.variant_images || [])]) {
+    const found = imageFromNode(node);
+    if (found && !images.includes(found)) images.push(found);
+  }
+
+  const primaryColor = detail?.primary_images?.[0]?.fabric_color_info;
   addColor(colors, primaryColor?.color_name, primaryColor?.color_hex);
-  return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices: [], rows };
+
+  const productInfo = detail?.product_info || {};
+  const deliveryInfo = detail?.delivery_info || {};
+  const estimate = productInfo.delivery_estimate_days || deliveryInfo.estimated_delivery;
+  return {
+    sizes: unique(sizes),
+    fabrics: unique(fabrics),
+    colors: [...colors.values()],
+    sizePrices: [],
+    rows: dedupeRows(rows),
+    sections: [...sections.entries()].map(([name, sectionRows]) => ({ name, rows: sectionRows })),
+    images,
+    sku: detail?.product_sku || detail?.variants?.[0]?.fabricsList?.[0]?.colorsList?.[0]?.sku,
+    stock: detail?.stock_status
+      ? { status: detail.stock_status.status, count: detail.stock_status.stock_count }
+      : undefined,
+    views: detail?.view_count,
+    rating: detail?.average_rating,
+    deliveryEstimate: estimate !== undefined && estimate !== null && estimate !== '' ? String(estimate) : undefined,
+    freeAssembly: deliveryInfo.supports_free_assembly === true,
+    customizable: productInfo.is_customizable === true,
+    sizeCustomizable: productInfo.is_size_customizable === true,
+  };
 }
 
 // Field names verified against the live API: a colour carries
@@ -435,19 +568,64 @@ export default function ProductDetails({
     return () => { active = false; };
   }, [slugBase, slugHashless, reload]);
 
-  const description = [product.d, detail?.general_information].filter(Boolean).join('\n\n');
+  // Everything the product page shows is read from the baked harvest first, with
+  // the live API as a fallback, and the catalogue itself as the last resort.
+  const baked = useMemo(() => getProductDetails(product.id), [product.id]);
+  const catalogue = product as ProductDetailsProduct & { lb?: unknown; st?: unknown; dl?: unknown; fd?: unknown; fa?: unknown };
+  // The API repeats its description in `general_information`, so equal texts are
+  // collapsed after normalising line endings and whitespace.
+  const description = dedupeText([product.d, baked?.info, detail?.general_information])
+    .join('\n\n');
   const sizes = unique([...live.sizes, ...local.sizes]);
   const textSizes = extractTextSizes(`${productName} ${description}`);
   const displaySizes = sizes.length ? sizes : textSizes;
-  const fabrics = unique([...live.fabrics, ...local.fabrics]);
-  const colorMap = new Map<string, { name: string; hex?: string }>();
-  [...local.colors, ...live.colors].forEach((color) => addColor(colorMap, color.name, color.hex));
+  const fabrics = unique([...local.fabrics, ...live.fabrics, ...(baked?.fabrics || [])]);
+  const colorMap = new Map<string, { name: string; hex?: string; image?: string }>();
+  [...local.colors, ...live.colors, ...(baked?.colors || [])].forEach((color) => addColor(colorMap, color.name, color.hex, color.image));
   const displayColors = [...colorMap.values()];
   const titleColors = displayColors.length ? [] : extractTitleColors(productName);
   const detailRows = dedupeRows([...live.rows, ...local.rows]).slice(0, 10);
+
+  // General Information, grouped the way the product page groups it.
+  const specSections = baked?.sections?.length
+    ? baked.sections
+    : live.sections;
+  const galleryPaths = baked?.gallery?.length ? baked.gallery : live.images;
+  const gallery = galleryPaths.map((path) => (path.startsWith('http') ? path : productImageUrl(path)));
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [galleryPicked, setGalleryPicked] = useState(false);
+  const chosenImage = gallery.length ? gallery[Math.min(galleryIndex, gallery.length - 1)] : undefined;
+  // A tapped gallery image wins; otherwise the bundled photo stays the default, so
+  // nothing regresses offline and a product without a bundled photo still gets the
+  // site's own image.
+  const galleryHero = chosenImage ? { uri: chosenImage } : undefined;
+
+  const catalogueLabels = Array.isArray(catalogue.lb) ? (catalogue.lb as string[]).filter(Boolean) : [];
+  const labels = unique([...(baked?.labels || []), ...catalogueLabels]);
+  const stockStatus = baked?.stock?.status || live.stock?.status || (typeof catalogue.st === 'string' ? catalogue.st : undefined);
+  const stockCount = baked?.stock?.count ?? live.stock?.count;
+  const sku = baked?.sku || live.sku;
+  const views = baked?.views ?? live.views;
+  const rating = baked?.rating ?? live.rating;
+  const deliveryDays = typeof catalogue.dl === 'number' && catalogue.dl > 0 ? catalogue.dl : undefined;
+  // The API sends either a day count ("9") or an ISO date ("2026-10-27").
+  const rawEstimate = baked?.deliveryEstimate || live.deliveryEstimate;
+  const estimateIsDate = !!rawEstimate && /^\d{4}-\d{2}-\d{2}$/.test(rawEstimate);
+  const deliveryEstimate = deliveryDays
+    ? `About ${deliveryDays} days`
+    : estimateIsDate
+      ? formatDate(rawEstimate as string)
+      : rawEstimate;
+  const deliveryLabel = !deliveryDays && estimateIsDate ? 'Delivery date' : 'Delivery';
+  const rawDeliveryDate = baked?.deliveryDate;
+  const deliveryDate = rawDeliveryDate ? formatDate(rawDeliveryDate) : undefined;
+  const freeDelivery = catalogue.fd === 1;
+  const freeAssembly = baked?.freeAssembly ?? live.freeAssembly ?? catalogue.fa === 1;
   const madeToOrder = isMadeToOrderText(description);
-  const isCustomizable = detail?.product_info?.is_customizable;
-  const isSizeCustomizable = detail?.product_info?.is_size_customizable;
+  const isCustomizable = baked?.customizable ?? detail?.product_info?.is_customizable;
+  const isSizeCustomizable = baked?.sizeCustomizable ?? detail?.product_info?.is_size_customizable;
+  const installment = Math.round(displayPrice / 4);
+  const hasAvailability = !!stockStatus || !!sku || !!deliveryEstimate || !!deliveryDate || freeDelivery || freeAssembly;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -458,17 +636,59 @@ export default function ProductDetails({
         </Pressable>
 
         <View style={styles.imageWrap}>
-          {displayPhoto ? <Image source={displayPhoto} style={styles.image} resizeMode="cover" /> : <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>}
+          {displayPhoto || galleryHero ? (
+            <Image source={galleryPicked && galleryHero ? galleryHero : displayPhoto || galleryHero} style={styles.image} resizeMode="cover" />
+          ) : (
+            <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>
+          )}
         </View>
+
+        {gallery.length > 1 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll} contentContainerStyle={styles.galleryStrip}>
+            {gallery.map((uri, index) => (
+              <Pressable
+                key={`${uri}-${index}`}
+                accessibilityRole="button"
+                accessibilityLabel={`Product image ${index + 1} of ${gallery.length}`}
+                accessibilityState={{ selected: galleryPicked && index === galleryIndex }}
+                onPress={() => {
+                  setGalleryIndex(index);
+                  setGalleryPicked(true);
+                }}
+                style={[styles.galleryThumb, index === galleryIndex && styles.galleryThumbActive]}
+              >
+                <Image source={{ uri }} style={styles.galleryThumbImage} resizeMode="cover" />
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
+
+        {gallery.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
 
         <View style={styles.productIntro}>
           {!!product.scn && <Text style={styles.category}>{product.scn}</Text>}
+          {labels.length > 0 && (
+            <View style={styles.labelRow}>
+              {labels.slice(0, 4).map((label) => <Text key={label} style={styles.labelPill}>{label}</Text>)}
+            </View>
+          )}
           <Text style={styles.name}>{productName}</Text>
           <View style={styles.priceRow}>
             <Text style={styles.price}>{money(displayPrice)}</Text>
             {!!displayListPrice && displayListPrice > displayPrice && <Text style={styles.oldPrice}>{money(displayListPrice)}</Text>}
           </View>
           {savedAmount > 0 && <Text style={styles.savePill}>You save {money(savedAmount)}</Text>}
+          {(!!rating || !!views) && (
+            <View style={styles.metaRow}>
+              {!!rating && (
+                <View style={styles.metaItem}>
+                  <Star color={COLORS.gold} size={13} fill={COLORS.gold} />
+                  <Text style={styles.metaText}>{rating.toFixed(1)}</Text>
+                </View>
+              )}
+              {!!views && <Text style={styles.metaText}>{views} views in 24 hrs</Text>}
+            </View>
+          )}
         </View>
 
         {hasSizeMenu && (
@@ -557,7 +777,17 @@ export default function ProductDetails({
           <FactRow label="Made to order" value={madeToOrder ? 'Yes — stated in the product description' : 'Not stated in the available listing'} />
           <FactRow
             label="Customization"
-            value={isCustomizable === true ? 'Available' : isCustomizable === false ? 'Not available' : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : 'Not specified'}
+            value={
+              isCustomizable === true && isSizeCustomizable === true
+                ? 'Available — any colour, any size'
+                : isCustomizable === true
+                  ? 'Available — any colour'
+                  : isSizeCustomizable === true
+                    ? 'Available — custom sizes'
+                    : isCustomizable === false
+                      ? 'Not available'
+                      : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : 'Not specified'
+            }
           />
           {hasDifferentSizePrices && !hasSizeMenu ? (
             <View style={styles.sizeSelection}>
@@ -597,7 +827,11 @@ export default function ProductDetails({
               <View style={styles.colorList}>
                 {displayColors.map((color) => (
                   <View key={color.name} style={styles.colorPill}>
-                    {color.hex ? <View style={[styles.swatch, { backgroundColor: color.hex }]} /> : null}
+                    {color.image ? (
+                      <Image source={{ uri: productImageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
+                    ) : color.hex ? (
+                      <View style={[styles.swatch, { backgroundColor: color.hex }]} />
+                    ) : null}
                     <Text style={styles.colorName}>{color.name}</Text>
                   </View>
                 ))}
@@ -612,7 +846,43 @@ export default function ProductDetails({
           </View>
         </View>
 
-        {!!detailRows.length && (
+        {hasAvailability && (
+          <View style={styles.detailsCard}>
+            <Text style={styles.sectionTitle}>Availability & delivery</Text>
+            {!!stockStatus && (
+              <FactRow
+                label="Availability"
+                value={stockCount ? `${humanize(stockStatus)} · up to ${stockCount} per order` : humanize(stockStatus)}
+              />
+            )}
+            {!!deliveryEstimate && <FactRow label={deliveryLabel} value={deliveryEstimate} />}
+            {!!deliveryDate && <FactRow label="Delivery date" value={deliveryDate} />}
+            {freeAssembly && <FactRow label="Assembly" value="Free assembly included" />}
+            {freeDelivery && <FactRow label="Delivery charges" value="Free on orders above AED 500" />}
+            {!!sku && <FactRow label="SKU" value={sku} />}
+          </View>
+        )}
+
+        <View style={styles.detailsCard}>
+          <Text style={styles.sectionTitle}>Payment</Text>
+          <FactRow label="Flexi payment" value={`Split in 4 of ${money(installment)}`} note={PRODUCT_PAYMENT_NOTE} />
+        </View>
+
+        {!!specSections.length && (
+          <View style={styles.detailsCard}>
+            <Text style={styles.sectionTitle}>General information</Text>
+            {specSections.map((section) => (
+              <View key={section.name} style={styles.specSection}>
+                <Text style={styles.specHeading}>{humanize(section.name)}</Text>
+                {section.rows.map((row, index) => (
+                  <FactRow key={`${section.name}-${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />
+                ))}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {!specSections.length && !!detailRows.length && (
           <View style={styles.detailsCard}>
             <Text style={styles.sectionTitle}>Dimensions & specifications</Text>
             {detailRows.map((row, index) => <FactRow key={`${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />)}
@@ -724,4 +994,18 @@ const styles = StyleSheet.create({
   glassOptionMeta: { color: COLORS.red, fontSize: 10, marginTop: 3 },
   glassOptionPrice: { color: COLORS.ink, fontSize: 13, fontWeight: '800' },
   glassNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, paddingHorizontal: 14, paddingBottom: 12 },
+  galleryScroll: { marginTop: 10, flexGrow: 0 },
+  galleryStrip: { gap: 8, paddingRight: 4 },
+  galleryThumb: { width: 56, height: 56, borderRadius: 12, overflow: 'hidden', borderWidth: 2, borderColor: 'transparent', backgroundColor: '#E6E0D9' },
+  galleryThumbActive: { borderColor: COLORS.red },
+  galleryThumbImage: { width: '100%', height: '100%' },
+  imageNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, marginTop: 8 },
+  labelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
+  labelPill: { color: COLORS.red, fontSize: 9, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', backgroundColor: '#FDE8E9', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, overflow: 'hidden' },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 8 },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  metaText: { color: COLORS.muted, fontSize: 11, fontWeight: '600' },
+  specSection: { marginTop: 12 },
+  specHeading: { color: COLORS.ink, fontSize: 12, fontWeight: '800', letterSpacing: 0.7, textTransform: 'uppercase', marginBottom: 2 },
+  swatchImage: { width: 24, height: 24, borderRadius: 7, borderWidth: 1, borderColor: '#D0D5DD' },
 });
