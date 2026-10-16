@@ -52,7 +52,7 @@ const officialPhotos = [
 
 const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
 const shortName = (name: string) => name.replace(/\s*-\s*\d+x\d+.*$/i, '');
-const photoFor = (product: Product) => catalogImages[product.id] || photoByProductId[product.id] || (product.c === 'sofas' ? officialPhotos[royalFurnitureData.products.indexOf(product) % officialPhotos.length] : undefined);
+const photoFor = (product: Product) => catalogImages[product.id] || photoByProductId[product.id] || officialPhotos[royalFurnitureData.products.indexOf(product) % officialPhotos.length];
 
 export default function HomeScreen() {
   const [tab, setTab] = useState<Tab>('home');
