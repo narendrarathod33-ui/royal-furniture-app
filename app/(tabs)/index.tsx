@@ -132,7 +132,7 @@ function HomeContent({ onCategory, onProduct, onShop }: { onCategory: (value: st
     <TrustRow />
     <SectionTitle title="Shop by room" action="View all" onPress={onShop} />
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalPad}>{royalFurnitureData.cats.map((cat) => <Pressable key={cat.s} style={[styles.roomCard, { backgroundColor: categoryColors[cat.s] || '#ddd' }]} onPress={() => onCategory(cat.s)}><Image source={homeCategoryImages[cat.s]} style={styles.roomPhoto} resizeMode="cover" /><View style={styles.roomShade} /><Text style={styles.roomLabel}>{cat.n}</Text><View style={styles.roomIcon}><Text>{cat.s === 'sofas' ? '◒' : cat.s === 'bedroom' ? '⌂' : cat.s === 'household' ? '✦' : '◌'}</Text></View></Pressable>)}</ScrollView>
-    <SectionTitle title="Fresh from Royal" action="See all" onPress={onShop} /><ProductRail products={deals} onProduct={onProduct} />
+    
     <View style={styles.banner}><View style={{ flex: 1 }}><Text style={styles.bannerKicker}>DESIGNED FOR UAE HOMES</Text><Text style={styles.bannerTitle}>Comfort is always in style.</Text><Text style={styles.bannerBody}>Free assembly on selected furniture and click & collect across our showrooms.</Text></View><Star color={COLORS.gold} size={56} strokeWidth={1.2} /></View>
     <SectionTitle title="Best sellers" action="View all" onPress={onShop} /><ProductRail products={best} onProduct={onProduct} />
   </ScrollView>;
