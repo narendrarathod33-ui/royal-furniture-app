@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import SplashGate from './SplashGate';
 
 /**
  * royalfurniture.ae renders every screen in Montserrat: the live site's <body>
@@ -45,10 +46,13 @@ export default function RootLayout() {
 
   return (
     <>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      {/* The launch screen and the ambient glass backdrop wrap every route. */}
+      <SplashGate>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </SplashGate>
       <StatusBar style="auto" />
     </>
   );
