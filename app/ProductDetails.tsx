@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { ChevronRight, Heart, RefreshCw, ShoppingBag, Star } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 import { GLASS, glassTilt } from './ui/glass';
@@ -709,21 +709,21 @@ export default function ProductDetails({
             <>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Previous product image"
+                accessibilityLabel="Previous slide"
                 accessibilityState={{ disabled: activeSlide === 0 }}
                 disabled={activeSlide === 0}
                 onPress={() => goToSlide(activeSlide - 1)}
-                style={[styles.sliderArrow, styles.sliderArrowLeft, activeSlide === 0 && styles.sliderArrowOff]}
+                style={[styles.sliderArrow, styles.sliderArrowLeft]}
               >
-                <ChevronRight color={COLORS.ink} size={20} style={styles.sliderArrowBack} />
+                <ChevronLeft color={COLORS.ink} size={20} />
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Next product image"
+                accessibilityLabel="Next slide"
                 accessibilityState={{ disabled: activeSlide === slides.length - 1 }}
                 disabled={activeSlide === slides.length - 1}
                 onPress={() => goToSlide(activeSlide + 1)}
-                style={[styles.sliderArrow, styles.sliderArrowRight, activeSlide === slides.length - 1 && styles.sliderArrowOff]}
+                style={[styles.sliderArrow, styles.sliderArrowRight]}
               >
                 <ChevronRight color={COLORS.ink} size={20} />
               </Pressable>
@@ -825,7 +825,7 @@ export default function ProductDetails({
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={`Size, ${selectedSizeText}${activeSize?.price !== undefined ? `, ${money(activeSize.price)}` : ''}. Tap to change size`}
-              accessibilityState={{ expanded: sizeOpen }}
+              aria-expanded={sizeOpen}
               onPress={() => setSizeOpen((open) => !open)}
               style={styles.glassTrigger}
             >
@@ -844,7 +844,7 @@ export default function ProductDetails({
                 )}
               </View>
               <View style={styles.glassChevronWrap}>
-                <ChevronRight color={COLORS.ink} size={18} style={{ transform: [{ rotate: sizeOpen ? '90deg' : '0deg' }] }} />
+                {sizeOpen ? <ChevronDown color={COLORS.ink} size={18} /> : <ChevronRight color={COLORS.ink} size={18} />}
               </View>
             </Pressable>
             {sizeOpen && (
@@ -1014,14 +1014,14 @@ function AccordionSection({ title, children }: { title: string; children: ReactN
     <View style={styles.detailsCard}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${title}. ${open ? 'Collapse' : 'Expand'} section`}
-        accessibilityState={{ expanded: open }}
+        accessibilityLabel={`${title}. ${open ? 'Hide' : 'Show'} details`}
+        aria-expanded={open}
         onPress={() => setOpen((value) => !value)}
         style={styles.accordionTrigger}
       >
         <Text style={styles.accordionTitle}>{title}</Text>
         <View style={styles.accordionChevron}>
-          <ChevronRight color={COLORS.ink} size={18} style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }} />
+          <Text style={styles.accordionSymbol}>{open ? '▲' : '▼'}</Text>
         </View>
       </Pressable>
       {open && <View style={styles.accordionBody}>{children}</View>}
@@ -1093,8 +1093,7 @@ const styles = StyleSheet.create({
   sliderArrow: { position: 'absolute', top: '50%', marginTop: -19, width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' , ...GLASS.chip },
   sliderArrowLeft: { left: 10 },
   sliderArrowRight: { right: 10 },
-  sliderArrowOff: { opacity: 0.4 },
-  sliderArrowBack: { transform: [{ rotate: '180deg' }] },
+
   sliderDots: { position: 'absolute', bottom: 12, alignSelf: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 12, backgroundColor: '#05000099' },
   sliderDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#ffffff88' },
   sliderDotActive: { width: 18, backgroundColor: '#fff' },
@@ -1104,6 +1103,9 @@ const styles = StyleSheet.create({
   accordionTrigger: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   accordionTitle: { color: COLORS.ink, fontSize: 17, fontWeight: '800', flex: 1 },
   accordionChevron: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)' , ...GLASS.chip },
+  // ▲ when expanded, ▼ when collapsed — a drawn glyph, so the toggle shows a
+  // symbol in both states on every platform.
+  accordionSymbol: { color: COLORS.ink, fontSize: 11, lineHeight: 14, fontWeight: '800' },
   accordionBody: { paddingTop: 2 },
   glassCard: { marginBottom: 14, borderRadius: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.78)', backgroundColor: 'rgba(255,255,255,0.38)', overflow: 'hidden', shadowColor: '#050000', shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 3 , ...GLASS.chrome },
   glassBlur: { ...StyleSheet.absoluteFillObject },
