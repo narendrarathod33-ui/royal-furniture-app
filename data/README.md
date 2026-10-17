@@ -54,10 +54,11 @@ Open `data/master.json` in any editor, change a value, save, reload the app.
 
 ## How the app should read it
 
-`app/data/master.ts` is the typed accessor already in the repo:
+`data/master.ts` is the typed accessor already in the repo (it sits next to the
+JSON, outside `app/`, because expo-router turns every file under `app/` into a route):
 
 ```ts
-import { products, productById, money, text, warrantyFor } from './data/master';
+import { products, productById, money, text, warrantyFor } from '../../data/master';
 
 const item = productById('7072-serafina-corner-sofa');
 item?.sizes;              // [{ label: '4-Seater', price: 3000, listPrice: 4000 }]
@@ -82,7 +83,7 @@ Suggested order of work, one screen at a time, checking the app after each step:
 
 Two caveats when you swap a screen over:
 
-- Importing `data/master.json` pulls the whole {2.9 MB} into the web bundle. It is fine
+- Importing `data/master.json` (through `data/master.ts`) pulls the whole ~2.9 MB into the web bundle. It is fine
   for testing; for production, split `products`/`deals` into their own file and import
   them lazily.
 - With `featureFlags.useLiveProductApi: true` the product page still prefers live API

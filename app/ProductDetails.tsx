@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   Image,
   type ImageSourcePropType,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -47,7 +50,6 @@ type ApiColor = {
   hex?: string;
   info_image?: unknown;
   stock?: number;
-  sku?: string;
   stock_status?: { status?: string; stock_count?: number; message?: string };
   variant_image?: string;
   responsive_images?: Record<string, { url?: string }>;
@@ -79,7 +81,6 @@ type ApiProductDetail = {
   variant_images?: { responsive_images?: Record<string, { url?: string }>; image?: string }[];
   /** The product gallery: the page shows primary_images first, then these. */
   additional_images?: { responsive_images?: Record<string, { url?: string }>; image?: string }[];
-  product_sku?: string;
   stock_status?: { status?: string; stock_count?: number; message?: string };
   view_count?: number;
   average_rating?: number;
@@ -100,7 +101,6 @@ type ProductOptionData = {
   sections: SpecSection[];
   /** Gallery images, in page order. */
   images: string[];
-  sku?: string;
   stock?: { status?: string; count?: number };
   views?: number;
   rating?: number;
@@ -311,7 +311,6 @@ function extractApiOptions(detail: ApiProductDetail | null): ProductOptionData {
     rows: dedupeRows(rows),
     sections: [...sections.entries()].map(([name, sectionRows]) => ({ name, rows: sectionRows })),
     images,
-    sku: detail?.product_sku || detail?.variants?.[0]?.fabricsList?.[0]?.colorsList?.[0]?.sku,
     stock: detail?.stock_status
       ? { status: detail.stock_status.status, count: detail.stock_status.stock_count }
       : undefined,
@@ -593,19 +592,45 @@ export default function ProductDetails({
     : live.sections;
   const galleryPaths = baked?.gallery?.length ? baked.gallery : live.images;
   const gallery = galleryPaths.map((path) => (path.startsWith('http') ? path : productImageUrl(path)));
+  // The slider shows every picture the site publishes for this product — the same
+  // list the thumbnail strip has always used. The photo the listing passed in stays
+  // the only slide for a product the harvest has no gallery for, so nothing
+  // regresses offline.
+  const galleryKey = gallery.join('|');
+  const slides = useMemo(() => {
+    const list: { key: string; source: ImageSourcePropType }[] = galleryKey
+      ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri } }))
+      : [];
+    if (!list.length && displayPhoto) list.push({ key: 'listing', source: displayPhoto });
+    return list;
+  }, [galleryKey, displayPhoto]);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const [galleryPicked, setGalleryPicked] = useState(false);
-  const chosenImage = gallery.length ? gallery[Math.min(galleryIndex, gallery.length - 1)] : undefined;
-  // A tapped gallery image wins; otherwise the bundled photo stays the default, so
-  // nothing regresses offline and a product without a bundled photo still gets the
-  // site's own image.
-  const galleryHero = chosenImage ? { uri: chosenImage } : undefined;
+  // Measured on the image frame so a slide is exactly one page wide, at whatever
+  // size the layout gives it (the frame keeps its own square sizing).
+  const [slideBox, setSlideBox] = useState({ width: Dimensions.get('window').width - 32, height: 0 });
+  const galleryRef = useRef<ScrollView>(null);
+  const activeSlide = Math.max(0, Math.min(galleryIndex, slides.length - 1));
+  const goToSlide = (index: number) => {
+    const next = Math.max(0, Math.min(index, slides.length - 1));
+    setGalleryIndex(next);
+    if (slideBox.width) galleryRef.current?.scrollTo({ x: next * slideBox.width, animated: true });
+  };
+  // Swiping (touch) and dragging the scrollbar (desktop) both land here.
+  const handleGalleryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!slideBox.width || slides.length < 2) return;
+    const next = Math.max(0, Math.min(Math.round(event.nativeEvent.contentOffset.x / slideBox.width), slides.length - 1));
+    if (next !== galleryIndex) setGalleryIndex(next);
+  };
+  // Opening another product starts its slider at the first picture.
+  useEffect(() => {
+    setGalleryIndex(0);
+    galleryRef.current?.scrollTo({ x: 0, animated: false });
+  }, [sourceId]);
 
   const catalogueLabels = Array.isArray(catalogue.lb) ? (catalogue.lb as string[]).filter(Boolean) : [];
   const labels = unique([...(baked?.labels || []), ...catalogueLabels]);
   const stockStatus = baked?.stock?.status || live.stock?.status || (typeof catalogue.st === 'string' ? catalogue.st : undefined);
   const stockCount = baked?.stock?.count ?? live.stock?.count;
-  const sku = baked?.sku || live.sku;
   const views = baked?.views ?? live.views;
   const rating = baked?.rating ?? live.rating;
   const deliveryDays = typeof catalogue.dl === 'number' && catalogue.dl > 0 ? catalogue.dl : undefined;
@@ -625,8 +650,21 @@ export default function ProductDetails({
   const madeToOrder = isMadeToOrderText(description);
   const isCustomizable = baked?.customizable ?? detail?.product_info?.is_customizable;
   const isSizeCustomizable = baked?.sizeCustomizable ?? detail?.product_info?.is_size_customizable;
+  // Only rows with something to say are rendered: a blank value, "not listed" or
+  // any other placeholder never reaches the page — the row is simply left out.
+  const madeToOrderText = madeToOrder ? 'Yes — stated in the product description' : '';
+  const customizationText = isCustomizable === true && isSizeCustomizable === true
+    ? 'Available — any colour, any size'
+    : isCustomizable === true
+      ? 'Available — any colour'
+      : isSizeCustomizable === true
+        ? 'Available — custom sizes'
+        : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : '';
   const installment = Math.round(displayPrice / 4);
-  const hasAvailability = !!stockStatus || !!sku || !!deliveryEstimate || !!deliveryDate || freeDelivery || freeAssembly;
+  const hasAvailability = !!stockStatus || !!deliveryEstimate || !!deliveryDate || freeDelivery || freeAssembly;
+  // The options section is only worth showing when at least one row has content.
+  const hasProductOptions = !!madeToOrderText || !!customizationText || !!displaySizes.length || !!fabrics.length
+    || !!displayColors.length || !!titleColors.length || (hasDifferentSizePrices && !hasSizeMenu);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -636,35 +674,86 @@ export default function ProductDetails({
           <Text style={styles.backText}>Back to collection</Text>
         </Pressable>
 
-        <View style={styles.imageWrap}>
-          {displayPhoto || galleryHero ? (
-            <Image source={galleryPicked && galleryHero ? galleryHero : displayPhoto || galleryHero} style={styles.image} resizeMode="cover" />
+        {/* Image slider: one page per picture — swipeable on touch, steppable with
+            the arrows and the thumbnail strip on desktop. */}
+        <View
+          style={styles.imageWrap}
+          onLayout={(event) => setSlideBox({ width: event.nativeEvent.layout.width, height: event.nativeEvent.layout.height })}
+        >
+          {slides.length ? (
+            <ScrollView
+              ref={galleryRef}
+              horizontal
+              pagingEnabled
+              snapToInterval={slideBox.width}
+              decelerationRate="fast"
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onScroll={handleGalleryScroll}
+              style={styles.slider}
+            >
+              {slides.map((slide) => (
+                <Image
+                  key={slide.key}
+                  source={slide.source}
+                  style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
+                  resizeMode="cover"
+                />
+              ))}
+            </ScrollView>
           ) : (
             <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>
           )}
+
+          {slides.length > 1 && (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Previous product image"
+                accessibilityState={{ disabled: activeSlide === 0 }}
+                disabled={activeSlide === 0}
+                onPress={() => goToSlide(activeSlide - 1)}
+                style={[styles.sliderArrow, styles.sliderArrowLeft, activeSlide === 0 && styles.sliderArrowOff]}
+              >
+                <ChevronRight color={COLORS.ink} size={20} style={styles.sliderArrowBack} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Next product image"
+                accessibilityState={{ disabled: activeSlide === slides.length - 1 }}
+                disabled={activeSlide === slides.length - 1}
+                onPress={() => goToSlide(activeSlide + 1)}
+                style={[styles.sliderArrow, styles.sliderArrowRight, activeSlide === slides.length - 1 && styles.sliderArrowOff]}
+              >
+                <ChevronRight color={COLORS.ink} size={20} />
+              </Pressable>
+              <View style={styles.sliderDots}>
+                {slides.map((slide, index) => (
+                  <View key={`dot-${slide.key}`} style={[styles.sliderDot, index === activeSlide && styles.sliderDotActive]} />
+                ))}
+              </View>
+            </>
+          )}
         </View>
 
-        {gallery.length > 1 && (
+        {slides.length > 1 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll} contentContainerStyle={styles.galleryStrip}>
-            {gallery.map((uri, index) => (
+            {slides.map((slide, index) => (
               <Pressable
-                key={`${uri}-${index}`}
+                key={`thumb-${slide.key}`}
                 accessibilityRole="button"
-                accessibilityLabel={`Product image ${index + 1} of ${gallery.length}`}
-                accessibilityState={{ selected: galleryPicked && index === galleryIndex }}
-                onPress={() => {
-                  setGalleryIndex(index);
-                  setGalleryPicked(true);
-                }}
-                style={[styles.galleryThumb, index === galleryIndex && styles.galleryThumbActive]}
+                accessibilityLabel={`Product image ${index + 1} of ${slides.length}`}
+                accessibilityState={{ selected: index === activeSlide }}
+                onPress={() => goToSlide(index)}
+                style={[styles.galleryThumb, index === activeSlide && styles.galleryThumbActive]}
               >
-                <Image source={{ uri }} style={styles.galleryThumbImage} resizeMode="cover" />
+                <Image source={slide.source} style={styles.galleryThumbImage} resizeMode="cover" />
               </Pressable>
             ))}
           </ScrollView>
         )}
 
-        {gallery.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
+        {slides.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
 
         <View style={styles.productIntro}>
           {!!product.scn && <Text style={styles.category}>{product.scn}</Text>}
@@ -674,11 +763,22 @@ export default function ProductDetails({
             </View>
           )}
           <Text style={styles.name}>{productName}</Text>
+          {/* Price and payment share one row: the price on the left, the payment
+              figure opposite it, so the two always sit side by side. */}
           <View style={styles.priceRow}>
-            <Text style={styles.price}>{money(displayPrice)}</Text>
-            {!!displayListPrice && displayListPrice > displayPrice && <Text style={styles.oldPrice}>{money(displayListPrice)}</Text>}
+            <View style={styles.priceBlock}>
+              <View style={styles.priceLine}>
+                <Text style={styles.price}>{money(displayPrice)}</Text>
+                {!!displayListPrice && displayListPrice > displayPrice && <Text style={styles.oldPrice}>{money(displayListPrice)}</Text>}
+              </View>
+              {savedAmount > 0 && <Text style={styles.savePill}>You save {money(savedAmount)}</Text>}
+            </View>
+            <View style={styles.paymentFact}>
+              <Text style={styles.paymentLabel}>Flexi payment</Text>
+              <Text style={styles.paymentValue}>Split in 4 of {money(installment)}</Text>
+              <Text style={styles.paymentNote}>{PRODUCT_PAYMENT_NOTE}</Text>
+            </View>
           </View>
-          {savedAmount > 0 && <Text style={styles.savePill}>You save {money(savedAmount)}</Text>}
           {(!!rating || !!views) && (
             <View style={styles.metaRow}>
               {!!rating && (
@@ -689,6 +789,33 @@ export default function ProductDetails({
               )}
               {!!views && <Text style={styles.metaText}>{views} views in 24 hrs</Text>}
             </View>
+          )}
+        </View>
+
+        {/* Always open: the piece's own story sits directly under the price. */}
+        {!!description && (
+          <View style={styles.descriptionCard}>
+            <Text style={styles.sectionTitle}>About this piece</Text>
+            <Text style={styles.description}>{description}</Text>
+          </View>
+        )}
+
+        <View style={styles.sourceStatus} accessibilityLiveRegion="polite">
+          {loading ? (
+            <>
+              <ActivityIndicator size="small" color={COLORS.red} />
+              <Text style={styles.statusLoading}>Checking official product details…</Text>
+            </>
+          ) : error ? (
+            <>
+              <Text style={styles.statusError}>Official details couldn’t be loaded. Showing saved catalog information where available.</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Retry loading official product details" onPress={() => setReload((value) => value + 1)} style={styles.retry}>
+                <RefreshCw color={COLORS.ink} size={15} />
+                <Text style={styles.retryText}>Retry</Text>
+              </Pressable>
+            </>
+          ) : (
+            <Text style={styles.statusSuccess}>Official product options checked</Text>
           )}
         </View>
 
@@ -754,102 +881,71 @@ export default function ProductDetails({
           </View>
         )}
 
-        <View style={styles.sourceStatus} accessibilityLiveRegion="polite">
-          {loading ? (
-            <>
-              <ActivityIndicator size="small" color={COLORS.red} />
-              <Text style={styles.statusLoading}>Checking official product details…</Text>
-            </>
-          ) : error ? (
-            <>
-              <Text style={styles.statusError}>Official details couldn’t be loaded. Showing saved catalog information where available.</Text>
-              <Pressable accessibilityRole="button" accessibilityLabel="Retry loading official product details" onPress={() => setReload((value) => value + 1)} style={styles.retry}>
-                <RefreshCw color={COLORS.ink} size={15} />
-                <Text style={styles.retryText}>Retry</Text>
-              </Pressable>
-            </>
-          ) : (
-            <Text style={styles.statusSuccess}>Official product options checked</Text>
-          )}
-        </View>
-
-        <View style={styles.detailsCard}>
-          <Text style={styles.sectionTitle}>Product options</Text>
-          <FactRow label="Made to order" value={madeToOrder ? 'Yes — stated in the product description' : 'Not stated in the available listing'} />
-          <FactRow
-            label="Customization"
-            value={
-              isCustomizable === true && isSizeCustomizable === true
-                ? 'Available — any colour, any size'
-                : isCustomizable === true
-                  ? 'Available — any colour'
-                  : isSizeCustomizable === true
-                    ? 'Available — custom sizes'
-                    : isCustomizable === false
-                      ? 'Not available'
-                      : /\b(select|choose|customi[sz])\w*/i.test(description) ? 'Described in the product listing' : 'Not specified'
-            }
-          />
-          {hasDifferentSizePrices && !hasSizeMenu ? (
-            <View style={styles.sizeSelection}>
-              <Text style={styles.sizeLabel}>Choose size</Text>
-              <View style={styles.sizeOptions}>
-                {local.sizePrices.map((option) => {
-                  const selectedOption = selectedSize === option.name;
-                  return (
-                    <Pressable
-                      key={option.name}
-                      accessibilityRole="radio"
-                      accessibilityLabel={`${option.name}, ${money(option.price)}`}
-                      accessibilityState={{ selected: selectedOption }}
-                      onPress={() => setSelectedSize(option.name)}
-                      style={[styles.sizeOption, selectedOption && styles.sizeOptionSelected]}
-                    >
-                      <Text style={[styles.sizeOptionName, selectedOption && styles.sizeOptionNameSelected]}>{option.name}</Text>
-                      <Text style={[styles.sizeOptionPrice, selectedOption && styles.sizeOptionNameSelected]}>{money(option.price)}</Text>
-                    </Pressable>
-                  );
-                })}
+        {hasProductOptions && (
+          <AccordionSection title="Product options">
+            {!!madeToOrderText && <FactRow label="Made to order" value={madeToOrderText} />}
+            {!!customizationText && <FactRow label="Customization" value={customizationText} />}
+            {hasDifferentSizePrices && !hasSizeMenu ? (
+              <View style={styles.sizeSelection}>
+                <Text style={styles.sizeLabel}>Choose size</Text>
+                <View style={styles.sizeOptions}>
+                  {local.sizePrices.map((option) => {
+                    const selectedOption = selectedSize === option.name;
+                    return (
+                      <Pressable
+                        key={option.name}
+                        accessibilityRole="radio"
+                        accessibilityLabel={`${option.name}, ${money(option.price)}`}
+                        accessibilityState={{ selected: selectedOption }}
+                        onPress={() => setSelectedSize(option.name)}
+                        style={[styles.sizeOption, selectedOption && styles.sizeOptionSelected]}
+                      >
+                        <Text style={[styles.sizeOptionName, selectedOption && styles.sizeOptionNameSelected]}>{option.name}</Text>
+                        <Text style={[styles.sizeOptionPrice, selectedOption && styles.sizeOptionNameSelected]}>{money(option.price)}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                <Text style={styles.sizeHint}>Price updates with your selected size.</Text>
+                {isSizeCustomizable === true && <Text style={styles.sizeHint}>Custom sizing is also available.</Text>}
               </View>
-              <Text style={styles.sizeHint}>Price updates with your selected size.</Text>
-              {isSizeCustomizable === true && <Text style={styles.sizeHint}>Custom sizing is also available.</Text>}
-            </View>
-          ) : (
-            <FactRow
-              label="Size options"
-              value={displaySizes.length ? displaySizes.join(' · ') : 'Not listed'}
-              note={isSizeCustomizable === true ? 'Custom sizing is available.' : undefined}
-            />
-          )}
-          <FactRow label="Fabrics" value={fabrics.length ? fabrics.join(' · ') : 'Not listed'} />
-          <View style={styles.colorFact}>
-            <Text style={styles.factLabel}>Colors</Text>
-            {displayColors.length ? (
-              <View style={styles.colorList}>
-                {displayColors.map((color) => (
-                  <View key={color.name} style={styles.colorPill}>
-                    {color.image ? (
-                      <Image source={{ uri: productImageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
-                    ) : color.hex ? (
-                      <View style={[styles.swatch, { backgroundColor: color.hex }]} />
-                    ) : null}
-                    <Text style={styles.colorName}>{color.name}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : titleColors.length ? (
-              <Text style={styles.factValue}>{titleColors.join(' · ')} <Text style={styles.mutedNote}>(from product name)</Text></Text>
-            ) : /\b(select|choose)\w*\s+(?:the\s+)?(?:fabric\s+and\s+)?colou?r/i.test(description) ? (
-              <Text style={styles.factValue}>Selectable — available shades aren’t listed</Text>
             ) : (
-              <Text style={styles.factValue}>Not listed</Text>
+              !!displaySizes.length && (
+                <FactRow
+                  label="Size options"
+                  value={displaySizes.join(' · ')}
+                  note={isSizeCustomizable === true ? 'Custom sizing is available.' : undefined}
+                />
+              )
             )}
-          </View>
-        </View>
+            {!!fabrics.length && <FactRow label="Fabrics" value={fabrics.join(' · ')} />}
+            {!!displayColors.length ? (
+              <View style={styles.colorFact}>
+                <Text style={styles.factLabel}>Colors</Text>
+                <View style={styles.colorList}>
+                  {displayColors.map((color) => (
+                    <View key={color.name} style={styles.colorPill}>
+                      {color.image ? (
+                        <Image source={{ uri: productImageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
+                      ) : color.hex ? (
+                        <View style={[styles.swatch, { backgroundColor: color.hex }]} />
+                      ) : null}
+                      <Text style={styles.colorName}>{color.name}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : !!titleColors.length ? (
+              <View style={styles.colorFact}>
+                <Text style={styles.factLabel}>Colors</Text>
+                <Text style={styles.factValue}>{titleColors.join(' · ')} <Text style={styles.mutedNote}>(from product name)</Text></Text>
+              </View>
+            ) : null}
+          </AccordionSection>
+        )}
 
         {hasAvailability && (
-          <View style={styles.detailsCard}>
-            <Text style={styles.sectionTitle}>Availability & delivery</Text>
+          <AccordionSection title="Availability & delivery">
             {!!stockStatus && (
               <FactRow
                 label="Availability"
@@ -860,18 +956,11 @@ export default function ProductDetails({
             {!!deliveryDate && <FactRow label="Delivery date" value={deliveryDate} />}
             {freeAssembly && <FactRow label="Assembly" value="Free assembly included" />}
             {freeDelivery && <FactRow label="Delivery charges" value="Free on orders above AED 500" />}
-            {!!sku && <FactRow label="SKU" value={sku} />}
-          </View>
+          </AccordionSection>
         )}
 
-        <View style={styles.detailsCard}>
-          <Text style={styles.sectionTitle}>Payment</Text>
-          <FactRow label="Flexi payment" value={`Split in 4 of ${money(installment)}`} note={PRODUCT_PAYMENT_NOTE} />
-        </View>
-
         {!!specSections.length && (
-          <View style={styles.detailsCard}>
-            <Text style={styles.sectionTitle}>General information</Text>
+          <AccordionSection title="General information">
             {specSections.map((section) => (
               <View key={section.name} style={styles.specSection}>
                 <Text style={styles.specHeading}>{humanize(section.name)}</Text>
@@ -880,21 +969,13 @@ export default function ProductDetails({
                 ))}
               </View>
             ))}
-          </View>
+          </AccordionSection>
         )}
 
         {!specSections.length && !!detailRows.length && (
-          <View style={styles.detailsCard}>
-            <Text style={styles.sectionTitle}>Dimensions & specifications</Text>
+          <AccordionSection title="Dimensions & specifications">
             {detailRows.map((row, index) => <FactRow key={`${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />)}
-          </View>
-        )}
-
-        {!!description && (
-          <View style={styles.descriptionCard}>
-            <Text style={styles.sectionTitle}>About this piece</Text>
-            <Text style={styles.description}>{description}</Text>
-          </View>
+          </AccordionSection>
         )}
       </ScrollView>
 
@@ -919,6 +1000,31 @@ function FactRow({ label, value, note }: { label: string; value: string; note?: 
         <Text style={styles.factValue}>{value}</Text>
         {!!note && <Text style={styles.mutedNote}>{note}</Text>}
       </View>
+    </View>
+  );
+}
+
+/**
+ * A collapsed-by-default section. The title row is the dropdown button; its
+ * content is only mounted once the customer expands it.
+ */
+function AccordionSection({ title, children }: { title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={styles.detailsCard}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${title}. ${open ? 'Collapse' : 'Expand'} section`}
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen((value) => !value)}
+        style={styles.accordionTrigger}
+      >
+        <Text style={styles.accordionTitle}>{title}</Text>
+        <View style={styles.accordionChevron}>
+          <ChevronRight color={COLORS.ink} size={18} style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }} />
+        </View>
+      </Pressable>
+      {open && <View style={styles.accordionBody}>{children}</View>}
     </View>
   );
 }
@@ -972,8 +1078,33 @@ const styles = StyleSheet.create({
   addButtonText: { color: COLORS.white, fontSize: 14, fontWeight: '800' },
 
   // Glass size dropdown — frosted panel with a translucent blur backdrop.
-  priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+  // Price on the left, the flexi-payment figure opposite it, on one row.
+  priceRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
+  priceBlock: { flexShrink: 0 },
+  priceLine: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
   savePill: { color: COLORS.red, fontSize: 12, fontWeight: '800', marginTop: 6 },
+  paymentFact: { alignItems: 'flex-end', flexShrink: 1, maxWidth: '54%', paddingTop: 6 },
+  paymentLabel: { color: COLORS.muted, fontSize: 10, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase' },
+  paymentValue: { color: COLORS.ink, fontSize: 13, fontWeight: '800', marginTop: 2 },
+  paymentNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, textAlign: 'right', marginTop: 2 },
+
+  // Image slider — one page per picture, arrows and counter over the photo.
+  slider: { flex: 1, width: '100%' },
+  sliderArrow: { position: 'absolute', top: '50%', marginTop: -19, width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' , ...GLASS.chip },
+  sliderArrowLeft: { left: 10 },
+  sliderArrowRight: { right: 10 },
+  sliderArrowOff: { opacity: 0.4 },
+  sliderArrowBack: { transform: [{ rotate: '180deg' }] },
+  sliderDots: { position: 'absolute', bottom: 12, alignSelf: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 12, backgroundColor: '#05000099' },
+  sliderDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#ffffff88' },
+  sliderDotActive: { width: 18, backgroundColor: '#fff' },
+
+  // Collapsed section header (the dropdown button) — same glass chip as the
+  // size dropdown's chevron, so every section header reads the same way.
+  accordionTrigger: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  accordionTitle: { color: COLORS.ink, fontSize: 17, fontWeight: '800', flex: 1 },
+  accordionChevron: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)' , ...GLASS.chip },
+  accordionBody: { paddingTop: 2 },
   glassCard: { marginBottom: 14, borderRadius: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.78)', backgroundColor: 'rgba(255,255,255,0.38)', overflow: 'hidden', shadowColor: '#050000', shadowOpacity: 0.1, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 3 , ...GLASS.chrome },
   glassBlur: { ...StyleSheet.absoluteFillObject },
   glassTrigger: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },

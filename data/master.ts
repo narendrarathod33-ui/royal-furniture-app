@@ -1,4 +1,4 @@
-import raw from '../../data/master.json';
+import raw from './master.json';
 
 /**
  * Typed accessors for `data/master.json` — the editable master data file.
@@ -8,10 +8,14 @@ import raw from '../../data/master.json';
  * module is the bridge to the hand-editable file: screens can read the same
  * content from here instead, so testing changes need no code edits.
  *
- * Nothing imports this file yet, so behaviour and bundle size are unchanged.
- * To switch a screen over, see `data/README.md` → "How the app should read it".
- * Note: importing this module pulls the whole JSON into the web bundle
- * (~2.9 MB); split `products`/`deals` out first if that matters to you.
+ * It lives in `data/` (not in `app/`) on purpose: expo-router turns every file under
+ * `app/` into a route, so keeping it here means the app only pulls the JSON in
+ * once a screen actually imports this module.
+ *
+ * Nothing imports it yet, so behaviour and bundle size are unchanged. To switch a
+ * screen over, see `data/README.md` → "How the app should read it". Note that an
+ * import pulls the whole JSON (~2.9 MB) into the web bundle: split
+ * `products`/`deals` out first if that matters to you.
  */
 
 export type Money = number;
