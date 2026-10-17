@@ -915,42 +915,101 @@ function SupportCard({ section }: { section: SupportSection }) {
   );
 }
 
-/** Rough reading weight of a section, so the two desktop columns stay even. */
+/** Rough reading weight of a topic, so the two desktop columns stay even. */
 const sectionWeight = (section: SupportSection) => section.rows.reduce((total, row) => total + row.a.length + (row.points || []).reduce((sum, point) => sum + point.length, 0) + (row.flag ? row.flag.detail.length : 0), 0) + (section.stores ? royalFurnitureData.stores.length * 130 : 0);
 
-/** Deal the sections into two columns, shortest column first, keeping page order. */
-function balanceSections(sections: readonly SupportSection[]): readonly (readonly SupportSection[])[] {
-  const columns: SupportSection[][] = [[], []];
+/** A dropdown of support topics, ordered the way a shopper meets them. */
+type SupportCategory = { id: string; title: string; blurb: string; icon: typeof Truck; topics: readonly string[] };
+type SupportGroup = { category: SupportCategory; topics: readonly SupportSection[] };
+
+const supportCategories: readonly SupportCategory[] = [
+  { id: 'buying', title: 'Product info & payment', blurb: 'What a product page tells you, colours and stock limits, prices and VAT, cards, Tamara and flexi payment.', icon: Wallet, topics: ['product', 'payment'] },
+  { id: 'orders', title: 'Orders & delivery', blurb: 'Delivery charges and timeframes, what to do on delivery day, Click & Collect, and tracking an order.', icon: Truck, topics: ['delivery', 'collect', 'tracking'] },
+  { id: 'aftercare', title: 'Returns & warranty', blurb: 'What can be returned or exchanged, cancellations and refunds, and the warranty on each product type.', icon: RotateCcw, topics: ['returns', 'warranty'] },
+  { id: 'account', title: 'Account & privacy', blurb: 'What this app stores about you, signing in, passwords, and how your details are treated.', icon: UserRound, topics: ['account'] },
+  { id: 'places', title: 'Stores & contact', blurb: 'The 12 showrooms and their numbers, who to call, WhatsApp, email and opening hours.', icon: MapPin, topics: ['stores', 'contact'] },
+  { id: 'gaps', title: 'Not covered on the website', blurb: 'The questions the site does not answer yet, each marked pending, and where to go next.', icon: FileQuestion, topics: ['gaps'] },
+];
+
+const supportSectionById = new Map(supportSections.map((section) => [section.id, section]));
+const supportGroups: readonly SupportGroup[] = supportCategories.map((category) => ({
+  category,
+  topics: category.topics.flatMap((id) => { const found = supportSectionById.get(id); return found ? [found] : []; }),
+}));
+
+/** Rough reading weight of a whole dropdown, so the desktop columns stay even. */
+const groupWeight = (group: SupportGroup) => group.topics.reduce((total, section) => total + sectionWeight(section), 0);
+
+/** Deal items into two columns, shortest column first, keeping page order. */
+function balanceColumns<T>(items: readonly T[], weightOf: (item: T) => number): readonly (readonly T[])[] {
+  const columns: T[][] = [[], []];
   const loads = [0, 0];
-  for (const section of sections) {
+  for (const item of items) {
     const target = loads[0] <= loads[1] ? 0 : 1;
-    columns[target].push(section);
-    loads[target] += sectionWeight(section);
+    columns[target].push(item);
+    loads[target] += weightOf(item);
   }
   return columns;
 }
 
 /**
- * The Shopping support area of the Account page. Two columns on wide screens,
- * one column on phones; nothing is hidden behind a toggle.
+ * One category dropdown. Same accordion as the product page: the title row is
+ * the button, the symbol shows the state, and the topics mount only when open.
+ */
+function SupportCategoryCard({ group, open, onToggle }: { group: SupportGroup; open: boolean; onToggle: () => void }) {
+  const Icon = group.category.icon;
+  const count = group.topics.length;
+  const topicWord = count === 1 ? 'topic' : 'topics';
+  return (
+    <View style={styles.supportCategory}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${group.category.title}. ${open ? 'Hide' : 'Show'} ${count} ${topicWord}`}
+        aria-expanded={open}
+        onPress={onToggle}
+        style={styles.supportCategoryTrigger}
+      >
+        <View style={styles.supportCategoryIcon}><Icon color={COLORS.red} size={17} /></View>
+        <View style={styles.supportCategoryCopy}>
+          <View style={styles.orderSectionHeader}>
+            <Text style={styles.supportCategoryTitle}>{group.category.title}</Text>
+            <Text style={styles.savedSectionCount}>{count} {topicWord}</Text>
+          </View>
+          <Text style={styles.supportCategoryBlurb}>{group.category.blurb}</Text>
+        </View>
+        <View style={styles.supportChevron}>
+          <Text style={styles.supportSymbol}>{open ? '▲' : '▼'}</Text>
+        </View>
+      </Pressable>
+      {open && <View style={styles.supportCategoryBody}>{group.topics.map((section) => <SupportCard key={section.id} section={section} />)}</View>}
+    </View>
+  );
+}
+
+/**
+ * The Shopping support area of the Account page: the topics grouped into six
+ * category dropdowns, closed until the shopper opens one. Two columns on wide
+ * screens, one column on phones.
  */
 function ShoppingSupport() {
   const { width } = useWindowDimensions();
   const wide = width >= 900;
-  const columns = wide ? balanceSections(supportSections) : [supportSections];
+  const [openCategories, setOpenCategories] = useState<readonly string[]>([]);
+  const toggleCategory = (id: string) => setOpenCategories((open) => open.includes(id) ? open.filter((item) => item !== id) : [...open, id]);
+  const columns = wide ? balanceColumns(supportGroups, groupWeight) : [supportGroups];
   return (
     <View style={styles.policyCard}>
       <View style={styles.orderSectionHeader}>
         <Text style={styles.policyTitle}>Shopping support</Text>
-        <Text style={styles.savedSectionCount}>{supportSections.length} topics</Text>
+        <Text style={styles.savedSectionCount}>{supportCategories.length} categories</Text>
       </View>
       <Text style={styles.supportIntro}>
-        {`Delivery, Click & Collect, returns, warranty, payment, tracking, account help, showrooms and how to reach us. ${SUPPORT_CHECKED}. Where the site publishes two versions of a fact the row is marked CONFLICT, and where it publishes nothing the row is marked PENDING with what is missing.`}
+        {`Open a category to read its answers. ${SUPPORT_CHECKED}. Where the site publishes two versions of a fact the row is marked CONFLICT, and where it publishes nothing the row is marked PENDING with what is missing.`}
       </Text>
       <View style={wide ? styles.supportColumns : styles.supportColumnStack}>
         {columns.map((column, index) => (
           <View key={index} style={styles.supportColumn}>
-            {column.map((section) => <SupportCard key={section.id} section={section} />)}
+            {column.map((group) => <SupportCategoryCard key={group.category.id} group={group} open={openCategories.includes(group.category.id)} onToggle={() => toggleCategory(group.category.id)} />)}
           </View>
         ))}
       </View>
@@ -1036,7 +1095,16 @@ const styles = StyleSheet.create({ safe: { flex: 1, backgroundColor: COLORS.crea
   supportColumns: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
   supportColumnStack: { gap: 0 },
   supportColumn: { flex: 1, minWidth: 0 },
-  supportCard: { marginBottom: 12, padding: 14, borderRadius: 16, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.line , ...GLASS.panel },
+  supportCategory: { marginBottom: 12, padding: 14, borderRadius: 16, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.line , ...GLASS.panel },
+  supportCategoryTrigger: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  supportCategoryIcon: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#FDE8E9', alignItems: 'center', justifyContent: 'center' , ...GLASS.chip },
+  supportCategoryCopy: { flex: 1, minWidth: 0 },
+  supportCategoryTitle: { color: COLORS.ink, fontSize: 15, fontWeight: '800' },
+  supportCategoryBlurb: { color: COLORS.muted, fontSize: 11, lineHeight: 16, marginTop: 3 },
+  supportChevron: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.7)' , ...GLASS.chip },
+  supportSymbol: { color: COLORS.ink, fontSize: 11, lineHeight: 14, fontWeight: '800' },
+  supportCategoryBody: { paddingTop: 12 },
+  supportCard: { marginBottom: 12, padding: 14, borderRadius: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: COLORS.line , ...GLASS.panel },
   supportCardHead: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   supportCardIcon: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#FDE8E9', alignItems: 'center', justifyContent: 'center' , ...GLASS.chip },
   supportCardTitle: { color: COLORS.ink, fontSize: 15, fontWeight: '800', flex: 1, minWidth: 0 },
