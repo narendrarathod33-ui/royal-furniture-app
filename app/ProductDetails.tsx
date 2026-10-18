@@ -38,6 +38,7 @@ import { ProductRail } from '../components/catalog/ProductCard';
 import { useRecentlyViewedStore } from '../stores/recentlyViewed';
 import type { Product } from '../components/catalog/kit';
 import { GLASS, glassTilt } from './ui/glass';
+import { t } from './i18n';
 
 /** A selectable size of the same product, sourced from the official catalogue. */
 export type SizeVariantOption = {
@@ -739,11 +740,11 @@ export default function ProductDetails({
   const rawEstimate = baked?.deliveryEstimate || live.deliveryEstimate;
   const estimateIsDate = !!rawEstimate && /^\d{4}-\d{2}-\d{2}$/.test(rawEstimate);
   const deliveryEstimate = deliveryDays
-    ? `About ${deliveryDays} days`
+    ? t('pdp.aboutDays', { n: deliveryDays })
     : estimateIsDate
       ? formatDate(rawEstimate as string)
       : rawEstimate;
-  const deliveryLabel = !deliveryDays && estimateIsDate ? 'Delivery date' : 'Delivery';
+  const deliveryLabel = !deliveryDays && estimateIsDate ? t('pdp.deliveryDate') : t('pdp.delivery');
   const rawDeliveryDate = baked?.deliveryDate;
   const deliveryDate = rawDeliveryDate ? formatDate(rawDeliveryDate) : undefined;
   const freeDelivery = catalogue.fd === 1;
@@ -888,7 +889,7 @@ export default function ProductDetails({
                   <Text style={styles.metaText}>{rating.toFixed(1)}</Text>
                 </View>
               )}
-              {!!views && <Text style={styles.metaText}>{views} views in 24 hrs</Text>}
+              {!!views && <Text style={styles.metaText}>{t('pdp.viewsIn24', { n: views })}</Text>}
             </View>
           )}
         </View>
@@ -896,7 +897,7 @@ export default function ProductDetails({
         {/* Always open: the piece's own story sits directly under the price. */}
         {!!description && (
           <View style={styles.descriptionCard}>
-            <Text style={styles.sectionTitle}>About this piece</Text>
+            <Text style={styles.sectionTitle}>{t('pdp.aboutThisPiece')}</Text>
             <Text style={styles.description}>{description}</Text>
           </View>
         )}
@@ -905,18 +906,18 @@ export default function ProductDetails({
           {loading ? (
             <>
               <ActivityIndicator size="small" color={COLORS.red} />
-              <Text style={styles.statusLoading}>Checking official product details…</Text>
+              <Text style={styles.statusLoading}>{t('pdp.checkingOfficial')}</Text>
             </>
           ) : error ? (
             <>
-              <Text style={styles.statusError}>Official details couldn’t be loaded. Showing saved catalog information where available.</Text>
-              <Pressable accessibilityRole="button" accessibilityLabel="Retry loading official product details" onPress={() => setReload((value) => value + 1)} style={styles.retry}>
+              <Text style={styles.statusError}>{t('pdp.officialFailed')}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.retryA11y')} onPress={() => setReload((value) => value + 1)} style={styles.retry}>
                 <RefreshCw color={COLORS.ink} size={15} />
-                <Text style={styles.retryText}>Retry</Text>
+                <Text style={styles.retryText}>{t('pdp.retry')}</Text>
               </Pressable>
             </>
           ) : (
-            <Text style={styles.statusSuccess}>Official product options checked</Text>
+            <Text style={styles.statusSuccess}>{t('pdp.officialChecked')}</Text>
           )}
         </View>
 
@@ -925,7 +926,7 @@ export default function ProductDetails({
             <BlurView pointerEvents="none" intensity={42} tint="light" style={styles.glassBlur} />
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Size, ${selectedSizeText}${activeSize?.price !== undefined ? `, ${money(activeSize.price)}` : ''}. Tap to change size`}
+              accessibilityLabel={`${t('pdp.tapToChangeSize', { s: selectedSizeText })}${activeSize?.price !== undefined ? `, ${money(activeSize.price)}` : ''}`}
               aria-expanded={sizeOpen}
               onPress={() => setSizeOpen((open) => !open)}
               style={styles.glassTrigger}
@@ -984,20 +985,20 @@ export default function ProductDetails({
 
         {!!upgrades.length && (
           <View style={styles.discoveryBlock}>
-            <Text style={styles.sectionTitle}>Upgrade your pick</Text>
-            <Text style={styles.discoverySub}>Bigger sizes of this piece — one tap to switch</Text>
+            <Text style={styles.sectionTitle}>{t('pdp.upgradeYourPick')}</Text>
+            <Text style={styles.discoverySub}>{t('pdp.upgradeSub')}</Text>
             <View style={styles.upgradeRow}>
               {upgrades.map((upgrade) => (
                 <Pressable
                   key={upgrade.name}
                   accessibilityRole="button"
-                  accessibilityLabel={`Upgrade to ${upgrade.name}, ${money(upgrade.price)}, ${money(upgrade.delta)} more`}
+                  accessibilityLabel={t('pdp.upgradeA11y', { n: upgrade.name, p: money(upgrade.price), d: money(upgrade.delta) })}
                   onPress={() => onOpenProduct?.({ ...(product as unknown as Product), id: `${catalogId}::size=${encodeURIComponent(upgrade.name)}`, n: `${productName} — Size: ${upgrade.name}`, o: upgrade.price, l: upgrade.listPrice ?? product.l ?? product.o })}
                   style={styles.upgradeChip}
                 >
                   <Text style={styles.upgradeName} numberOfLines={1}>{upgrade.name}</Text>
                   <Text style={styles.upgradePrice}>{money(upgrade.price)}</Text>
-                  <Text style={styles.upgradeDelta}>+{money(upgrade.delta)} more</Text>
+                  <Text style={styles.upgradeDelta}>{t('pdp.more', { d: money(upgrade.delta) })}</Text>
                 </Pressable>
               ))}
             </View>
@@ -1005,12 +1006,12 @@ export default function ProductDetails({
         )}
 
         {hasProductOptions && (
-          <AccordionSection title="Product options">
+          <AccordionSection title={t('pdp.productOptions')}>
             {!!madeToOrderText && <FactRow label="Made to order" value={madeToOrderText} />}
             {!!customizationText && <FactRow label="Customization" value={customizationText} />}
             {hasDifferentSizePrices && !hasSizeMenu ? (
               <View style={styles.sizeSelection}>
-                <Text style={styles.sizeLabel}>Choose size</Text>
+                <Text style={styles.sizeLabel}>{t('pdp.chooseSize')}</Text>
                 <View style={styles.sizeOptions}>
                   {localSizePrices.map((option) => {
                     const selectedOption = selectedSize === option.name;
@@ -1077,13 +1078,13 @@ export default function ProductDetails({
             )}
             {!!deliveryEstimate && <FactRow label={deliveryLabel} value={deliveryEstimate} />}
             {!!deliveryDate && <FactRow label="Delivery date" value={deliveryDate} />}
-            {freeAssembly && <FactRow label="Assembly" value="Free assembly included" />}
-            {freeDelivery && <FactRow label="Delivery charges" value="Free on orders above AED 500" />}
+            {freeAssembly && <FactRow label={t('pdp.assembly')} value={t('pdp.freeAssembly')} />}
+            {freeDelivery && <FactRow label={t('pdp.deliveryCharges')} value={t('pdp.freeAbove')} />}
           </AccordionSection>
         )}
 
         {!!specSections.length && (
-          <AccordionSection title="General information">
+          <AccordionSection title={t('pdp.generalInfo')}>
             {specSections.map((section) => (
               <View key={section.name} style={styles.specSection}>
                 <Text style={styles.specHeading}>{humanize(section.name)}</Text>
@@ -1096,20 +1097,20 @@ export default function ProductDetails({
         )}
 
         {!specSections.length && !!detailRows.length && (
-          <AccordionSection title="Dimensions & specifications">
+          <AccordionSection title={t('pdp.dimensionsSpecs')}>
             {detailRows.map((row, index) => <FactRow key={`${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />)}
           </AccordionSection>
         )}
 
         {!!related.length && (
           <View style={styles.discoveryBlock}>
-            <Text style={styles.sectionTitle}>You may also like</Text>
+            <Text style={styles.sectionTitle}>{t('pdp.youMayAlsoLike')}</Text>
             <ProductRail products={related} onProduct={onOpenProduct!} />
           </View>
         )}
         {!!recentlyViewed.length && (
           <View style={styles.discoveryBlock}>
-            <Text style={styles.sectionTitle}>Recently viewed</Text>
+            <Text style={styles.sectionTitle}>{t('pdp.recentlyViewed')}</Text>
             <ProductRail products={recentlyViewed} onProduct={onOpenProduct!} />
           </View>
         )}
@@ -1117,12 +1118,12 @@ export default function ProductDetails({
       </ScrollView>
 
       <View style={[styles.actionBar, adaptive.twoPane && { width: '100%', maxWidth: 560, alignSelf: 'flex-end' }, adaptive.compactHeight && { paddingVertical: 6 }]}>
-        <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? 'Remove from saved items' : 'Save product'} onPress={onSave} style={styles.saveButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? t('pdp.removeSaved') : t('pdp.save')} onPress={onSave} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Add to bag, ${activeSize ? selectedSizeText : 'one size'}, ${money(displayPrice)}`} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice })} style={styles.addButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.addToBagA11y', { size: activeSize ? selectedSizeText : 'one size', p: money(displayPrice) })} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice })} style={styles.addButton}>
           <ShoppingBag color={COLORS.white} size={18} />
-          <Text style={styles.addButtonText}>Add to bag · {money(displayPrice)}</Text>
+          <Text style={styles.addButtonText}>{t('pdp.addToBag', { p: money(displayPrice) })}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

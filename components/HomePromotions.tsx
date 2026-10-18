@@ -4,12 +4,13 @@ import { ArrowRight } from 'lucide-react-native';
 import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
 import { GLASS, useReducedMotion } from '../app/ui/glass';
 import { wrapSlideIndex } from '../utils/gallery';
+import { t } from '../app/i18n';
 
-const promotions = [
-  { key: 'deals', eyebrow: 'THE ROYAL EDIT', title: 'More home.\nLess spend.', action: 'Explore deals', category: 'all', image: require('../assets/images/catalog-live/bogota-7-seater-sofa-set.webp') },
-  { key: 'customization', eyebrow: 'MADE TO ORDER', title: 'Your home.\nYour way.', action: 'Customize your space', category: 'customization', image: { uri: 'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/YASEEN-MAJILIS-4_143b444c.webp' } },
-  { key: 'kids', eyebrow: 'LITTLE SPACES, BIG IDEAS', title: 'Room for little\ndreamers.', action: 'Explore kids’ rooms', category: 'kids-and-teens', image: require('../assets/images/catalog-live/the-shannon-kids-bed.webp') },
-] as const;
+const promotions: { key: string; eyebrow: string; title: string; action: string; category: string; image: any }[] = [
+  { key: 'deals', eyebrow: 'THE ROYAL EDIT', title: t('home.moreHome'), action: t('home.exploreDeals'), category: 'all', image: require('../assets/images/catalog-live/bogota-7-seater-sofa-set.webp') },
+  { key: 'customization', eyebrow: t('home.madeToOrder'), title: t('home.yourHomeYourWay'), action: t('home.customize'), category: 'customization', image: { uri: 'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/YASEEN-MAJILIS-4_143b444c.webp' } },
+  { key: 'kids', eyebrow: t('home.littleSpaces'), title: t('home.littleDreamers'), action: t('home.exploreKids'), category: 'kids-and-teens', image: require('../assets/images/catalog-live/the-shannon-kids-bed.webp') },
+];
 
 const AUTOPLAY_MS = 5000;
 

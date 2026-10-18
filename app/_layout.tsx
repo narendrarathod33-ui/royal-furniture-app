@@ -1,11 +1,17 @@
 import { AdaptiveFrame } from '../hooks/useAdaptiveLayout';
 import { LIQUID_MOTION_CSS } from '../ui/liquidMotion';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { I18nManager, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { bootDirection, isRTL } from '../app/i18n';
 import SplashGate from './SplashGate';
+
+// Language direction must be decided before the first render: React Native
+// computes mirrored layout from this, and on the web the document direction
+// drives all flexbox mirroring.
+bootDirection();
 
 /**
  * royalfurniture.ae renders every screen in Montserrat: the live site's <body>
@@ -61,6 +67,17 @@ function useWebsiteFont() {
 export default function RootLayout() {
   useFrameworkReady();
   useWebsiteFont();
+
+  useEffect(() => {
+    // Belt-and-braces for web: the document direction must match the saved
+    // language even if the bundle executes after first paint.
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.documentElement.lang = isRTL() ? 'ar' : 'en';
+      document.documentElement.dir = isRTL() ? 'rtl' : 'ltr';
+    }
+    I18nManager.allowRTL(true);
+    I18nManager.forceRTL(isRTL());
+  }, []);
 
   return (
     <>

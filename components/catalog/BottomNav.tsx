@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BadgePercent, Search, ShoppingBag, Star, UserRound } from 'lucide-react-native';
 import { useAdaptiveLayout } from '../../hooks/useAdaptiveLayout';
 import { COLORS, styles } from './kit';
+import { t } from '../../app/i18n';
 import { GLASS } from '../../app/ui/glass';
 import type { Tab } from './kit';
 
@@ -45,7 +46,7 @@ export const floatingNavStyles = StyleSheet.create({
 export function BottomNav({ tab, setTab, count }: { tab: Tab; setTab: (tab: Tab) => void; count: number }) {
   const adaptive = useAdaptiveLayout();
   const rail = adaptive.twoPane && !adaptive.compactHeight;
-  const items: [Tab, string][] = [['home', 'Home'], ['categories', 'Browse'], ['search', 'Search'], ['shop', 'Deals'], ['arrivals', 'New in']];
+  const items: [Tab, string][] = [['home', t('nav.home')], ['categories', t('nav.browse')], ['search', t('nav.search')], ['shop', t('nav.deals')], ['arrivals', t('nav.new')]];
   return (
     <View testID={rail ? 'navigation-rail' : 'bottom-navigation'} style={[floatingNavStyles.shadow, rail && { top: 16, left: 8, right: undefined, bottom: undefined, width: 80, height: 400 }]}>
       <View style={[floatingNavStyles.surface, rail && { flexDirection: 'column', paddingVertical: 10 }]}>

@@ -2,6 +2,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { Modal, Platform, SafeAreaView } from 'react-native';
 import { Bell, Check, Eye, Truck, X } from 'lucide-react-native';
 import { COLORS, money, photoFor, styles, type ListedProduct } from './kit';
+import { t } from '../../app/i18n';
 import { GLASS } from '../../app/ui/glass';
 import { useQuickViewStore } from '../../stores/quickView';
 
@@ -19,8 +20,8 @@ export function QuickViewSheet({ onAdd, onOpenProduct }: { onAdd: (product: List
   return (
     <Modal transparent visible={open} animationType={Platform.OS === 'web' ? 'fade' : 'slide'} onRequestClose={close}>
       <View style={s.scrim}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close quick view" onPress={close} style={StyleSheet.absoluteFill} />
-        <SafeAreaView testID="quick-view-sheet" accessibilityViewIsModal accessibilityLabel="Quick view" style={s.sheet}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('qv.close')} onPress={close} style={StyleSheet.absoluteFill} />
+        <SafeAreaView testID="quick-view-sheet" accessibilityViewIsModal accessibilityLabel={t('qv.quickViewLabel')} style={s.sheet}>
           {product && <QuickViewBody product={product} onAdd={onAdd} onOpenProduct={onOpenProduct} onClose={close} />}
         </SafeAreaView>
       </View>
@@ -43,14 +44,14 @@ export function QuickViewBody({ product, onAdd, onOpenProduct, onClose }: { prod
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.pad}>
             <View style={s.grab} />
             <View style={s.head}>
-              <Pressable accessibilityRole="button" accessibilityLabel="Close quick view" onPress={close} hitSlop={8} style={s.close}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.close')} onPress={close} hitSlop={8} style={s.close}>
                 <X size={20} color="#33242C" />
               </Pressable>
             </View>
             <View style={s.body}>
               <View style={s.photo}>{source
                 ? <Image source={source} accessibilityLabel={product.n} resizeMode="contain" style={styles.productPhoto} />
-                : <Text style={s.photoNote}>Photo unavailable</Text>}</View>
+                : <Text style={s.photoNote}>{t('card.photoUnavailable')}</Text>}</View>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text style={s.name}>{product.n}</Text>
                 <Text style={s.priceRow}>
@@ -60,28 +61,28 @@ export function QuickViewBody({ product, onAdd, onOpenProduct, onClose }: { prod
                 {discount > 0 && <Text style={s.pill}>{discount}% OFF</Text>}
                 <View style={s.metaRow}>
                   <Truck size={13} color={COLORS.muted} />
-                  <Text style={s.meta}>{deliveryDays ? `Delivery: about ${deliveryDays} days` : 'Delivery: 2–7 days'}{freeDelivery ? ' · Free delivery' : ''}</Text>
+                  <Text style={s.meta}>{deliveryDays ? t('qv.deliveryAbout', { n: deliveryDays }) : t('qv.deliveryRange')}{freeDelivery ? t('qv.freeDelivery') : ''}</Text>
                 </View>
                 <View style={s.metaRow}>
                   {inStock ? <Check size={13} color="#127A44" /> : <Bell size={13} color={COLORS.red} />}
-                  <Text style={[s.meta, !inStock && { color: COLORS.red }]}>{inStock ? 'In stock' : 'Out of stock'}</Text>
+                  <Text style={[s.meta, !inStock && { color: COLORS.red }]}>{inStock ? t('pdp.inStock') : t('pdp.outOfStock')}</Text>
                 </View>
               </View>
             </View>
             {!!product.d && <Text style={s.desc}>{product.d}</Text>}
             {!inStock ? (
-              <Pressable accessibilityRole="button" accessibilityLabel={`Notify me when ${product.n} is back`} onPress={() => { close(); }} style={[s.cta, s.ctaGhost]}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.notifyA11y', { n: product.n })} onPress={() => { close(); }} style={[s.cta, s.ctaGhost]}>
                 <Bell size={15} color={COLORS.red} />
-                <Text style={[s.ctaText, { color: COLORS.red }]}>Notify me when it's back</Text>
+                <Text style={[s.ctaText, { color: COLORS.red }]}>{t('qv.notify')}</Text>
               </Pressable>
             ) : multiOption ? (
-              <Pressable accessibilityRole="button" accessibilityLabel={`View full details for ${product.n}`} onPress={() => { close(); onOpenProduct(product); }} style={s.cta}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.viewDetailsA11y', { n: product.n })} onPress={() => { close(); onOpenProduct(product); }} style={s.cta}>
                 <Eye size={15} color="#fff" />
-                <Text style={s.ctaText}>View full details</Text>
+                <Text style={s.ctaText}>{t('qv.viewFullDetails')}</Text>
               </Pressable>
             ) : (
-              <Pressable accessibilityRole="button" accessibilityLabel={`Add to cart, ${product.n}, ${money(product.o)}`} onPress={() => { onAdd(product); close(); }} style={s.cta}>
-                <Text style={s.ctaText}>Add to cart · {money(product.o)}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.addToCartA11y', { n: product.n, p: money(product.o) })} onPress={() => { onAdd(product); close(); }} style={s.cta}>
+                <Text style={s.ctaText}>{t('qv.addToCart', { p: money(product.o) })}</Text>
               </Pressable>
             )}
     </ScrollView>

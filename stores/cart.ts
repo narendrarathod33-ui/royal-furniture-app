@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type { Product } from '../components/catalog/kit';
 import { loadJSON, removeSaved, saveJSON } from './appStorage';
 import { showToast } from '../components/catalog/Toast';
+import { t } from '../app/i18n';
 
 /** The server sandbox rejects carts above this; the cap is enforced here, in one place. */
 export const MAX_QUANTITY = 10;
@@ -80,6 +81,6 @@ export function useToggleSavedWithToast() {
   return useCallback((product: Product) => {
     const wasSaved = useCartStore.getState().saved.includes(product.id);
     useCartStore.getState().toggleSaved(product.id);
-    showToast(wasSaved ? 'Removed from saved items' : 'Saved for later');
+    showToast(wasSaved ? t('toast.unsaved') : t('toast.saved'));
   }, []);
 }
