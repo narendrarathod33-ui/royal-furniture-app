@@ -1,20 +1,14 @@
 /**
  * Royal Furniture — Google Sheets → live demo catalog sync.
+ * Menu: Catalog ▸ Sync now (or enable the 5-minute auto-sync).
  *
- * Paste this into your catalog spreadsheet:  Extensions ▸ Apps Script
- * (replace anything the editor pre-fills), save, then reload the sheet and
- * use the "Catalog ▸ Sync now" menu. The first sync asks for authorization —
- * approve it once (it only touches this spreadsheet and the demo receiver).
- *
- * After a sync, the demo app updates itself within ~15 seconds
- * (refresh the browser tab if it does not).
+ * Native Google Sheets cannot be converted to .xlsx with getAs() (it only
+ * exports PDF), so this uses the spreadsheet's own xlsx export endpoint.
  */
 
-// Demo receiver — sandbox-specific; ask for a new URL if the demo moves.
 const ENDPOINT = 'https://8081-ieyf6suwlxmlb9jknj5l4.e2b.app/upload';
 const TOKEN = '15b5abea0bf2c148bc81ece317cd8a41c81f638d01719b8a';
 
-/** Adds the "Catalog" menu when the sheet opens. */
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Catalog')
@@ -23,26 +17,46 @@ function onOpen() {
     .addToUi();
 }
 
-/** Exports this spreadsheet as .xlsx and POSTs it to the demo app. */
-function syncCatalog() {
-  const blob = DriveApp.getFileById(SpreadsheetApp.getActive().getId())
-    .getBlob()
-    .getAs('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    .setName('catalog.xlsx');
-  const response = UrlFetchApp.fetch(ENDPOINT, {
-    method: 'post',
-    payload: blob.getBytes(),
-    contentType: 'application/octet-stream',
-    headers: { 'x-bridge-token': TOKEN },
+/** Exports this spreadsheet as .xlsx via the Drive export endpoint. */
+function exportXlsx_() {
+  const id = SpreadsheetApp.getActive().getId();
+  DriveApp.getFileById(id).getName(); // keeps the Drive scope on the token
+  const url = 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=xlsx';
+  const response = UrlFetchApp.fetch(url, {
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
     muteHttpExceptions: true,
   });
-  const body = response.getContentText();
+  if (response.getResponseCode() !== 200) {
+    throw new Error('Could not export this sheet as .xlsx (HTTP ' + response.getResponseCode() + ')');
+  }
+  return response.getBlob().setName('catalog.xlsx');
+}
+
+/** Exports this spreadsheet and POSTs it to the demo app receiver. */
+function syncCatalog() {
+  let body;
+  try {
+    const blob = exportXlsx_();
+    const response = UrlFetchApp.fetch(ENDPOINT, {
+      method: 'post',
+      payload: blob.getBytes(),
+      contentType: 'application/octet-stream',
+      headers: { 'x-bridge-token': TOKEN },
+      muteHttpExceptions: true,
+    });
+    body = response.getContentText();
+  } catch (err) {
+    body = String(err && err.message ? err.message : err);
+    try {
+      SpreadsheetApp.getUi().alert('Catalog sync failed', body, SpreadsheetApp.getUi().ButtonSet.OK);
+    } catch (e) {}
+    Logger.log('Sync error: ' + body);
+    return body;
+  }
   Logger.log('Sync response: ' + body);
   try {
     SpreadsheetApp.getUi().alert('Catalog sync', body, SpreadsheetApp.getUi().ButtonSet.OK);
-  } catch (e) {
-    // running from a trigger (no UI) — the execution log has the result.
-  }
+  } catch (e) {}
   return body;
 }
 
