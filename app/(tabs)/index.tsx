@@ -61,7 +61,7 @@ const homeCategoryImages: Record<string, number> = {
 const homeDealTiles = [
   { label: 'Corner sofas', category: 'sofas:corner-sofas', image: require('../../assets/images/deal-sofas.webp') },
   { label: 'Recliners', category: 'sofas:recliner', image: require('../../assets/images/deal-recliners.webp') },
-  { label: 'End tables', category: 'furniture:end-table', image: require('../../assets/images/deal-tables.webp') },
+  { label: 'Coffee tables', category: 'furniture:living-room:coffee-table', image: require('../../assets/images/deal-coffee-tables.webp') },
   { label: 'Home decor', category: 'household:decor-items', image: require('../../assets/images/deal-decor.webp') },
 ] as const;
 const bedroomFeatureProduct = catalogData.find((product) => product.c === 'bedroom' && product.remoteImage) as { remoteImage?: string } | undefined;

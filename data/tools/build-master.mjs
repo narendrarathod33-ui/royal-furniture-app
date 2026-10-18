@@ -433,7 +433,7 @@ const doc = {
       dealTiles: [
         { label: 'Corner sofas', category: 'sofas:corner-sofas', asset: 'assets/images/deal-sofas.webp' },
         { label: 'Recliners', category: 'sofas:recliner', asset: 'assets/images/deal-recliners.webp' },
-        { label: 'End tables', category: 'furniture:end-table', asset: 'assets/images/deal-tables.webp' },
+        { label: 'Coffee tables', category: 'furniture:living-room:coffee-table', asset: 'assets/images/deal-coffee-tables.webp' },
         { label: 'Home decor', category: 'household:decor-items', asset: 'assets/images/deal-decor.webp' },
       ],
       sectionTitles: { deals: 'Amazing deals', rooms: 'Shop by room', bestSellers: 'Best sellers' },
