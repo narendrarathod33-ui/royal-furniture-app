@@ -39,8 +39,8 @@ export function ShopContent({ products, query, setQuery, category, setCategory, 
   </View>}
 </View>{/* A new sort invalidates cached row geometry and the previous product anchor.
     Keep filter state in ShopContent; only the virtualized results list restarts. */}
-<AdaptiveProductList key={browseSort} style={styles.flex} data={catalogList} keyExtractor={(item) => item.id} contentContainerStyle={styles.grid} renderItem={({ item }) => <ProductCard product={item} onPress={() => onProduct(item)} saved={saved.includes(item.id)} onSave={() => onSave(item)} wide />} ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>No products match these filters</Text><Text style={styles.pageSub}>Try a different category.</Text></View>} /></View></View></View>;
+<AdaptiveProductList key={browseSort} style={styles.flex} data={catalogList} keyExtractor={(item) => item.id} contentContainerStyle={styles.grid} renderItem={({ item }) => <ProductCard product={item} onPress={onProduct} saved={saved.includes(item.id)} onSave={onSave} wide />} ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>No products match these filters</Text><Text style={styles.pageSub}>Try a different category.</Text></View>} /></View></View></View>;
   return <DealsPage products={dealProducts} categories={royalFurnitureData.cats} photo={categoryThumbnail}
     header={<Header count={cartCount} onCart={onCart} onAccount={onAccount} />}
-    renderCard={(item) => <ProductCard product={item} onPress={() => onProduct(item)} saved={saved.includes(item.id)} onSave={() => onSave(item)} wide />} />;
+    renderCard={(item) => <ProductCard product={item} onPress={onProduct} saved={saved.includes(item.id)} onSave={onSave} wide />} />;
 }
