@@ -68,6 +68,23 @@ test.describe('Royal Furniture quick view', () => {
     await expect(sheetPage).toHaveCount(0);
   });
 
+  test('the eye never overlaps the discount pill on a card', async ({ page }) => {
+    await page.goto('/', load);
+    await page.getByRole('tab', { name: 'Search' }).click();
+    const field = page.getByTestId('product-search-field');
+    await expect(field).toBeVisible();
+    await field.locator('input').fill('Serafina');
+    const frame = page.getByTestId('product-thumbnail-frame').filter({ has: page.getByText(/% OFF/) }).first();
+    await expect(frame).toBeVisible();
+    const eye = await frame.getByTestId('quick-view').boundingBox();
+    const pill = await frame.getByText(/% OFF/).first().boundingBox();
+    expect(eye, 'eye button box').toBeTruthy();
+    expect(pill, 'discount pill box').toBeTruthy();
+    const overlaps = eye!.x < pill!.x + pill!.width && pill!.x < eye!.x + eye!.width
+      && eye!.y < pill!.y + pill!.height && pill!.y < eye!.y + eye!.height;
+    expect(overlaps, 'eye and discount pill must not intersect').toBe(false);
+  });
+
   test('browse offers the biggest-discount sort', async ({ page }) => {
     await page.goto('/', load);
     await page.getByRole('tab', { name: 'Browse' }).click();
