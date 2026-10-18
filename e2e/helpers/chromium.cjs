@@ -75,7 +75,8 @@ function chromiumLaunchOptions() {
   extract('fonts.tar.br', '/tmp/fonts');
   extract('swiftshader.tar.br', '/tmp/swiftshader.marker', { flat: true });
   const existing = process.env.LD_LIBRARY_PATH ? `:${process.env.LD_LIBRARY_PATH}` : '';
-  process.env.LD_LIBRARY_PATH = `${LIB_DIR}${existing}`;
+  // al2023.tar unpacks with a leading lib/ component (/tmp/al2/lib/lib/*.so).
+  process.env.LD_LIBRARY_PATH = `${LIB_DIR}/lib:${LIB_DIR}${existing}`;
   const chromium = require('@sparticuz/chromium');
   const mod = chromium.default ?? chromium;
   // --single-process/--no-zygote are Lambda memory constraints; outside Lambda
