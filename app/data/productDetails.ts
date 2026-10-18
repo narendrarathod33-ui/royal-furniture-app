@@ -15499,19 +15499,41 @@ const mergeOverride = (record: ProductDetailRecord, override: CatalogOverride): 
       else target.rows.push({ ...row });
     }
   }
-  return { ...record, gallery, colors, fabrics, sections };
+  return {
+    ...record,
+    gallery,
+    colors,
+    fabrics,
+    sections,
+    info: override.info ?? record.info,
+    sku: override.sku ?? record.sku,
+    rating: override.rating ?? record.rating,
+    views: override.views ?? record.views,
+    stock: override.stock ? { ...record.stock, ...override.stock } : record.stock,
+    deliveryEstimate: override.deliveryEstimate ?? record.deliveryEstimate,
+    deliveryDate: override.deliveryDate ?? record.deliveryDate,
+    customizable: override.customizable ?? record.customizable,
+    sizeCustomizable: override.sizeCustomizable ?? record.sizeCustomizable,
+  };
 };
 
-/** Build a record purely from overrides (products the harvest never covered). */
+/** Build a record purely from overrides (new products the harvest never covered). */
 const overrideOnly = (override: CatalogOverride): ProductDetailRecord => ({
   labels: [],
   sections: (override.sections || []).map((section) => ({ name: section.name, rows: section.rows.map((row) => ({ ...row })) })),
   colors: (override.colors || []).map((color) => ({ ...color })),
   fabrics: [...(override.fabrics || [])],
   gallery: [...(override.gallery || [])],
+  info: override.info,
+  sku: override.sku,
+  rating: override.rating,
+  views: override.views,
+  stock: override.stock,
+  deliveryEstimate: override.deliveryEstimate,
+  deliveryDate: override.deliveryDate,
   freeAssembly: false,
-  customizable: false,
-  sizeCustomizable: false,
+  customizable: override.customizable === true,
+  sizeCustomizable: override.sizeCustomizable === true,
 });
 
 /** Full product-page details for a catalogue id, or undefined when not harvested. */
