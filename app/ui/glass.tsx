@@ -78,10 +78,33 @@ export const GLASS = {
     boxShadow: `${DEPTH(14, 30, 0.12)}, ${TOP_LIGHT}, ${BOTTOM_GLOW}`,
   }),
 
+  /** Blur-free twin of `panel` for list cells (product cards). Over the flat
+   * page backdrop the blur is visually a no-op (blurring a flat color changes
+   * nothing), but it costs a GPU backdrop sample per card — dozens on screen
+   * while the catalog grid scrolls. Same bevel, border, shadow: same look. */
+  panelNoBlur: glass({
+    backgroundColor: WHITE(0.52),
+    borderWidth: 1,
+    borderColor: BEVEL_SIDE,
+    borderTopColor: BEVEL_TOP,
+    boxShadow: `${DEPTH(14, 30, 0.13)}, ${TOP_LIGHT}, ${BOTTOM_GLOW}`,
+  }),
+
   /** Pills, chips, filters, small round icon buttons. */
   chip: glass({
     backgroundColor: WHITE(0.46),
     ...blurLayer(BLUR(12)),
+    borderWidth: 1,
+    borderColor: BEVEL_SIDE,
+    borderTopColor: BEVEL_TOP,
+    boxShadow: `${DEPTH(6, 14, 0.08)}, ${TOP_LIGHT}`,
+  }),
+
+  /** Blur-free twin of `chip` for list cells (per-card hearts) — same
+   * rationale as `panelNoBlur`: identical pixels over a flat/photo backdrop,
+   * without a GPU backdrop sample per rendered card. */
+  chipNoBlur: glass({
+    backgroundColor: WHITE(0.46),
     borderWidth: 1,
     borderColor: BEVEL_SIDE,
     borderTopColor: BEVEL_TOP,

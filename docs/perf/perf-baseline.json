@@ -1,0 +1,32 @@
+{
+  "label": "baseline",
+  "viewport": "390x844",
+  "coldLoad": {
+    "ttfbMs": 3,
+    "domContentLoadedMs": 181,
+    "loadMs": 183,
+    "transferKB": 0,
+    "decodedKB": 0,
+    "requests": 26,
+    "interactiveMs": 725,
+    "longTasksDuringLoad": 0
+  },
+  "scrollBrowse": {
+    "blurredSurfacesOnScreen": 30,
+    "frames": 129,
+    "droppedOver32ms": 27,
+    "droppedPct": 21.1,
+    "worstMs": 333,
+    "p95Ms": 150,
+    "longTasksDuringScroll": 0
+  },
+  "tapToPdp": {
+    "reps": [
+      723,
+      1758,
+      2052
+    ],
+    "medianMs": 1758
+  },
+  "at": "2026-10-18T16:05:41.571Z"
+}
