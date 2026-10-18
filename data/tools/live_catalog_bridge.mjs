@@ -20,7 +20,7 @@ const REPO = path.join(HOME, 'royal-furniture-app');
 const IMPORTER = 'data/tools/catalog_xlsx.py';
 const STATE_DIR = path.join(HOME, '.catalog-bridge');
 const STATE_FILE = path.join(STATE_DIR, 'state.json');
-const IGNORE = ['/node_modules/', '/dist/', '/.git/', '/.arena/', '/.cache/', '/.local/', '/.npm/', '/.catalog-bridge/'];
+const IGNORE = ['/node_modules/', '/dist/', '/.git/', '/.arena/', '/.cache/', '/.local/', '/.npm/', '/.catalog-bridge/', '/google-drive-catalog.xlsx'];
 const SETTLE_MS = 1500; // let uploads finish writing before importing
 
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : {};
@@ -81,7 +81,12 @@ async function markExisting() {
   // Remember files that already exist so a bridge restart does not re-import old uploads.
   const scan = (dir) => {
     let entries = [];
-    try { entries = require('node:fs').readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch (err) {
+      log('…could not scan', dir, '-', err.message);
+      return;
+    }
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
       if (IGNORE.some((part) => full.includes(part))) continue;

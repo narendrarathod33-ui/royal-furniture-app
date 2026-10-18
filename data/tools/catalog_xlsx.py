@@ -201,12 +201,21 @@ def coerce(kind: str, value, where: str):
     if value is None or (isinstance(value, str) and value.strip() == ""):
         return None
     if kind == "int":
-        num = float(value)
+        try:
+            num = float(value)
+        except (TypeError, ValueError):
+            raise SystemExit(f"{where}: expected a number, got {value!r}") from None
         if num != int(num) or num < 0:
             raise SystemExit(f"{where}: expected a whole number >= 0, got {value!r}")
         return int(num)
     if kind == "bool":
-        return 1 if value in (1, "1", True, "yes", "true") else 0
+        if isinstance(value, str):
+            value = value.strip().lower()
+        if value in (1, "1", True, "yes", "y", "true"):
+            return 1
+        if value in (0, "0", False, "no", "n", "false", ""):
+            return 0
+        raise SystemExit(f"{where}: expected 1/0, yes/no or true/false, got {value!r}")
     if kind == "labels":
         return [part.strip() for part in str(value).split(",") if part.strip()]
     if kind == "pipe":
@@ -244,12 +253,18 @@ def coerce(kind: str, value, where: str):
             rows.append({"label": label.strip(), "value": row_value.strip()})
         return rows
     if kind == "rating":
-        num = float(value)
+        try:
+            num = float(value)
+        except (TypeError, ValueError):
+            raise SystemExit(f"{where}: expected a number, got {value!r}") from None
         if not 0 <= num <= 5:
             raise SystemExit(f"{where}: rating must be between 0 and 5")
         return round(num, 1)
     if kind == "stockcount":
-        num = int(float(value))
+        try:
+            num = int(float(value))
+        except (TypeError, ValueError):
+            raise SystemExit(f"{where}: expected a whole number, got {value!r}") from None
         if num < 0:
             raise SystemExit(f"{where}: stock_count must be >= 0")
         return {"count": num}
@@ -305,13 +320,21 @@ def sheet_products(ws, products, overrides: dict, leaf_map: dict[str, list[str]]
     for slug, ids in leaf_map.items():
         for pid in ids:
             membership.setdefault(pid, []).append(slug)
+    def safe_text(value):
+        """Neutralise formula injection: openpyxl stores leading `=` as a live
+        formula (verified data_type='f'), so prefix spreadsheet-dangerous
+        leading characters with an apostrophe (Excel/Sheets render it as text)."""
+        if isinstance(value, str) and value[:1] in ("=", "+", "@"):
+            return "'" + value
+        return value
+
     for row, product in enumerate(products, start=2):
         override = overrides.get(product["id"], {})
         for col, (name, key, kind) in enumerate(COLUMNS, start=1):
             value = product.get(key)
             if kind == "labels":
                 value = ", ".join(value or [])
-            ws.cell(row=row, column=col, value=value)
+            ws.cell(row=row, column=col, value=safe_text(value))
         base = len(COLUMNS)
         for col, (name, key, kind) in enumerate(OVERRIDE_COLUMNS, start=base + 1):
             if key in SECTION_COLUMNS:
@@ -335,7 +358,7 @@ def sheet_products(ws, products, overrides: dict, leaf_map: dict[str, list[str]]
                 value = 1 if value else 0
             elif kind == "stockcount":
                 value = value.get("count")
-            ws.cell(row=row, column=col, value=value)
+            ws.cell(row=row, column=col, value=safe_text(value))
         special_base = base + len(OVERRIDE_COLUMNS)
         ws.cell(row=row, column=special_base + 1, value=", ".join(sorted(membership.get(product["id"], []))))
     widths = [34, 38, 14, 16, 16, 60, 11, 14, 11, 22, 13, 9, 10, 10, 55,
@@ -531,6 +554,8 @@ def cmd_import(xlsx_path: Path) -> None:
                 raise SystemExit(f"row {row_no}: new product `{pid}` is missing {missing} — fill those cells; import aborted (nothing written)")
             if cell_map["category"] not in known_categories:
                 raise SystemExit(f"row {row_no}: new product `{pid}` has unknown category `{cell_map['category']}`; import aborted (nothing written)")
+            if cell_map.get("image_url") in (None, ""):
+                raise SystemExit(f"row {row_no}: new product `{pid}` needs image_url (the main product photo); import aborted (nothing written)")
             product: dict = {"id": pid}
             for name, key, kind in COLUMNS:
                 if key == "id":

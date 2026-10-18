@@ -6,31 +6,35 @@
  * so instead of polling Drive, the sheet pushes to us: a Google Apps Script
  * bound to the catalog spreadsheet POSTs the workbook to /upload on every
  * sync (manual menu item or a timed trigger). This receiver:
- *   1. checks the shared secret (x-bridge-token header),
+ *   1. checks the shared secret (x-bridge-token header, timing-safe compare),
  *   2. validates the payload is a real .xlsx,
- *   3. saves it to the workspace for reference,
- *   4. runs data/tools/catalog_xlsx.py import synchronously and returns the
- *      importer's output in the HTTP response — so the Apps Script execution
- *      log shows exactly what changed (or why the import was rejected).
+ *   3. saves it under the private state directory (which the file-watcher
+ *      bridge ignores, so a push is imported exactly once),
+ *   4. runs data/tools/catalog_xlsx.py import serially — one import at a
+ *      time, never concurrent — and returns the importer's output in the
+ *      HTTP response, so the Apps Script execution log shows exactly what
+ *      changed (or why the import was rejected).
  *
  * The dev server (Metro, watch mode) rebuilds as soon as the import rewrites
  * app/data/catalogData.ts and the open browser page updates itself.
  *
- * The token lives in /home/user/.catalog-bridge/receiver-token (never
- * committed). Run:  node data/tools/drive_receiver.mjs
+ * The token lives in RECEIVER_TOKEN or /home/user/.catalog-bridge/receiver-token
+ * (never committed). Run:  node data/tools/drive_receiver.mjs
  */
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
+import { createHash, timingSafeEqual } from 'node:crypto';
+import { existsSync, readFileSync, writeFileSync, renameSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 
 const HOME = '/home/user';
 const REPO = path.join(HOME, 'royal-furniture-app');
 const IMPORTER = 'data/tools/catalog_xlsx.py';
-const OUT = path.join(HOME, 'google-drive-catalog.xlsx');
+const STATE_DIR = path.join(HOME, '.catalog-bridge');
+const OUT = path.join(STATE_DIR, 'incoming.xlsx');
 // Secret is read from the RECEIVER_TOKEN environment variable, falling back to
 // the private state file (outside the repository, mode 600). Never hardcoded.
-const TOKEN_FILE = path.join(HOME, '.catalog-bridge', 'receiver-token');
+const TOKEN_FILE = path.join(STATE_DIR, 'receiver-token');
 const TOKEN = process.env.RECEIVER_TOKEN || (existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf8').trim() : '');
 const PORT = Number(process.env.RECEIVER_PORT || 8081);
 const MAX_BYTES = 30 * 1024 * 1024;
@@ -41,6 +45,13 @@ if (!TOKEN) {
 }
 
 const log = (...args) => console.log(new Date().toISOString(), ...args);
+
+/** Length-independent timing-safe comparison (hash both sides first). */
+function tokenMatches(candidate) {
+  const a = createHash('sha256').update(TOKEN).digest();
+  const b = createHash('sha256').update(candidate).digest();
+  return timingSafeEqual(a, b);
+}
 
 function runImport(file) {
   return new Promise((resolve) => {
@@ -53,8 +64,26 @@ function runImport(file) {
   });
 }
 
+// Imports mutate shared data files (read-modify-write); they must never overlap.
+let importBusy = false;
+const importQueue = [];
+async function runImportSerialized(file) {
+  if (importBusy) {
+    await new Promise((resolve) => importQueue.push(resolve));
+  }
+  importBusy = true;
+  try {
+    return await runImport(file);
+  } finally {
+    importBusy = false;
+    const next = importQueue.shift();
+    if (next) next();
+  }
+}
+
 const server = createServer((req, res) => {
   const send = (status, payload) => {
+    if (res.writableEnded || res.destroyed) return;
     const body = JSON.stringify(payload, null, 1);
     res.writeHead(status, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body) });
     res.end(body);
@@ -68,37 +97,42 @@ const server = createServer((req, res) => {
     return send(404, { ok: false, error: 'post the workbook to /upload' });
   }
 
-  if ((req.headers['x-bridge-token'] || '') !== TOKEN) {
+  if (!tokenMatches(String(req.headers['x-bridge-token'] || ''))) {
     log('⛔ rejected upload: bad or missing token from', req.socket.remoteAddress);
     return send(401, { ok: false, error: 'bad or missing x-bridge-token header' });
   }
 
   const chunks = [];
   let size = 0;
+  let aborted = false;
   req.on('data', (chunk) => {
     size += chunk.length;
-    if (size > MAX_BYTES) {
+    if (size > MAX_BYTES && !aborted) {
+      aborted = true;
+      chunks.length = 0;
+      send(413, { ok: false, error: `payload larger than ${MAX_BYTES} bytes` });
       req.destroy();
       return;
     }
-    chunks.push(chunk);
+    if (!aborted) chunks.push(chunk);
   });
 
   req.on('end', async () => {
+    if (aborted) return;
     const body = Buffer.concat(chunks);
-    if (size > MAX_BYTES) return send(413, { ok: false, error: `payload larger than ${MAX_BYTES} bytes` });
     if (body.length < 4 || body[0] !== 0x50 || body[1] !== 0x4b) {
       log('⛔ rejected upload: body is not an .xlsx (zip) file');
       return send(400, { ok: false, error: 'body does not look like an .xlsx file (zip magic missing)' });
     }
 
+    mkdirSync(STATE_DIR, { recursive: true });
     const tmp = `${OUT}.tmp`;
     writeFileSync(tmp, body);
     renameSync(tmp, OUT);
     log(`📥 received ${(body.length / 1024).toFixed(0)} KB workbook — importing…`);
 
     const started = Date.now();
-    const { code, output } = await runImport(OUT);
+    const { code, output } = await runImportSerialized(OUT);
     const seconds = ((Date.now() - started) / 1000).toFixed(1);
     if (code === 0) {
       log(`✅ drive sync applied in ${seconds}s — Metro is rebuilding; the open page updates itself.`);
