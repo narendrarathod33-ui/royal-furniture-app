@@ -15,6 +15,7 @@
  * through that function rather than touching `RAW`.
  */
 import { slugFromProductId } from './officialSizes';
+import { catalogOverrides, type CatalogOverride } from './catalogOverrides';
 
 /** Bucket every gallery / swatch image path is relative to. */
 export const PRODUCT_IMAGE_BASE = 'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/';
@@ -15466,11 +15467,62 @@ const decode = (raw: RawDetail): ProductDetailRecord => {
   };
 };
 
+/** Merge sheet-driven overrides on top of a decoded record (override wins per label/name). */
+const mergeOverride = (record: ProductDetailRecord, override: CatalogOverride): ProductDetailRecord => {
+  const gallery = [...record.gallery];
+  for (const path of override.gallery || []) if (!gallery.includes(path)) gallery.push(path);
+  const colors = record.colors.map((color) => ({ ...color }));
+  for (const color of override.colors || []) {
+    const existing = colors.find((c) => c.name.toLowerCase() === color.name.toLowerCase());
+    if (existing) {
+      existing.name = color.name;
+      if (color.hex) existing.hex = color.hex;
+      if (color.image) existing.image = color.image;
+    } else {
+      colors.push({ ...color });
+    }
+  }
+  const fabrics = [...record.fabrics];
+  for (const fabric of override.fabrics || []) {
+    if (!fabrics.some((f) => f.toLowerCase() === fabric.toLowerCase())) fabrics.push(fabric);
+  }
+  const sections = record.sections.map((section) => ({ name: section.name, rows: section.rows.map((row) => ({ ...row })) }));
+  for (const section of override.sections || []) {
+    const target = sections.find((s) => s.name.toLowerCase() === section.name.toLowerCase());
+    if (!target) {
+      sections.push({ name: section.name, rows: section.rows.map((row) => ({ ...row })) });
+      continue;
+    }
+    for (const row of section.rows) {
+      const existing = target.rows.find((r) => r.label.toLowerCase() === row.label.toLowerCase());
+      if (existing) existing.value = row.value;
+      else target.rows.push({ ...row });
+    }
+  }
+  return { ...record, gallery, colors, fabrics, sections };
+};
+
+/** Build a record purely from overrides (products the harvest never covered). */
+const overrideOnly = (override: CatalogOverride): ProductDetailRecord => ({
+  labels: [],
+  sections: (override.sections || []).map((section) => ({ name: section.name, rows: section.rows.map((row) => ({ ...row })) })),
+  colors: (override.colors || []).map((color) => ({ ...color })),
+  fabrics: [...(override.fabrics || [])],
+  gallery: [...(override.gallery || [])],
+  freeAssembly: false,
+  customizable: false,
+  sizeCustomizable: false,
+});
+
 /** Full product-page details for a catalogue id, or undefined when not harvested. */
 export function getProductDetails(productId: string): ProductDetailRecord | undefined {
   const slug = slugFromProductId(productId);
   const raw = RAW[slug] || RAW[slug.replace(/-[0-9a-f]{6}$/, '')];
-  return raw ? decode(raw) : undefined;
+  const decoded = raw ? decode(raw) : undefined;
+  const override = catalogOverrides[productId];
+  if (decoded && override) return mergeOverride(decoded, override);
+  if (!decoded && override) return overrideOnly(override);
+  return decoded;
 }
 
 /** Absolute URL for a harvested image path. */
