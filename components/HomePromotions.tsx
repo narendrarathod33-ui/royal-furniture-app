@@ -7,7 +7,7 @@ import { wrapSlideIndex } from '../utils/gallery';
 
 const promotions = [
   { key: 'deals', eyebrow: 'THE ROYAL EDIT', title: 'More home.\nLess spend.', action: 'Explore deals', category: 'all', image: require('../assets/images/catalog-live/bogota-7-seater-sofa-set.webp') },
-  { key: 'customization', eyebrow: 'MADE TO ORDER', title: 'Your home.\nYour way.', action: 'Customize your space', category: 'customization', image: require('../assets/images/catalog-live/broadway-dining-set-4-seater-antique-oak.webp') },
+  { key: 'customization', eyebrow: 'MADE TO ORDER', title: 'Your home.\nYour way.', action: 'Customize your space', category: 'customization', image: { uri: 'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/YASEEN-MAJILIS-4_143b444c.webp' } },
   { key: 'kids', eyebrow: 'LITTLE SPACES, BIG IDEAS', title: 'Room for little\ndreamers.', action: 'Explore kids’ rooms', category: 'kids-and-teens', image: require('../assets/images/catalog-live/the-shannon-kids-bed.webp') },
 ] as const;
 

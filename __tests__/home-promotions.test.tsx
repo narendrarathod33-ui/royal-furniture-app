@@ -88,7 +88,9 @@ test('slide photos fill their frame with cover (never stretched) and use the cur
   const { readFileSync } = require('node:fs');
   const source = readFileSync('components/HomePromotions.tsx', 'utf8');
   expect(source.includes('bogota-7-seater-sofa-set.webp')).toBe(true);
-  expect(source.includes('broadway-dining-set-4-seater-antique-oak.webp')).toBe(true);
+  // Slide 2 carries the Yaseen Majlis Corner Sofa's own catalog photo (remoteImage).
+  expect(source.includes('YASEEN-MAJILIS-4_143b444c.webp')).toBe(true);
+  expect(source.includes('broadway-dining-set')).toBe(false);
   expect(source.includes('the-shannon-kids-bed.webp')).toBe(true);
   expect(source.includes('dayana-corner-sofa')).toBe(false);
   expect(source.includes('the-rainbow-bed')).toBe(false);
