@@ -1,0 +1,19 @@
+# Search flow — the native twin of e2e/smoke.spec.ts
+# "search finds products by name and shows a result count".
+#
+#   export APP_ID=<your.app.id>
+#   maestro test native-flows/search.yaml
+#
+# "Search products" is the TextInput's accessibilityLabel; tapping it focuses
+# the field, then inputText types into the focused element.
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn:
+    text: '^Search$'
+- tapOn:
+    text: '^Search products$'
+- inputText: 'sofa'
+- assertVisible: '\d+ results'
+- assertVisible: 'Sofa'
+- assertNotVisible: 'No products found'

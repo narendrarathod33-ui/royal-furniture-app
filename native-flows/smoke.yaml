@@ -1,0 +1,24 @@
+# Login-less launch smoke — the native twin of e2e/smoke.spec.ts
+# "home renders rooms, deals tiles and the floating tab nav".
+#
+# Not runnable in this sandbox (no simulator/device). Against an EAS dev build:
+#   export APP_ID=<your.app.id>   # see native-flows/README.md
+#   maestro test native-flows/smoke.yaml
+#
+# Selectors: Maestro treats `text` as a regular expression matched against the
+# visible text OR the accessibility label, so the app's accessibilityLabels
+# (tab names, "Cart, N items" badge) drive everything here.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Shop by room'
+# The floating tab nav, exactly as the web smoke anchors it.
+- assertVisible: '^Home$'
+- assertVisible: '^Browse$'
+- assertVisible: '^Search$'
+- assertVisible: '^Deals$'
+- assertVisible: '^New in$'
+# Header: the bag badge announces its count; the account control is next to it.
+- assertVisible: '^Cart, \d+ items$'
+- assertVisible: '^Account$'

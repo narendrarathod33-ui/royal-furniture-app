@@ -22,6 +22,19 @@ async function clickUntil(locator, landsOn, timeout = 30_000) {
   }).toPass({ timeout });
 }
 
+/** The add-to-bag control announces `Add to bag, <size>, AED <price>` — read it back. */
+async function addBagLabel(page: import('@playwright/test').Page, pattern: RegExp) {
+  const label = await page.getByRole('button', { name: pattern }).getAttribute('aria-label');
+  expect(label, 'add-to-bag label').toBeTruthy();
+  return label as string;
+}
+
+function priceFromLabel(label: string) {
+  const match = /AED ([\d,]+)$/.exec(label);
+  expect(match, `AED price inside "${label}"`).toBeTruthy();
+  return Number(match![1].replace(/,/g, ''));
+}
+
 async function openProduct(page, query) {
   await page.goto('/', load);
   await page.getByRole('tab', { name: 'Search' }).click();
@@ -63,7 +76,31 @@ test.describe('Royal Furniture smoke', () => {
     expect(count).toBeGreaterThanOrEqual(6); // Nimbus ships 190x90 … 200x180
     await sizes.last().click();
     // The add-to-bag control always announces the selected size and its price.
-    await expect(page.getByRole('button', { name: /Add to bag, 200x180 · King, / })).toBeVisible();
+    const kingLabel = await addBagLabel(page, /Add to bag, 200x180 · King, /);
+    // Size drives price: switching back to the smallest size must swap the
+    // announced AED amount, not just the dimensions.
+    if ((await page.getByRole('radio').count()) === 0) {
+      await page.getByRole('button', { name: /Tap to change size/ }).click();
+    }
+    await page.getByRole('radio').first().click();
+    const smallLabel = await addBagLabel(page, /Add to bag, 190x90/);
+    expect(priceFromLabel(smallLabel)).toBeLessThan(priceFromLabel(kingLabel));
+  });
+
+  test('the chosen price sort sticks when you leave browse and come back', async ({ page }) => {
+    await page.goto('/', load);
+    await page.getByRole('tab', { name: 'Browse' }).click();
+    await page.getByRole('button', { name: /^Sort products, / }).click();
+    await page.getByRole('radio', { name: 'Price low to high' }).click();
+    await expect(page.getByRole('button', { name: 'Sort products, Price low to high' })).toBeVisible();
+    const sortedFirst = await page.getByRole('button', { name: /, AED/ }).first().getAttribute('aria-label');
+    expect(sortedFirst, 'first sorted card label').toBeTruthy();
+    // Leave the tab entirely, then come back: the session keeps both the
+    // chosen order in the trigger and the sorted grid order.
+    await page.getByRole('tab', { name: 'Home' }).click();
+    await page.getByRole('tab', { name: 'Browse' }).click();
+    await expect(page.getByRole('button', { name: 'Sort products, Price low to high' })).toBeVisible();
+    expect(await page.getByRole('button', { name: /, AED/ }).first().getAttribute('aria-label')).toBe(sortedFirst);
   });
 
   test('adding to the bag updates the header badge and the cart line', async ({ page }) => {

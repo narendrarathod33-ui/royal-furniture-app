@@ -1,0 +1,63 @@
+# Cart money path — search → PDP → size → bag → demo checkout → order in
+# Account. The native twin of the e2e/smoke.spec.ts add/checkout tests.
+#
+#   export APP_ID=<your.app.id>
+#   maestro test native-flows/cart.yaml
+#
+# Relies on the app's shipped accessibilityLabels: "Search products" (search
+# field), "Add to bag, <size>, AED <price>" (PDP), "Cart, N items" (badge),
+# "Your name" / "Mobile number" / "Delivery address" (checkout inputs).
+#
+# Native persistence of cart/orders lands with MMKV in P5; everything here is
+# in-session on purpose, so the flow stays valid before and after that swap.
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn:
+    text: '^Search$'
+- tapOn:
+    text: '^Search products$'
+- inputText: 'Nimbus Bed'
+- hideKeyboard
+# Result cards announce "<product>, AED <price>" — that distinguishes the card
+# from the typed query text in the field itself.
+- tapOn:
+    text: 'Nimbus Bed.*AED'
+    index: 0
+# The PDP is up when its size trigger announces itself.
+- assertVisible: 'Tap to change size'
+- tapOn:
+    text: 'Tap to change size'
+- tapOn:
+    text: '200x180'
+- assertVisible: '^Add to bag'
+- tapOn:
+    text: '^Add to bag'
+- assertVisible: '^Cart, 1 items$'
+- tapOn:
+    text: '^Cart, 1 items$'
+- assertVisible: 'Local demo checkout'
+- assertVisible: 'Nimbus Bed'
+- tapOn: 'Local demo checkout'
+# The sheet shows a heading Text and the input's accessibility label with the
+# same copy; index 1 is the input (heading renders first).
+- tapOn:
+    text: '^Your name$'
+    index: 1
+- inputText: 'Maestro Tester'
+- tapOn:
+    text: '^Mobile number$'
+    index: 1
+- inputText: '0501234567'
+- tapOn:
+    text: '^Delivery address$'
+    index: 1
+- inputText: 'Test Tower, Abu Dhabi'
+- hideKeyboard
+- tapOn: 'Place order request'
+- assertVisible: 'Demo order saved locally'
+- tapOn: 'Continue shopping'
+- tapOn:
+    text: '^Account$'
+# The demo order id surfaces in the account's order history.
+- assertVisible: 'RF-\d{8}'

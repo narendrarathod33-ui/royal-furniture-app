@@ -137,12 +137,24 @@ it is verified end-to-end and unrelated to UI standards.
   Fallback documented: revert is one-file.
 - **Gate:** suites green, smoke green, bundle delta recorded.
 
-### Phase 4 — E2E maturity (S in-sandbox; M with device)
-- Playwright specs expand to the money paths (Drive-push → catalog updates →
-  size dropdown → price-order persistence).
-- **Maestro flows authored now** (`native-flows/*.yaml`: login-less smoke, cart
-  flow, search flow), executed against an EAS dev build when available — not
-  runnable in this sandbox, stated openly.
+### Phase 4 — E2E maturity (S in-sandbox; M with device) — DONE
+  > **Shipped as:** the four money paths are real, executable tests.
+  > `e2e/catalog-push.spec.ts` drives the actual Drive-push loop — exports the
+  > live workbook, bumps every Nimbus Bed row's `price_aed`, POSTs it to the
+  > receiver's `/upload` with the bridge token, and asserts the PDP add-to-bag
+  > price moves by exactly AED 1,000 after a reload (restores `app/data` in a
+  > `finally`; skips when the receiver isn't running). `e2e/smoke.spec.ts`
+  > gained size-drives-price (smallest vs king add-bag labels compared) and
+  > price-sort persistence (sort → leave tab → return → order kept). Native:
+  > `native-flows/*.yaml` (login-less smoke, search, cart→checkout→order),
+  > authored against the app's shipped accessibilityLabels with documented
+  > Maestro semantics (`text` = visible text or a11y label, regex); NOT
+  > executable in this sandbox — run via `npm run e2e:native` against an EAS
+  > dev build once P5 pins `APP_ID`. `scripts/maestro-flows.test.mjs` (in
+  > `npm test`) lints the YAML and fails if a flow references a label the app
+  > no longer ships. Checkout inputs gained real accessibilityLabels ("Your
+  > name" / "Mobile number" / "Delivery address"). Gate: tsc clean, jest
+  > 42/42, legacy 57/57, Playwright 10/10.
 
 ### Phase 5 — Delivery & offline (on demand)
 - **EAS Build/Submit**: `eas.json` profiles (development, preview, production);
