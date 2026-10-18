@@ -37,6 +37,7 @@ LAUNCHING A PRODUCT (new rows)
 """
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import re
@@ -466,6 +467,19 @@ def cmd_export(output: Path) -> None:
 
 
 def cmd_import(xlsx_path: Path) -> None:
+    # One import at a time, across every caller (Drive receiver, file-watcher
+    # bridge, CLI): the import is a read-modify-write of shared data files, so
+    # concurrent runs would interleave and silently drop each other's changes.
+    lock_path = ROOT / ".catalog-bridge-import.lock"
+    with open(lock_path, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            _cmd_import_locked(xlsx_path)
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def _cmd_import_locked(xlsx_path: Path) -> None:
     products = parse_ts_array(CATALOG_TS)
     by_id: dict[str, dict] = {p["id"]: p for p in products}
     current_overrides = parse_overrides_ts() if OVERRIDES_TS.exists() else {}
