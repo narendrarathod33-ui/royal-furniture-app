@@ -32,7 +32,9 @@
     "baseline:bundle": "node scripts/bundle-baseline.mjs",
     "test": "npm run test:jest && npm run test:legacy",
     "test:jest": "jest",
-    "test:legacy": "node --test scripts/*.test.mjs"
+    "test:legacy": "node --test scripts/*.test.mjs",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -59,7 +61,7 @@
     "lucide-react-native": "^0.475.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.81.4",
+    "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-mmkv": "^4.3.2",
     "react-native-nitro-modules": "^0.37.1",

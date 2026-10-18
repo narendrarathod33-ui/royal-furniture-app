@@ -57,6 +57,18 @@ npm run ota:publish     # eas update --channel production --auto
 Channels map 1:1 to build profiles, so a `preview` build only ever receives
 `preview` updates.
 
+## Prebuild verified in-sandbox
+
+`npx expo prebuild --platform android` and `--platform ios` were both run and
+inspected in the sandbox (applicationId / PRODUCT_BUNDLE_IDENTIFIER =
+`com.royalfurniture.app`, Expo.plist updates keys emitted). The generated
+`android/` and `ios/` folders are intentionally **not committed** — this
+project stays on the managed (CNG) workflow: EAS Build regenerates them in
+the cloud on every build, so `app.json` stays the single source of truth.
+`react-native` is aligned to the exact SDK 54 expected version (0.81.5), and
+the tracked lockfile is `bun.lock` only (kept in sync with `package.json` —
+EAS will use bun); any local gitignored npm lockfile is sandbox-only.
+
 ## Native persistence (react-native-mmkv)
 
 Installed and wired in P5 through the `stores/appStoragePlatform` split:
