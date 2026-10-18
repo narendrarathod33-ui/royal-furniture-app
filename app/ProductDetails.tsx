@@ -627,9 +627,12 @@ export default function ProductDetails({
     [onOpenProduct, recentIds, catalogId],
   );
   // Upsell: the next sizes up from the current selection, one tap to switch.
+  // Chips price off the price the page actually displays (the variant menu),
+  // never the harvest fallback, so "+AED … more" always matches what the
+  // shopper sees and no in-between size is skipped.
   const upgrades = useMemo(
-    () => (onOpenProduct ? upgradePicks(selectedPrice, (sizeVariants || []).map((variant) => ({ name: [variant.label, variant.sizeType].filter(Boolean).join(' · '), label: variant.label, price: variant.price, listPrice: variant.listPrice })), 2) : []),
-    [onOpenProduct, selectedPrice, sizeVariants],
+    () => (onOpenProduct && usingSizeVariants ? upgradePicks(displayPrice, (sizeVariants || []).map((variant) => ({ name: [variant.label, variant.sizeType].filter(Boolean).join(' · '), label: variant.label, price: variant.price, listPrice: variant.listPrice })), 2) : []),
+    [onOpenProduct, usingSizeVariants, displayPrice, sizeVariants],
   );
 
   // General Information, grouped the way the product page groups it.

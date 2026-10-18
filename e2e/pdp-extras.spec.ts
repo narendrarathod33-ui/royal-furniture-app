@@ -71,7 +71,11 @@ test.describe('Royal Furniture PDP extras', () => {
     await expect(chip).toBeVisible();
     const chipLabel = (await chip.getAttribute('aria-label'))!;
     const chipPrice = Number(/, AED ([\d,]+),/.exec(chipLabel)![1].replace(/,/g, ''));
+    const chipDelta = Number(/, AED ([\d,]+) more$/.exec(chipLabel)![1].replace(/,/g, ''));
     expect(chipPrice, 'upgrade offers a pricier size').toBeGreaterThan(priceBefore);
+    // The advertised "+AED … more" must equal the price difference against the
+    // price the page actually displays (no harvest/variant drift).
+    expect(chipPrice - priceBefore).toBe(chipDelta);
 
     // Tapping the chip switches the whole page to that size: add-to-bag now
     // carries the upgrade's price.
