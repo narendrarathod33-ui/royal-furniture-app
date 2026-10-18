@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Animated, Easing, Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Animated, Easing, Image, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { GlassBackdrop, useGlassPageBackground, useReducedMotion } from './ui/glass';
 
@@ -49,7 +49,18 @@ const LOGO = require('../assets/images/royal-logo.png');
 export default function SplashGate({ children }: { children: ReactNode }) {
   const reduced = useReducedMotion();
   const { width } = useWindowDimensions();
-  const [done, setDone] = useState(false);
+  /** Warm reloads skip the intro: it plays once per browser session (web only),
+   * so revisits go straight to content instead of paying the scripted ~1.3s
+   * again. sessionStorage is per-tab, so a fresh tab still gets the intro. */
+  const seenThisSession = useMemo(() => {
+    if (Platform.OS !== 'web') return false;
+    try {
+      if (window.sessionStorage.getItem('rf-splash-seen')) return true;
+      window.sessionStorage.setItem('rf-splash-seen', '1');
+    } catch {}
+    return false;
+  }, []);
+  const [done, setDone] = useState(seenThisSession);
   const progress = useRef(new Animated.Value(0)).current;
   const exit = useRef(new Animated.Value(0)).current;
   const leaving = useRef(false);
@@ -76,6 +87,7 @@ export default function SplashGate({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    if (seenThisSession) return; // intro already played this session — no timers
     if (reduced) {
       // Reduced motion: one soft fade, no movement.
       Animated.timing(progress, { toValue: 1, duration: SPLASH_TIMING.reduced, useNativeDriver: true }).start(({ finished }) => {
@@ -94,7 +106,7 @@ export default function SplashGate({ children }: { children: ReactNode }) {
     // Safety net: the launch screen can never outstay its welcome.
     const guard = setTimeout(() => leave(true), SPLASH_TOTAL_MS + 500);
     return () => clearTimeout(guard);
-  }, [leave, progress, reduced]);
+  }, [leave, progress, reduced, seenThisSession]);
 
   const skip = useCallback(() => {
     progress.stopAnimation();

@@ -1,0 +1,16 @@
+{
+  "protocol": "prod export @ :4123, warm reload (HTTP cache populated), longtask via PerformanceObserver init-script, resources via resource-timing transferSize",
+  "warmReloadTotals": {
+    "desktopCpu": { "runs_ms": [2007, 615, 1989], "note": "run1 includes font+photo cold fetches inside tab" },
+    "cpu4xPhone": { "runs_ms": [2220, 2549, 2604] }
+  },
+  "phases4x": { "bootLongTaskMs": [1077, 800, 736], "splashIntroMs": "~1300 unconditional (pre-fix)", "resourceTransferBytes": 0, "verdict": "all bytes from cache; cost = parse/execute + scripted intro" },
+  "afterFix": { "splashAtFirstPaint": true, "splashRemovedAfterReactMount": true, "warmInteractiveDesktopMs": 469, "introPlayedCold": true, "introSkippedWarmReload": true, "freshTabPlaysIntro": "by sessionStorage semantics", "pageErrors": 0 },
+  "deployDefect": {
+    "finding": "SPA export wrote absolute /_expo asset URLs; at /royal-furniture-app/ the browser requests user.github.io/_expo/... -> 404, app never boots",
+    "affected": ["gh-pages 9f4a829 (perf r2)", "gh-pages 88d2a80 (shop redesign)"],
+    "evidence": "fetch of https://...github.io/_expo/static/js/web/entry-ff762c6c...js -> 'Site not found'; prefixed variant (with /royal-furniture-app) -> 200 real bundle",
+    "fix": "build:web:pages exports with PAGES_BASE_PATH=/royal-furniture-app (Expo rewrites entry + asset URLs); verified locally under a prefix-mounted server"
+  },
+  "date": "2026-10-18"
+}

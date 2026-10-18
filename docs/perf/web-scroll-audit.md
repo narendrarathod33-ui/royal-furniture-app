@@ -157,3 +157,40 @@ not implemented** (no speculative changes without expected-gain evidence).
 *Operational note:* headless Chromium in this sandbox segfaults at launch after
 a re-provision; recovery is `rm -rf /tmp/chromium /tmp/al2 /tmp/fonts` and let
 `e2e/helpers/chromium.cjs` re-extract.
+
+## Round 4 — warm reload + the deploy defect (2026-10-18)
+
+**Trigger:** "still slow on reload in the browser." Two stacked causes found.
+
+**Cause 1 — the live site could not boot at all (deploy defect).** Expo's SPA
+export wrote **absolute** asset URLs (`src="/_expo/..."`). On GitHub Pages the
+site lives at `/royal-furniture-app/`, so the browser requested
+`user.github.io/_expo/...` → 404 → `#root` stays empty forever: an Endless
+"loading" that looks like slowness. Both live gh-pages commits are affected
+(`9f4a829` perf-r2, `88d2a80` shop-redesign); the repo's own
+`build:web:pages` script existed with the right flag (`PAGES_BASE_PATH`) but
+deploys were made from unprefixed exports. **Fix:** deploys now use
+`npm run build:web:pages` (prefixed entry verified in the export, then
+boot-verified under a locally prefix-mounted server, 0 page errors).
+Evidence: `warm-reload-r4.json`.
+
+**Cause 2 — warm reload cost is CPU, not network.** With the cache fully warm
+(every resource `transferSize: 0`), reload to interactive is **2.2–2.6s at 4×
+CPU throttle** (phone-class), 0.6–2.0s on desktop: one **0.7–1.1s long task**
+parse+execute of the 5.8 MB chunk, then `SplashGate` replayed its scripted
+**~1.3s intro on every load** (no session gating). Two behavior-safe fixes:
+
+1. **Boot splash in `index.html`** — `scripts/inject-web-splash.mjs`
+   (idempotent, wired into `build:web:pages`) injects a ~1 KB brand mark +
+   indeterminate bar that fills the white gap during boot and removes itself
+   the moment React mounts anything (MutationObserver, 8s failsafe). No
+   libraries, no app code touched.
+2. **Intro once per session** — `SplashGate` marks
+   `sessionStorage['rf-splash-seen']` (web only); warm reloads skip straight
+   to content; a fresh tab still plays it. Measured: cold plays, warm reload
+   interactive in **469 ms** (desktop CPU) with no intro, 0 page errors,
+   Playwright 10/10, jest 45/45, tsc clean.
+
+Cold-load unaffected beyond Cause-1's fix: transfer numbers from Round 2
+stand. The remaining structural lever (splitting `productDetails.ts`, −24%
+of boot parse) stays recommended-not-implemented per Round 3's verdict.
