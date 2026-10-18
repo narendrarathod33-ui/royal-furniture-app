@@ -12,7 +12,7 @@ for (const name of ['catalogData', 'dealsCatalog', 'royalFurnitureData', 'leafPr
   modules[name] = module.exports;
 }
 const catalog = modules.catalogData.catalogData;
-const source = read('app/(tabs)/index.tsx');
+const source = read('components/catalog/ShopContent.tsx');
 const ast = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const screen = ast.statements.find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'ShopContent');
 function nodes(tree) {

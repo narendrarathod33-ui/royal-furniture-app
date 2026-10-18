@@ -68,5 +68,5 @@ test('resize does not reset the active product photo, route, or selected size', 
   assert.match(details,/activeSlideRef.current \+ 1/);
   assert.match(read('app/_layout.tsx'),/<AdaptiveFrame><Stack(?:\s[^>]+)?>/);
   assert.doesNotMatch(read('hooks/useAdaptiveLayout.tsx'),/key=\{/);
-  assert.match(read('app/(tabs)/index.tsx'),/navigation-rail/);
+  assert.match(read('components/catalog/BottomNav.tsx'),/navigation-rail/);
 });

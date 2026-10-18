@@ -86,7 +86,7 @@ test('category search uses its rounded field as focus indicator, without an inne
 test('both search fields focus their input from the outer bar and keep the native caret visible', () => {
   const layout = readFileSync(new URL('../app/_layout.tsx', import.meta.url), 'utf8');
   const navigation = readFileSync(new URL('../components/BrowseNavigation.tsx', import.meta.url), 'utf8');
-  const main = readFileSync(new URL('../app/(tabs)/index.tsx', import.meta.url), 'utf8');
+  const main = readFileSync(new URL('../components/catalog/Screens.tsx', import.meta.url), 'utf8');
   for (const [source, id] of [[navigation, 'category-search-field'], [main, 'product-search-field']]) {
     assert.match(source, new RegExp(`testID="${id}"[^>]*onPress=\\{\\(\\) => searchInput.current\\?\\.focus\\(\\)\\}`));
     assert.match(source, /ref=\{searchInput\}[^>]*caretHidden=\{false\}/);

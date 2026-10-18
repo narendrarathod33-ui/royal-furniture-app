@@ -60,18 +60,18 @@ test('pay-later banner uses the supplied artwork without cropping, stretching or
 });
 
 test('compact section spacing is limited to Home and does not shrink the kids carousel',()=>{
- const app=readFileSync(new URL('../app/(tabs)/index.tsx',import.meta.url),'utf8');
- const home=app.slice(app.indexOf('function HomeContent('),app.indexOf('function TrustRow('));
+ const home=readFileSync(new URL('../components/catalog/HomeContent.tsx',import.meta.url),'utf8');
+ const kit=readFileSync(new URL('../components/catalog/kit.ts',import.meta.url),'utf8');
+ const chrome=readFileSync(new URL('../components/catalog/ProductCard.tsx',import.meta.url),'utf8');
  assert.equal((home.match(/<SectionTitle compact title=/g)||[]).length,3);
- assert(app.includes('homeSectionTitle: { paddingTop: 14, paddingBottom: 8 }'));
- assert(app.includes('compact = false'));
- assert(app.includes('officialFeature: { marginHorizontal: 20, marginTop: 12,'));
- assert(app.includes('collectionStories: { marginTop: 12, gap: 10 }'));
+ assert(kit.includes('homeSectionTitle: { paddingTop: 14, paddingBottom: 8 }'));
+ assert(chrome.includes('compact = false'));
+ assert(kit.includes('officialFeature: { marginHorizontal: 20, marginTop: 12,'));
+ assert(kit.includes('collectionStories: { marginTop: 12, gap: 10 }'));
 });
 
 test('Shop by room keeps its photos and category actions without decorative icon badges',()=>{
- const app=readFileSync(new URL('../app/(tabs)/index.tsx',import.meta.url),'utf8');
- const home=app.slice(app.indexOf('function HomeContent('),app.indexOf('function TrustRow('));
+ const home=readFileSync(new URL('../components/catalog/HomeContent.tsx',import.meta.url),'utf8');
  assert(!home.includes('styles.roomIcon'));assert(!home.includes("'◒'"));
  assert(home.includes('onPress={() => onCategory(cat.s)}'));
  assert(home.includes('source={categoryThumbnail(cat.s)}'));

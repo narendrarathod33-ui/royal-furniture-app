@@ -4,9 +4,11 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
-const source = read('app/(tabs)/index.tsx');
-const ast = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const source = read('components/catalog/ProductCard.tsx');
+const ast = ts.createSourceFile('ProductCard.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const card = ast.statements.find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'ProductCard');
+const stylesSource = read('components/catalog/kit.ts');
+const stylesAst = ts.createSourceFile('kit.ts', stylesSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 const compile = code => ts.transpileModule(code, {compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 const nodes = tree => !tree ? [] : Array.isArray(tree) ? tree.flatMap(nodes) : tree.props ? [tree, ...nodes(tree.props.children)] : [];
 function harness() {
@@ -46,9 +48,9 @@ test('a changed source retries normally, while a recreated failed source does no
 });
 test('thumbnail styles reserve a square for both rail and grid, without a fixed height',()=>{
   let properties;
-  const visit=n=>{if(ts.isPropertyAssignment(n)&&n.name.getText(ast)==='productImage')properties=n.initializer;ts.forEachChild(n,visit);};visit(ast);
+  const visit=n=>{if(ts.isPropertyAssignment(n)&&n.name.getText(stylesAst)==='productImage')properties=n.initializer;ts.forEachChild(n,visit);};visit(stylesAst);
   const module={exports:{},GLASS:{hero:{}},glassTilt:()=>({})};
-  vm.runInNewContext(compile('exports.style = '+properties.getText(ast)),module);
+  vm.runInNewContext(compile('exports.style = '+properties.getText(stylesAst)),module);
   assert.equal(module.exports.style.aspectRatio,1);assert.equal(module.exports.style.width,'100%');
   assert.equal(module.exports.style.height,undefined);assert.equal(module.exports.style.overflow,'hidden');
 });
@@ -56,7 +58,7 @@ test('detail gallery, detail thumbnails and cart photos contain products; editor
   const details=read('app/ProductDetails.tsx');
   assert.match(details,/style=\{styles.galleryThumbImage\} resizeMode="contain"/);
   assert.match(details,/style=\{styles.swatchImage\} resizeMode="cover"/);
-  assert.match(source,/style=\{styles.cartPhoto\} resizeMode="contain"/);
+  assert.match(read('components/catalog/CartContent.tsx'),/style=\{styles.cartPhoto\} resizeMode="contain"/);
   assert.match(read('components/HomePromotions.tsx'), /style=\{s.photo\} resizeMode="contain"/);
   const start=details.indexOf('testID="product-gallery-touch-surface"');
   assert.match(details.slice(start,details.indexOf('style={styles.slider}',start+1)),/resizeMode="contain"/);

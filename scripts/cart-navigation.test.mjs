@@ -6,12 +6,18 @@ import ts from 'typescript';
 
 // Exercise the real screen/component callbacks with a minimal hook/JSX harness.
 // No native renderer or new dependency is needed for these state/prop regressions.
-const file = readFileSync(new URL('../app/(tabs)/index.tsx', import.meta.url), 'utf8');
-const ast = ts.createSourceFile('index.tsx', file, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const names = ['AppSession', 'CartContent', 'AccountContent', 'Header'];
-const functions = ast.statements.filter((node) => ts.isFunctionDeclaration(node) && names.includes(node.name?.text));
+const screens = { AppSession: 'app/(tabs)/index.tsx', CartContent: 'components/catalog/CartContent.tsx', AccountContent: 'components/catalog/AccountContent.tsx', Header: 'components/catalog/ProductCard.tsx' };
+const functions = [];
+for (const [name, path] of Object.entries(screens)) {
+  const source = readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+  const ast = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const found = ast.statements.filter((node) => ts.isFunctionDeclaration(node) && node.name?.text === name);
+  assert.equal(found.length, 1, `${path} must export ${name}`);
+  functions.push(found[0]);
+}
 assert.equal(functions.length, names.length);
-const javascript = ts.transpileModule(functions.map((node) => node.getText(ast)).join('\n'), {
+const javascript = ts.transpileModule(functions.map((node) => node.getText(node.getSourceFile())).join('\n'), {
   compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const product = { id: 'chair', n: 'Chair', o: 100, l: 150, c: 'furniture', scn: 'Chairs', z: [], sp: {} };
@@ -28,14 +34,14 @@ function harness() {
   };
   functions.forEach(visit);
   Object.assign(context, {
-    Math, Date,
+    Math, Date, Set,
     useAdaptiveLayout: () => adaptive,
     styles: new Proxy({}, { get: () => ({}) }), COLORS: {}, categoryColors: {}, shortName: (name) => name,
     royalFurnitureData: { products: [product], stores: [] }, catalogData: [product],
     money: (value) => `AED ${value}`,
     photoFor: () => undefined, photoForCatalogId: () => undefined, getSizeVariants: () => [],
     Animated: { Value: class { interpolate() { return 1; } }, View: 'Animated.View' },
-    setTimeout: () => 0,
+    setTimeout: () => 0, clearTimeout: () => {},
     useMemo: (callback) => callback(), useEffect: () => {}, useRef: (value) => ({ current: value }),
     useState: (initial) => {
       const instance = current;

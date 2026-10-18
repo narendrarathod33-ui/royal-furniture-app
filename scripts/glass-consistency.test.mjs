@@ -59,11 +59,11 @@ test('newer controls reuse existing glass presets, with selected states still vi
 });
 function luminance(hex) { const c=hex.match(/\w\w/g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722; }
 test('inactive navigation ink retains AA text contrast even over a black photo behind its translucent tint', () => {
- const nav=styles('app/(tabs)/index.tsx','floatingNavStyles');
+ const nav=styles('components/catalog/BottomNav.tsx','floatingNavStyles');
  assert.equal(nav.surface.backgroundColor,'rgba(255,255,255,0.86)');assert.equal(nav.label.color,'#504C54');
  const worstBackground='#'+Math.round(255*.86).toString(16).repeat(3);
  assert((luminance(worstBackground)+.05)/(luminance(nav.label.color)+.05)>=4.5);
- assert.match(read('app/(tabs)/index.tsx'),/selected \? COLORS.red : '#504C54'/);
+ assert.match(read('components/catalog/BottomNav.tsx'),/selected \? COLORS.red : '#504C54'/);
 });
 test('selected gallery thumbnail has a continuous brand-colour rim', () => {
  const s=styles('app/ProductDetails.tsx','styles');assert.equal(s.galleryThumbActive.borderTopColor,s.galleryThumbActive.borderColor);
