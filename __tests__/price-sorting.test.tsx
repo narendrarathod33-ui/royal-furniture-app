@@ -148,3 +148,14 @@ test('sorting never mutates the original catalog and family cards use the cheape
     expect(card.o).toBe(Math.min(...variants.map((v: any) => v.price)));
   }
 });
+
+test('biggest discount sorts by list-vs-offer ratio without mutating the catalog', async () => {
+  const before = JSON.stringify(catalogData);
+  const h = await harness();
+  await selectSort(h.screen, 'Biggest discount');
+  const data = h.last().data;
+  const ratios = data.map((p: any) => (p.l > p.o ? (p.l - p.o) / (p.l || 1) : 0));
+  const sorted = [...ratios].sort((a: number, b: number) => b - a);
+  expect(ratios).toEqual(sorted);
+  expect(JSON.stringify(catalogData)).toBe(before);
+});

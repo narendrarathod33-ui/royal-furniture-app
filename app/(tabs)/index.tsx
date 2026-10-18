@@ -18,6 +18,7 @@ import { Header, ProductCard } from '../../components/catalog/ProductCard';
 import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
 import { ToastHost, showToast } from '../../components/catalog/Toast';
 import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
+import { QuickViewSheet } from '../../components/catalog/QuickView';
 import { useSessionStore } from '../../stores/session';
 
 export default function HomeScreen() {
@@ -114,6 +115,7 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
         {tab === 'cart' && <CartContent onCart={openCart} onAccount={openAccount} onProduct={openProduct} onShop={openShop} />}
         </AdaptiveRegion></Animated.View>
         <BottomNav tab={tab} setTab={setTab} count={cartCount} />
+        <QuickViewSheet onAdd={handleAddToCart} onOpenProduct={openProduct} />
         <ToastHost />
       </View>
     </SafeAreaView>
