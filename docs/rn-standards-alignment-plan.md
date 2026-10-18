@@ -156,14 +156,31 @@ it is verified end-to-end and unrelated to UI standards.
   > name" / "Mobile number" / "Delivery address"). Gate: tsc clean, jest
   > 42/42, legacy 57/57, Playwright 10/10.
 
-### Phase 5 — Delivery & offline (on demand)
+### Phase 5 — Delivery & offline (on demand) — DONE (in-sandbox part)
 - **EAS Build/Submit**: `eas.json` profiles (development, preview, production);
   OTA updates channel. Requires an Expo account + `eas init` — needs your
   credentials/decision, nothing happens in-sandbox.
-- **Offline (NetInfo + persisted query cache)**: deferred until there is a
-  real offline requirement; the app is online-only today.
+  > **Shipped as:** `eas.json` (development/preview/production + matching OTA
+  > channels, `appVersion` runtime policy, submit config); `app.json` pins
+  > `com.royalfurniture.app` for iOS + Android; `expo-updates` installed and
+  > plugged in (url lands with `eas init`); npm scripts `eas:init`,
+  > `build:native/ios/android`, `submit:ios/android`, `ota:publish`; runbook
+  > in `docs/delivery.md`. The builds/submissions themselves need the Expo
+  > account — stated openly, as planned.
+- **MMKV (the P2/P4 handoff, done):** `react-native-mmkv` installed via
+  `expo install` (4.3.2, SDK 54) and wired through the adapter seam —
+  `stores/appStoragePlatform.ts` (native: MMKV, in-memory fallback for
+  jest/Expo Go) vs `stores/appStoragePlatform.web.ts` (localStorage; MMKV
+  never enters the web bundle). New `__tests__/app-storage.test.ts` pins the
+  fallback contract. Cart/orders now truly persist on native builds;
+  `native-flows/cart.yaml` therefore starts with `clearState: true`.
+- **Offline (NetInfo + persisted query cache)**: stays deferred, per plan —
+  the app is online-only today and already degrades gracefully (bundled
+  catalog, photo fallbacks, offline PDP state, local demo checkout).
 - RAM bundles / module splitting: not needed at current size; revisit if the
   bundle baseline from Phase 0 grows >2×.
+  > **Checked:** dev web bundle ~10.9 MB raw / ~1.7 MB gzip — flat vs the
+  > P0 baseline (10.92 MB), nowhere near the 2× threshold.
 
 ## 3. Sequencing & stop points
 

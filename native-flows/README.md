@@ -18,12 +18,15 @@ maestro test native-flows/search.yaml
 maestro test native-flows/cart.yaml
 ```
 
-`APP_ID` is required because `app.json` does not pin a bundle id yet — P5
-sets `ios.bundleIdentifier` / `android.package`; keep them identical to the
-exported `APP_ID` so one value drives both platforms.
+`APP_ID` must match the app id in `app.json` — `com.royalfurniture.app` is
+pinned for both platforms (P5). Change it **before** the first EAS build if
+you use a different domain: the bundle id/package is permanent once an app
+is published.
 
 `npm run e2e:native` runs the whole directory (needs the `maestro` CLI and a
-connected device/simulator).
+connected device/simulator). `cart.yaml` starts with `clearState: true`
+because bag/orders now persist natively via react-native-mmkv — without it a
+previous run's bag would shift the badge counts.
 
 ## Selectors
 

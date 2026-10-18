@@ -12,7 +12,8 @@
 # in-session on purpose, so the flow stays valid before and after that swap.
 appId: ${APP_ID}
 ---
-- launchApp
+- launchApp:
+    clearState: true
 - tapOn:
     text: '^Search$'
 - tapOn:
