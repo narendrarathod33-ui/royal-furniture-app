@@ -22,7 +22,7 @@ export function CustomizationPage<T extends MadeToOrderProduct>({ products, cate
   const intro = <View>
     <View style={[s.hero, width >= 700 && { flexDirection: 'row', alignItems: 'center' }]}>
       <View style={{ flex: 1, minWidth: 0 }}><Text style={s.eyebrow}>CUSTOMIZATION · MADE TO ORDER</Text><Text accessibilityRole="header" style={s.title}>Your home.{`\n`}Your way.</Text><Text style={s.body}>Not every home is the same. Your furniture shouldn’t be either.</Text><Text style={s.note}>Explore pieces explicitly marked Made to Order in our collection. Available sizes, fabrics and colours vary by product.</Text></View>
-      {width >= 700 && <Image source={require('../assets/images/catalog-live/the-rainbow-bed.webp')} resizeMode="contain" style={s.heroImage} accessibilityLabel="The Rainbow Bed, made-to-order furniture inspiration" />}
+      {width >= 700 && <Image source={{ uri: 'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/YASEEN-MAJILIS-4_143b444c.webp' }} resizeMode="contain" style={s.heroImage} accessibilityLabel="The Yaseen Majlis Corner Sofa, made-to-order furniture inspiration" />}
     </View>
     <View style={s.benefits}><View style={s.benefit}><Palette size={18} color="#A3272E" /><Text style={s.benefitText}>Colour & fabric</Text></View><View style={s.benefit}><Ruler size={18} color="#A3272E" /><Text style={s.benefitText}>Size possibilities</Text></View><View style={s.benefit}><Sparkles size={18} color="#A3272E" /><Text style={s.benefitText}>A personal touch</Text></View></View>
     <Text style={s.guidance}>Choose a piece to see its listed options. Confirm custom requirements, availability and lead times with the Royal Furniture team before ordering.</Text>
