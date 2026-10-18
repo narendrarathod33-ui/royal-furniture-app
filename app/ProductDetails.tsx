@@ -1,6 +1,14 @@
+import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
+import { attachGalleryPointerNavigation } from '../utils/galleryPointer';
+import { ProductPhotoViewer } from '../components/ProductPhotoViewer';
+import { sortSizesByPrice, selectSizeOption } from '../utils/sizePricing';
+import { wrapSlideIndex, loopSlidePosition, settledSlidePosition } from '../utils/gallery';
+import { filterProductResponse } from './privacy/productResponse';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
+  Platform,
   Dimensions,
   Image,
   type ImageSourcePropType,
@@ -14,7 +22,7 @@ import {
   View,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 import { GLASS, glassTilt } from './ui/glass';
@@ -436,6 +444,7 @@ function dedupeRows(rows: DetailRow[]) {
 
 export default function ProductDetails({
   product,
+  header,
   photoSource,
   sizeVariants,
   onBack,
@@ -444,6 +453,7 @@ export default function ProductDetails({
   isSaved,
 }: {
   product: ProductDetailsProduct;
+  header?: ReactNode;
   photoSource?: ImageSourcePropType;
   sizeVariants?: SizeVariantOption[];
   onBack: () => void;
@@ -451,6 +461,7 @@ export default function ProductDetails({
   onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
   isSaved: boolean;
 }) {
+  const adaptive = useAdaptiveLayout();
   const sourceId = product.id.split('::size=')[0];
   // The API slug is the catalogue id minus its leading number. A trailing hash is
   // part of the slug on some rows (e.g. `azilea-smart-pro-grid-mattress-56bb1d`) and
@@ -463,13 +474,13 @@ export default function ProductDetails({
   const [reload, setReload] = useState(0);
   const local = useMemo(() => getLocalOptions(product), [product]);
   const live = useMemo(() => extractApiOptions(detail), [detail]);
+  const localSizePrices = useMemo(() => sortSizesByPrice(local.sizePrices), [local]);
   const cartSize = sizeFromProductId(product.id);
-  const defaultSizeOption = local.sizePrices.find((option) => option.name === cartSize)
-    || local.sizePrices.find((option) => option.price === product.o)
-    || local.sizePrices[0];
-  const hasDifferentSizePrices = new Set(local.sizePrices.map((option) => option.price)).size > 1;
+  const defaultSizeOption = localSizePrices.find((option) => option.name === cartSize)
+    || localSizePrices[0];
+  const hasDifferentSizePrices = new Set(localSizePrices.map((option) => option.price)).size > 1;
   const [selectedSize, setSelectedSize] = useState(defaultSizeOption?.name || '');
-  const selectedSizeOption = local.sizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
+  const selectedSizeOption = localSizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
   const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
   const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? product.l : product.l;
   const productName = product.n.replace(/\s+—\s+Size:\s+.*$/, '');
@@ -486,14 +497,12 @@ export default function ProductDetails({
   const apiSizes = useMemo(() => extractApiSizeOptions(detail), [detail]);
   const [selectedVariantId, setSelectedVariantId] = useState('');
   const [sizeOpen, setSizeOpen] = useState(false);
-  const sourceVariant = variants.find((variant) => variant.id === sourceId);
-  const activeVariant = variants.find((variant) => variant.id === selectedVariantId) || sourceVariant || variants[0];
-  const usingSizeVariants = variants.length > 1 && !!activeVariant;
+  const usingSizeVariants = variants.length > 1;
   const usingOfficialSizes = !usingSizeVariants && officialSizes.length > 1;
   const usingApiSizes = !usingSizeVariants && !usingOfficialSizes && apiSizes.length > 1;
 
   type SizeOption = { key: string; label: string; price?: number; listPrice?: number; discount?: number; photo?: ImageSourcePropType };
-  const sizeOptions: SizeOption[] = usingSizeVariants
+  const rawSizeOptions: SizeOption[] = usingSizeVariants
     ? variants.map((variant) => ({
         key: variant.id,
         label: [variant.label, variant.sizeType].filter(Boolean).join(' · '),
@@ -509,12 +518,12 @@ export default function ProductDetails({
         ? apiSizes.map((option) => ({ key: option.label, label: option.label, price: option.price, listPrice: option.listPrice,
             discount: option.price && option.listPrice && option.listPrice > option.price ? Math.round((1 - option.price / option.listPrice) * 100) : undefined }))
         : [];
-  const activeSize = sizeOptions.find((option) => option.key === selectedVariantId)
-    || sizeOptions.find((option) => option.key === sourceId);
+  const sizeOptions = sortSizesByPrice(rawSizeOptions);
+  const activeSize = selectSizeOption(sizeOptions, selectedVariantId, cartSize);
+  const activeVariant = variants.find((variant) => variant.id === activeSize?.key) || variants[0];
   const hasSizeMenu = sizeOptions.length > 1;
   const hasPricedSizes = sizeOptions.some((option) => option.price !== undefined);
-  // Until a size is chosen the catalog price stands, so opening the menu never
-  // silently changes what the customer is looking at.
+  // Display the cheapest known size immediately, unless a customer/cart size is selected.
   const displayPrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
   // A chosen size keeps its own original price; while the chosen size is unpriced
   // the catalogue's original price stands.
@@ -542,11 +551,11 @@ export default function ProductDetails({
       for (const url of urls) {
         for (const headers of [{ locale: 'en', country: 'ae' }, undefined]) {
           try {
-            const response = await fetch(url, headers ? { headers } : undefined);
+            const response = await fetch(url, { headers, credentials: 'omit', referrerPolicy: 'no-referrer' });
             if (!response.ok) continue;
             const payload = (await response.json()) as { data?: ApiProductDetail };
             if (!payload.data) continue;
-            return payload.data;
+            return filterProductResponse(payload.data) as ApiProductDetail;
           } catch {
             // try the next combination
           }
@@ -609,23 +618,78 @@ export default function ProductDetails({
   // size the layout gives it (the frame keeps its own square sizing).
   const [slideBox, setSlideBox] = useState({ width: Dimensions.get('window').width - 32, height: 0 });
   const galleryRef = useRef<ScrollView>(null);
-  const activeSlide = Math.max(0, Math.min(galleryIndex, slides.length - 1));
-  const goToSlide = (index: number) => {
-    const next = Math.max(0, Math.min(index, slides.length - 1));
-    setGalleryIndex(next);
-    if (slideBox.width) galleryRef.current?.scrollTo({ x: next * slideBox.width, animated: true });
+  const pageRef = useRef<ScrollView>(null);
+  const webGalleryOffset = useRef(new Animated.Value(0)).current;
+  const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
+  const webGallerySurface = useRef<View>(null);
+  const galleryIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeSlide = wrapSlideIndex(galleryIndex, slides.length);
+  // Identical end caps let touch swipes and arrow clicks continue in either direction.
+  const loopingSlides = slides.length > 1
+    ? [{ ...slides[slides.length - 1], key: 'loop-last' }, ...slides, { ...slides[0], key: 'loop-first' }]
+    : slides;
+  const settleGallery = (offset: number) => {
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    if (!slideBox.width || slides.length < 2) return;
+    const position = Math.round(offset / slideBox.width);
+    const settled = settledSlidePosition(position, slides.length);
+    if (settled !== position) {
+      galleryRef.current?.scrollTo({ x: settled * slideBox.width, animated: false });
+    }
+    setGalleryIndex(wrapSlideIndex(settled - 1, slides.length));
   };
-  // Swiping (touch) and dragging the scrollbar (desktop) both land here.
+  const goToSlide = (index: number) => {
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    setGalleryIndex(wrapSlideIndex(index, slides.length));
+    if (!slideBox.width) return;
+    const position = loopSlidePosition(index, slides.length);
+    if (Platform.OS === 'web') {
+      webGalleryOffset.stopAnimation();
+      Animated.timing(webGalleryOffset, {
+        toValue: -position * slideBox.width, duration: 240, useNativeDriver: false,
+      }).start(({ finished }) => {
+        if (finished) webGalleryOffset.setValue(-settledSlidePosition(position, slides.length) * slideBox.width);
+      });
+    } else {
+      galleryRef.current?.scrollTo({ x: position * slideBox.width, animated: true });
+    }
+  };
   const handleGalleryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!slideBox.width || slides.length < 2) return;
-    const next = Math.max(0, Math.min(Math.round(event.nativeEvent.contentOffset.x / slideBox.width), slides.length - 1));
-    if (next !== galleryIndex) setGalleryIndex(next);
+    const offset = event.nativeEvent.contentOffset.x;
+    setGalleryIndex(wrapSlideIndex(Math.round(offset / slideBox.width) - 1, slides.length));
+    // Web does not consistently emit momentum-end, so also settle once scrolling stops.
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    galleryIdleTimer.current = setTimeout(() => settleGallery(offset), 180);
   };
-  // Opening another product starts its slider at the first picture.
   useEffect(() => {
+    if (Platform.OS !== 'web' || !slides.length) return;
+    const node = webGallerySurface.current as unknown as HTMLElement | null;
+    if (!node) return;
+    return attachGalleryPointerNavigation(node, (direction) => goToSlide(activeSlide + direction), () => setPhotoZoomOpen(true));
+  }, [sourceId, activeSlide, slides.length, slideBox.width]);
+  // Only new product/gallery data resets selection; resizing retains the active image.
+  useEffect(() => {
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
     setGalleryIndex(0);
-    galleryRef.current?.scrollTo({ x: 0, animated: false });
-  }, [sourceId]);
+    webGalleryOffset.stopAnimation();
+    webGalleryOffset.setValue(slides.length > 1 ? -slideBox.width : 0);
+    galleryRef.current?.scrollTo({ x: slides.length > 1 ? slideBox.width : 0, animated: false });
+    return () => {
+      webGalleryOffset.stopAnimation();
+      if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    };
+  }, [sourceId, galleryKey, slides.length, webGalleryOffset]);
+
+  const activeSlideRef = useRef(activeSlide);
+  activeSlideRef.current = activeSlide;
+  useEffect(() => {
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    webGalleryOffset.stopAnimation();
+    const position = slides.length > 1 ? activeSlideRef.current + 1 : 0;
+    webGalleryOffset.setValue(-position * slideBox.width);
+    galleryRef.current?.scrollTo({ x: position * slideBox.width, animated: false });
+  }, [slideBox.width]);
 
   const catalogueLabels = Array.isArray(catalogue.lb) ? (catalogue.lb as string[]).filter(Boolean) : [];
   const labels = unique([...(baked?.labels || []), ...catalogueLabels]);
@@ -668,36 +732,54 @@ export default function ProductDetails({
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Back to collection" onPress={onBack} style={styles.back}>
-          <ChevronRight color={COLORS.ink} size={20} style={styles.backIcon} />
-          <Text style={styles.backText}>Back to collection</Text>
+      {header}
+      <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={productName} onClose={() => setPhotoZoomOpen(false)} />
+      <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={[styles.back, { alignSelf: 'flex-start', minWidth: 44, minHeight: 44 }]}>
+          <ChevronLeft color={COLORS.ink} size={22} />
         </Pressable>
 
+        <View testID="adaptive-product-layout" style={{ flexDirection: adaptive.twoPane ? 'row' : 'column', gap: adaptive.twoPane ? 28 : 0, alignItems: 'flex-start' }}>
+        <View style={{ width: '100%', flex: adaptive.twoPane ? 1 : undefined, maxWidth: adaptive.twoPane ? 560 : undefined, minWidth: 0 }}>
         {/* Image slider: one page per picture — swipeable on touch, steppable with
             the arrows and the thumbnail strip on desktop. */}
         <View
           style={styles.imageWrap}
           onLayout={(event) => setSlideBox({ width: event.nativeEvent.layout.width, height: event.nativeEvent.layout.height })}
         >
-          {slides.length ? (
+          {slides.length ? Platform.OS === 'web' ? (
+            // A non-scrollable track leaves vertical touch/wheel gestures to the page.
+            // Only a deliberate horizontal swipe animates the track; no preventDefault.
+            <View
+              ref={webGallerySurface}
+              testID="product-gallery-touch-surface"
+              style={[styles.slider, { overflow: 'hidden', touchAction: 'pan-y pinch-zoom' }]}
+            >
+              <Animated.View pointerEvents="none" style={{ flexDirection: 'row', width: loopingSlides.length * slideBox.width, height: '100%', transform: [{ translateX: webGalleryOffset }] }}>
+                {loopingSlides.map((slide) => <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />)}
+              </Animated.View>
+            </View>
+          ) : (
             <ScrollView
               ref={galleryRef}
               horizontal
+              nestedScrollEnabled
+              directionalLockEnabled
               pagingEnabled
               snapToInterval={slideBox.width}
               decelerationRate="fast"
               showsHorizontalScrollIndicator={false}
               scrollEventThrottle={16}
               onScroll={handleGalleryScroll}
+              onMomentumScrollEnd={(event) => settleGallery(event.nativeEvent.contentOffset.x)}
               style={styles.slider}
             >
-              {slides.map((slide) => (
+              {loopingSlides.map((slide) => (
                 <Image
                   key={slide.key}
                   source={slide.source}
                   style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
               ))}
             </ScrollView>
@@ -705,28 +787,9 @@ export default function ProductDetails({
             <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>
           )}
 
+          {slides.length > 0 && <Pressable accessibilityRole="button" accessibilityLabel="Open photo zoom" onPress={() => setPhotoZoomOpen(true)} style={styles.photoZoomButton}><ZoomIn size={20} color={COLORS.ink} /></Pressable>}
           {slides.length > 1 && (
             <>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Previous slide"
-                accessibilityState={{ disabled: activeSlide === 0 }}
-                disabled={activeSlide === 0}
-                onPress={() => goToSlide(activeSlide - 1)}
-                style={[styles.sliderArrow, styles.sliderArrowLeft]}
-              >
-                <ChevronLeft color={COLORS.ink} size={20} />
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Next slide"
-                accessibilityState={{ disabled: activeSlide === slides.length - 1 }}
-                disabled={activeSlide === slides.length - 1}
-                onPress={() => goToSlide(activeSlide + 1)}
-                style={[styles.sliderArrow, styles.sliderArrowRight]}
-              >
-                <ChevronRight color={COLORS.ink} size={20} />
-              </Pressable>
               <View style={styles.sliderDots}>
                 {slides.map((slide, index) => (
                   <View key={`dot-${slide.key}`} style={[styles.sliderDot, index === activeSlide && styles.sliderDotActive]} />
@@ -747,7 +810,7 @@ export default function ProductDetails({
                 onPress={() => goToSlide(index)}
                 style={[styles.galleryThumb, index === activeSlide && styles.galleryThumbActive]}
               >
-                <Image source={slide.source} style={styles.galleryThumbImage} resizeMode="cover" />
+                <Image source={slide.source} style={styles.galleryThumbImage} resizeMode="contain" />
               </Pressable>
             ))}
           </ScrollView>
@@ -755,6 +818,7 @@ export default function ProductDetails({
 
         {slides.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
 
+        </View><View style={{ width: '100%', flex: adaptive.twoPane ? 1 : undefined, minWidth: 0, maxWidth: adaptive.twoPane ? 680 : undefined }}>
         <View style={styles.productIntro}>
           {!!product.scn && <Text style={styles.category}>{product.scn}</Text>}
           {labels.length > 0 && (
@@ -765,7 +829,7 @@ export default function ProductDetails({
           <Text style={styles.name}>{productName}</Text>
           {/* Price and payment share one row: the price on the left, the payment
               figure opposite it, so the two always sit side by side. */}
-          <View style={styles.priceRow}>
+          <View style={[styles.priceRow, { flexWrap: 'wrap', gap: 12 }]}>
             <View style={styles.priceBlock}>
               <View style={styles.priceLine}>
                 <Text style={styles.price}>{money(displayPrice)}</Text>
@@ -773,7 +837,7 @@ export default function ProductDetails({
               </View>
               {savedAmount > 0 && <Text style={styles.savePill}>You save {money(savedAmount)}</Text>}
             </View>
-            <View style={styles.paymentFact}>
+            <View style={[styles.paymentFact, { minWidth: 160, flexShrink: 1 }]}>
               <Text style={styles.paymentLabel}>Flexi payment</Text>
               <Text style={styles.paymentValue}>Split in 4 of {money(installment)}</Text>
               <Text style={styles.paymentNote}>{PRODUCT_PAYMENT_NOTE}</Text>
@@ -889,7 +953,7 @@ export default function ProductDetails({
               <View style={styles.sizeSelection}>
                 <Text style={styles.sizeLabel}>Choose size</Text>
                 <View style={styles.sizeOptions}>
-                  {local.sizePrices.map((option) => {
+                  {localSizePrices.map((option) => {
                     const selectedOption = selectedSize === option.name;
                     return (
                       <Pressable
@@ -977,9 +1041,10 @@ export default function ProductDetails({
             {detailRows.map((row, index) => <FactRow key={`${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />)}
           </AccordionSection>
         )}
+        </View></View>
       </ScrollView>
 
-      <View style={styles.actionBar}>
+      <View style={[styles.actionBar, adaptive.twoPane && { width: '100%', maxWidth: 560, alignSelf: 'flex-end' }, adaptive.compactHeight && { paddingVertical: 6 }]}>
         <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? 'Remove from saved items' : 'Save product'} onPress={onSave} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
@@ -1089,10 +1154,8 @@ const styles = StyleSheet.create({
   paymentNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, textAlign: 'right', marginTop: 2 },
 
   // Image slider — one page per picture, arrows and counter over the photo.
+  photoZoomButton: { position: 'absolute', right: 12, top: 12, width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFFFFFE8', alignItems: 'center', justifyContent: 'center' },
   slider: { flex: 1, width: '100%' },
-  sliderArrow: { position: 'absolute', top: '50%', marginTop: -19, width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' , ...GLASS.chip },
-  sliderArrowLeft: { left: 10 },
-  sliderArrowRight: { right: 10 },
 
   sliderDots: { position: 'absolute', bottom: 12, alignSelf: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 12, backgroundColor: '#05000099' },
   sliderDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#ffffff88' },
@@ -1131,7 +1194,7 @@ const styles = StyleSheet.create({
   galleryScroll: { marginTop: 10, flexGrow: 0 },
   galleryStrip: { gap: 8, paddingRight: 4 },
   galleryThumb: { width: 56, height: 56, borderRadius: 12, overflow: 'hidden', borderWidth: 2, borderColor: 'transparent', backgroundColor: '#E6E0D9' , ...GLASS.chip },
-  galleryThumbActive: { borderColor: COLORS.red },
+  galleryThumbActive: { borderColor: COLORS.red, borderTopColor: COLORS.red },
   galleryThumbImage: { width: '100%', height: '100%' },
   imageNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, marginTop: 8 },
   labelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },

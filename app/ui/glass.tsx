@@ -195,7 +195,8 @@ export const GLASS = {
 
   /** Floating navigation. */
   nav: glass({
-    backgroundColor: WHITE(0.5),
+    // Navigation overlays photos: retain enough tint for readable inactive labels.
+    backgroundColor: WHITE(0.86),
     ...blurLayer(BLUR(22, 160)),
     borderWidth: 1,
     borderColor: WHITE(0.7),

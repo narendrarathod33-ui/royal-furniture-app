@@ -1,3 +1,4 @@
+import { GLASS, asTextStyle } from './ui/glass';
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -23,11 +24,16 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   text: {
+    color: '#40202B',
     fontSize: 20,
     fontWeight: 600,
   },
   link: {
     marginTop: 15,
     paddingVertical: 15,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    color: '#FFFFFF',
+    ...asTextStyle(GLASS.buttonPrimary),
   },
 });

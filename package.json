@@ -6,7 +6,23 @@
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start --tunnel --port 4000",
     "build:web": "expo export --platform web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "node scripts/serve-production.mjs",
+    "test:production": "node --test scripts/production.test.mjs",
+    "test:payments": "node --test scripts/payments.test.mjs",
+    "test:navigation": "node --test scripts/cart-navigation.test.mjs",
+    "test:gallery": "node --test scripts/gallery.test.mjs",
+    "test:sizes": "node --test scripts/size-pricing.test.mjs",
+    "test:categories": "node --test scripts/category-navigation.test.mjs",
+    "test:motion": "node --test scripts/liquid-motion.test.mjs",
+    "test:zoom": "node --test scripts/photo-zoom.test.mjs",
+    "test:adaptive": "node --test scripts/adaptive-layout.test.mjs",
+    "test:images": "node --test scripts/product-images.test.mjs",
+    "test:sorting": "node --test scripts/price-sorting.test.mjs",
+    "test:deals": "node --test scripts/deals.test.mjs",
+    "test:home": "node --test scripts/home-promotions.test.mjs",
+    "test:glass": "node --test scripts/glass-consistency.test.mjs",
+    "test:customization": "node --test scripts/customization.test.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -41,7 +57,8 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.21.0",
     "react-native-webview": "13.15.0",
-    "react-native-worklets": "0.5.1"
+    "react-native-worklets": "0.5.1",
+    "stripe": "^23.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
