@@ -44,13 +44,16 @@ test('actual viewport measurement controls every slide and snapping, not a cappe
   }
 });
 
-test('controls wrap, swipe updates the counter, and the counter reads x / y', async () => {
+test('dots navigate, swipe updates the counter, and no arrow buttons render', async () => {
   dims.current = { width: 390, height: 844, fontScale: 1 };
   const screen = await render(<HomePromotions onShop={() => {}} onCategory={() => {}} onCustomize={() => {}} />);
   const byLabel = (label: string) => byProps(screen.root, { accessibilityLabel: label })[0];
-  await fireEvent(byLabel('Previous promotion'), 'press');
+  // Arrow chrome was removed: dots, swipe and autoplay are the controls.
+  expect(byProps(screen.root, { accessibilityLabel: 'Previous promotion' })).toHaveLength(0);
+  expect(byProps(screen.root, { accessibilityLabel: 'Next promotion' })).toHaveLength(0);
+  await fireEvent(byLabel('Show promotion 3'), 'press');
   expect(flattenText(screen.root)).toContain('3 / 3');
-  await fireEvent(byLabel('Next promotion'), 'press');
+  await fireEvent(byLabel('Show promotion 1'), 'press');
   expect(flattenText(screen.root)).toContain('1 / 3');
   // A swipe settles through momentum end on the native scroll container.
   const scroll = scrollViews(screen.root)[0];
@@ -75,14 +78,21 @@ test('promotions preserve Deals and kids-category destinations', async () => {
   expect(routes).toEqual(['deals', 'customization', 'kids-and-teens']);
 });
 
-test('promotions contain complete product photos instead of cropping category posters', async () => {
+test('slide photos fill their frame with cover (never stretched) and use the current campaign set', async () => {
   dims.current = { width: 390, height: 844, fontScale: 1 };
   const screen = await render(<HomePromotions onShop={() => {}} onCategory={() => {}} onCustomize={() => {}} />);
   const images = byType(screen.root, 'Image');
   expect(images.length).toBe(3);
-  expect(images.every((node) => node.props.resizeMode === 'contain')).toBe(true);
+  expect(images.every((node) => node.props.resizeMode === 'cover')).toBe(true);
+  expect(images.every((node) => node.props.resizeMode !== 'fill' && node.props.resizeMode !== 'stretch')).toBe(true);
   const { readFileSync } = require('node:fs');
   const source = readFileSync('components/HomePromotions.tsx', 'utf8');
+  expect(source.includes('bogota-7-seater-sofa-set.webp')).toBe(true);
+  expect(source.includes('broadway-dining-set-4-seater-antique-oak.webp')).toBe(true);
+  expect(source.includes('the-shannon-kids-bed.webp')).toBe(true);
+  expect(source.includes('dayana-corner-sofa')).toBe(false);
+  expect(source.includes('the-rainbow-bed')).toBe(false);
+  expect(source.includes('bunny-kids-bed')).toBe(false);
   expect(source.includes('home-kids.webp')).toBe(false);
   expect(source.includes('home-furniture.webp')).toBe(false);
 });
