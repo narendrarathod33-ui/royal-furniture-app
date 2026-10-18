@@ -92,6 +92,18 @@ test.describe('Royal Furniture smoke', () => {
     await expect(page.getByText(/RF-\d{8}/)).toBeVisible();
   });
 
+  test('the bag survives a full page reload (persisted store)', async ({ page }) => {
+    await openProduct(page, 'Nimbus Bed');
+    await page.getByRole('button', { name: /Add to bag/ }).click();
+    await expect(page.getByRole('button', { name: 'Cart, 1 items' })).toBeVisible();
+    await page.reload(load);
+    // Zustand persist rehydrates cart/saved/orders from localStorage.
+    await expect(page.getByRole('button', { name: 'Cart, 1 items' })).toBeVisible();
+    await page.getByRole('button', { name: 'Cart, 1 items' }).click();
+    await expect(page.getByText('Local demo checkout', { exact: true })).toBeVisible();
+    await expect(page.getByText(/Nimbus Bed/).first()).toBeVisible();
+  });
+
   test('account screen exposes profile fields and support', async ({ page }) => {
     await page.goto('/', load);
     await page.getByRole('button', { name: 'Account' }).click();

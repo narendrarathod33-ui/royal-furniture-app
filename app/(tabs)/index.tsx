@@ -15,8 +15,10 @@ import { CartContent } from '../../components/catalog/CartContent';
 import { AccountContent } from '../../components/catalog/AccountContent';
 import { SearchContent, NewArrivalsContent, BestSellersContent } from '../../components/catalog/Screens';
 import { Header, ProductCard } from '../../components/catalog/ProductCard';
-import { photoFor, photoForCatalogId, styles, type OrderRecord, type Product, type Tab } from '../../components/catalog/kit';
+import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
 import { ToastHost, showToast } from '../../components/catalog/Toast';
+import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
+import { useSessionStore } from '../../stores/session';
 
 export default function HomeScreen() {
   const [session, setSession] = useState(0);
@@ -33,6 +35,8 @@ export default function HomeScreen() {
         if (!response.ok) throw new Error('Deletion unavailable');
       }
     }
+    useCartStore.getState().resetUserData();
+    useSessionStore.getState().resetUserData();
     setSession((value) => value + 1);
   }} />;
 }
@@ -40,43 +44,44 @@ export default function HomeScreen() {
 function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   const adaptive = useAdaptiveLayout();
   const rail = adaptive.twoPane && !adaptive.compactHeight;
-  const [tab, setTab] = useState<Tab>('home');
+  // Shared user state lives in stores: tab/overlay/order history in the
+  // session store, cart/saved in the cart store (persisted). This component
+  // only subscribes to the slices it renders.
+  const tab = useSessionStore((state) => state.tab);
+  const setTab = useSessionStore((state) => state.setTab);
+  const selected = useSessionStore((state) => state.selected);
+  const openProduct = useSessionStore((state) => state.openProduct);
+  const closeProduct = useSessionStore((state) => state.closeProduct);
+  const orders = useSessionStore((state) => state.orders);
+  const cart = useCartStore((state) => state.cart);
+  const saved = useCartStore((state) => state.saved);
+  // Ephemeral search/filter state stays component-local on purpose: it is not
+  // user data, does not need to survive reloads, and keeps store churn low.
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [catalogSort, setCatalogSort] = useState('trending');
-  const [selected, setSelected] = useState<Product | null>(null);
-  const pageMotion = useRef(new Animated.Value(1)).current;
-  const [saved, setSaved] = useState<string[]>([]);
-  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [customizationFilters, setCustomizationFilters] = useState<CustomizationFilters>({ category: 'all', query: '', sort: 'featured' });
+  const pageMotion = useRef(new Animated.Value(1)).current;
 
   // Toasts render through the isolated ToastHost: notice updates never touch
   // this component's state, so they cannot re-render the screen tree.
-  const toggleSaved = useCallback((product: Product) => {
-    setSaved((items) => items.includes(product.id) ? items.filter((id) => id !== product.id) : [...items, product.id]);
-    showToast(saved.includes(product.id) ? 'Removed from saved items' : 'Saved for later');
-  }, [saved]);
+  const toggleSaved = useToggleSavedWithToast();
 
-  const addToCart = useCallback((product: Product) => {
-    setCart((items) => {
-      const existing = items.find((item) => item.product.id === product.id);
-      return existing ? items.map((item) => item.product.id === product.id ? { ...item, quantity: Math.min(10, item.quantity + 1) } : item) : [...items, { product, quantity: 1 }];
-    });
+  const handleAddToCart = useCallback((product: Product) => {
+    useCartStore.getState().addToCart(product);
     showToast('Added to your bag');
   }, []);
 
   // Stable navigation and list callbacks: memoized cards and lists downstream
   // keep their prop identity across session re-renders.
-  const openHome = useCallback(() => setTab('home'), []);
-  const openCart = useCallback(() => setTab('cart'), []);
-  const openAccount = useCallback(() => setTab('account'), []);
-  const openShop = useCallback(() => setTab('shop'), []);
-  const openCustomize = useCallback(() => setTab('customization'), []);
-  const openBestSellers = useCallback(() => setTab('bestSellers'), []);
-  const openCategories = useCallback((value: string) => { setCategory(value); setTab('categories'); }, []);
-  const handleOrderCreated = useCallback((order: OrderRecord) => setOrders((items) => [order, ...items]), []);
-  const renderCatalogCard = useCallback((item: Product) => <ProductCard product={item} onPress={setSelected} saved={saved.includes(item.id)} onSave={toggleSaved} wide />, [saved, toggleSaved]);
+  const openHome = useCallback(() => setTab('home'), [setTab]);
+  const openCart = useCallback(() => setTab('cart'), [setTab]);
+  const openAccount = useCallback(() => setTab('account'), [setTab]);
+  const openShop = useCallback(() => setTab('shop'), [setTab]);
+  const openCustomize = useCallback(() => setTab('customization'), [setTab]);
+  const openBestSellers = useCallback(() => setTab('bestSellers'), [setTab]);
+  const openCategories = useCallback((value: string) => { setCategory(value); setTab('categories'); }, [setTab]);
+  const renderCatalogCard = useCallback((item: Product) => <ProductCard product={item} onPress={openProduct} saved={saved.includes(item.id)} onSave={toggleSaved} wide />, [openProduct, saved, toggleSaved]);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -89,7 +94,7 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
     const sourceId = selected.id.split('::size=')[0];
     const name = selected.n.replace(/\s+—\s+Size:\s+.*$/, '');
     const sizeOptions = getSizeVariants(sourceId).map((variant) => ({ ...variant, photo: photoForCatalogId(variant.id) }));
-    return <><ProductDetails header={<Header count={cartCount} onCart={() => { setSelected(null); setTab('cart'); }} onAccount={() => { setSelected(null); setTab('account'); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={() => setSelected(null)} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const cartProduct = { ...selected, paymentProductId: sibling?.id || (variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId), id: variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId, n: variant.size ? `${name} — Size: ${variant.size}` : name, o: variant.price, l: variant.listPrice ?? selected.l }; addToCart(cartProduct); }} isSaved={saved.includes(sourceId)} /><ToastHost /></>;
+    return <><ProductDetails header={<Header count={cartCount} onCart={() => { closeProduct(); openCart(); }} onAccount={() => { closeProduct(); openAccount(); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={closeProduct} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const cartProduct = { ...selected, paymentProductId: sibling?.id || (variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId), id: variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId, n: variant.size ? `${name} — Size: ${variant.size}` : name, o: variant.price, l: variant.listPrice ?? selected.l }; handleAddToCart(cartProduct); }} isSaved={saved.includes(sourceId)} /><ToastHost /></>;
   }
 
   return (
@@ -99,14 +104,14 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
         <Animated.View style={[styles.pageTransition, { marginLeft: rail ? 96 : 0, opacity: pageMotion, transform: [{ translateY: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [0.985, 1] }) }] }]}>
         <AdaptiveRegion inset={rail ? 96 : 0}>
         {tab === 'customization' && <CustomizationPage products={catalogData as unknown as readonly Product[]} categories={royalFurnitureData.cats} filters={customizationFilters} onFiltersChange={setCustomizationFilters} onBack={openHome} header={<Header count={cartCount} onCart={openCart} onAccount={openAccount} />} renderCard={renderCatalogCard} />}
-        {tab === 'home' && <HomeContent onCustomize={openCustomize} onCategory={openCategories} onProduct={setSelected} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'shop' && <ShopContent products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={setSelected} saved={saved} onSave={toggleSaved} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'categories' && <ShopContent catalogSort={catalogSort} onCatalogSortChange={setCatalogSort} products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={setSelected} saved={saved} onSave={toggleSaved} catalogOnly cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'search' && <SearchContent onProduct={setSelected} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'arrivals' && <NewArrivalsContent onProduct={setSelected} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'bestSellers' && <BestSellersContent onProduct={setSelected} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'home' && <HomeContent onCustomize={openCustomize} onCategory={openCategories} onProduct={openProduct} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'shop' && <ShopContent products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'categories' && <ShopContent catalogSort={catalogSort} onCatalogSortChange={setCatalogSort} products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} catalogOnly cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'search' && <SearchContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'arrivals' && <NewArrivalsContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'bestSellers' && <BestSellersContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'account' && <AccountContent onDeleteData={onDeleteData} orders={orders} onBag={openCart} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'cart' && <CartContent onCart={openCart} onAccount={openAccount} cart={cart} setCart={setCart} saved={saved} onSave={toggleSaved} onProduct={setSelected} onOrderCreated={handleOrderCreated} onShop={openShop} />}
+        {tab === 'cart' && <CartContent onCart={openCart} onAccount={openAccount} onProduct={openProduct} onShop={openShop} />}
         </AdaptiveRegion></Animated.View>
         <BottomNav tab={tab} setTab={setTab} count={cartCount} />
         <ToastHost />

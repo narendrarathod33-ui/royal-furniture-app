@@ -1,7 +1,16 @@
 import { fireEvent, render } from '@testing-library/react-native';
 
 import HomeScreen from '../app/(tabs)/index';
+import { useCartStore } from '../stores/cart';
+import { useSessionStore } from '../stores/session';
 import { byProps, byType, flattenText } from './test-utils';
+
+// Stores are module-level singletons; without a reset one test's cart would
+// leak into the next (they used to be component state, remounted per test).
+beforeEach(() => {
+  useCartStore.getState().resetUserData();
+  useSessionStore.getState().resetUserData();
+});
 
 // The entire app shell (HomeScreen → AppSession) runs for real: real tabs,
 // cart state, PDP with the offline details path, and SandboxCheckout imports.

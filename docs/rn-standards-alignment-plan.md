@@ -94,7 +94,20 @@ it is verified end-to-end and unrelated to UI standards.
 - `production` / `payments` suites stay as node scripts (server logic).
 - **Gate:** 100% behavioral parity checklist per ported suite; full run green.
 
-### Phase 2 — State → Zustand + MMKV (M, medium risk; requires cart-navigation ported)
+### Phase 2 — State → Zustand + MMKV (M, medium risk; requires cart-navigation ported) — DONE
+  > **Shipped as:** `stores/cart.ts` (`useCartStore` + `MAX_QUANTITY` +
+  > `useToggleSavedWithToast`), `stores/session.ts` (`useSessionStore`), and
+  > `stores/appStorage.ts` (sync get/set/remove adapter). CartContent props
+  > shrank to `{onProduct, onShop, onAccount, onCart}`; AppSession subscribes
+  > store slices. **Deviation:** zustand's `persist` middleware was NOT used —
+  > its barrel import drags the devtools middleware (containing
+  > `import.meta.env`) into Metro's classic-script web bundle, a parse-time
+  > `SyntaxError` that blanks the whole app. Persistence is wired by hand per
+  > store (hydrate once at module load, `subscribe` → save user-owned slices;
+  > privacy delete also `removeSaved`). This keeps the P5 MMKV swap
+  > adapter-only, exactly as planned. Gate: tsc clean, jest 42/42, legacy
+  > 52/52, smoke 8/8 incl. new reload-persistence test; bundle 10.94 MB raw /
+  > 1.65 MB gzip (~unchanged vs P0 baseline).
 - `stores/session.ts`: `useSessionStore` — tab, notice (+ its timer logic),
   orders. `stores/cart.ts`: `useCartStore` — cart, saved, with the **10-cap
   invariant as a store action** (`addToCart`, `inc` capped in one place,

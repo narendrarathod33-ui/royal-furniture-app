@@ -25,6 +25,7 @@ import { ProductCard } from '../components/catalog/ProductCard';
 import { byProps, byType, firstByProps } from './test-utils';
 import { styles, type ListedProduct } from '../components/catalog/kit';
 import { CartContent } from '../components/catalog/CartContent';
+import { useCartStore } from '../stores/cart';
 import { catalogData } from '../app/data/catalogData';
 
 const RealProductDetails = jest.requireActual('../app/ProductDetails').default;
@@ -88,20 +89,12 @@ test('thumbnail styles reserve a square for both rail and grid, without a fixed 
 });
 
 test('detail gallery and cart photos contain products; editorial and swatches still cover', async () => {
-  // Cart line photos keep the full product visible.
+  // Cart line photos keep the full product visible. The cart is seeded
+  // through the real store action (the props moved into the store in P2).
   mockPhoto.current = source('cart-photo.webp');
+  useCartStore.getState().addToCart(fakeProduct);
   const cart = await render(
-    <CartContent
-      cart={[{ product: fakeProduct, quantity: 1 }]}
-      setCart={() => {}}
-      saved={[]}
-      onSave={() => {}}
-      onProduct={() => {}}
-      onOrderCreated={() => {}}
-      onShop={() => {}}
-      onAccount={() => {}}
-      onCart={() => {}}
-    />
+    <CartContent onProduct={() => {}} onShop={() => {}} onAccount={() => {}} onCart={() => {}} />
   );
   const cartPhoto = byProps(cart.root, {}).filter((node) => node.props.style === styles.cartPhoto);
   expect(cartPhoto).toHaveLength(1);
