@@ -7,7 +7,9 @@
         "./*"
       ]
     },
-    "types": null
+    "types": [
+      "jest"
+    ]
   },
   "include": [
     "**/*.ts",
@@ -17,7 +19,10 @@
     "nativewind-env.d.ts"
   ],
   "exclude": [
+    "__tests__",
     "e2e",
+    "jest.config.js",
+    "jest.setup.js",
     "node_modules",
     "playwright.config.ts"
   ]

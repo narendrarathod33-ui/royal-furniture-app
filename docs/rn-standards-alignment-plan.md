@@ -61,7 +61,7 @@ it is verified end-to-end and unrelated to UI standards.
 
 ## 2. Staged plan
 
-### Phase 0 — Guardrails before anything moves (S, low risk)
+### Phase 0 — Guardrails before anything moves (S, low risk) — DONE
 - **Playwright smoke E2E against the web preview** (their standards list
   Playwright for E2E; it runs in this sandbox): home → search → PDP size
   select → cart → sandbox checkout → account. This is the safety net that
@@ -71,7 +71,17 @@ it is verified end-to-end and unrelated to UI standards.
 - **Gate:** smoke green on `:4000`; all 100 node tests green; committed as its
   own commit so every later phase diffs against a behavior baseline.
 
-### Phase 1 — Jest + RNTL foundation, port suites incrementally (M, medium risk)
+### Phase 1 — Jest + RNTL foundation, port suites incrementally (M, medium risk) — DONE
+> Ported (RNTL v14 + jest-expo/ios): product-images (5), price-sorting (4),
+> category-navigation (7), home-promotions (8), adaptive-layout (7), and
+> cart-navigation (10 — the full HomeScreen shell; the P2 state-migration gate).
+> Old suites deleted after behavioral parity. Two documented holdouts stay on
+> the node harness: the AdaptiveProductList FlatList remount contract (RNTL v14
+> renders a host-only tree — FlatList internal props are unobservable) and the
+> HomePromotions resize-realign scrollTo (unobservable without a ref seam).
+> Toolchain: `npm run test` = jest (42) + node:test legacy (52); Playwright
+> smoke (7) remains the E2E gate. RNTL v14 gotchas encoded in __tests__/test-utils.ts:
+> render/fireEvent/unmount are async; queryAll walks descendants only.
 - Add `jest`, `jest-expo` preset, `@testing-library/react-native`; keep the
   `node:test` suites running in parallel (`npm run test:legacy`).
 - Port order = coupling risk order: `product-images` → `price-sorting` →
