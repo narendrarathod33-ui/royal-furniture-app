@@ -20,7 +20,13 @@ import {
   StyleSheet,
   Text,
   View,
+  type ViewStyle,
 } from 'react-native';
+
+// Web-only CSS touch-action for the gallery surface: react-native-web passes it
+// through to the DOM, but RN's ViewStyle doesn't model combined values, so the
+// literal is typed through a cast and shared by the two gallery surfaces.
+const WEB_TOUCH_ACTION = { touchAction: 'pan-y pinch-zoom' } as unknown as ViewStyle;
 import { BlurView } from 'expo-blur';
 import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
@@ -755,7 +761,7 @@ export default function ProductDetails({
             <View
               ref={webGallerySurface}
               testID="product-gallery-touch-surface"
-              style={[styles.slider, { overflow: 'hidden', touchAction: 'pan-y pinch-zoom' }]}
+              style={[styles.slider, { overflow: 'hidden' }, WEB_TOUCH_ACTION]}
             >
               <Animated.View pointerEvents="none" style={{ flexDirection: 'row', width: loopingSlides.length * slideBox.width, height: '100%', transform: [{ translateX: webGalleryOffset }] }}>
                 {loopingSlides.map((slide) => <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />)}

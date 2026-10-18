@@ -52,7 +52,10 @@ test('web touch surface uses a non-scrollable View and lets the browser pan vert
   visit(detailsAst);
   assert(surface);
   assert.equal(surface.openingElement.tagName.getText(detailsAst), 'View');
-  assert.match(surface.getText(detailsAst), /touchAction: 'pan-y pinch-zoom'/);
+  // The touch-action value lives in the shared WEB_TOUCH_ACTION constant
+  // (typed through a cast for TS; react-native-web passes it to the DOM).
+  assert.match(surface.getText(detailsAst), /WEB_TOUCH_ACTION/);
+  assert.match(detailsSource, /const WEB_TOUCH_ACTION = \{ touchAction: 'pan-y pinch-zoom' \} as unknown as ViewStyle;/);
   assert(!surface.getText(detailsAst).includes('<ScrollView'));
   assert(!surface.getText(detailsAst).includes('preventDefault'));
 });

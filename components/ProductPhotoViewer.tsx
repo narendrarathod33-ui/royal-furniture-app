@@ -2,7 +2,10 @@ import { GLASS } from '../app/ui/glass';
 import { AdaptiveFrame } from '../hooks/useAdaptiveLayout';
 import { wrapSlideIndex } from '../utils/gallery';
 import { useEffect, useRef, useState } from 'react';
-import { Image, type ImageSourcePropType, type GestureResponderEvent, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, type ImageSourcePropType, type GestureResponderEvent, Modal, Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+
+// Web-only CSS touch-action (see ProductDetails WEB_TOUCH_ACTION note).
+const WEB_TOUCH_NONE = { touchAction: 'none' } as unknown as ViewStyle;
 import { ChevronLeft, ChevronRight, Minus, Plus, RotateCcw, X } from 'lucide-react-native';
 import { clampPhotoZoom, INITIAL_ZOOM, movePhotoZoom, photoSwipeDirection, type PhotoZoom, type ZoomPoint } from '../utils/photoZoom';
 
@@ -75,7 +78,7 @@ export function ProductPhotoViewer({ visible, photos, index, onIndexChange, name
     <AdaptiveFrame><View accessibilityViewIsModal accessibilityLabel={`Zoomed photo of ${name}`} style={s.viewer}>
       <View style={s.toolbar}><Text numberOfLines={2} style={s.name}>{name}</Text><Pressable accessibilityRole="button" accessibilityLabel="Close photo zoom" onPress={onClose} style={s.button}><X size={23} color="#FFF" /></Pressable></View>
       <View style={s.stage}>
-      <View ref={surface} testID="photo-zoom-surface" style={[s.surface, Platform.OS === 'web' && { touchAction: 'none' }]} onLayout={(event) => setBox(event.nativeEvent.layout)}
+      <View ref={surface} testID="photo-zoom-surface" style={[s.surface, Platform.OS === 'web' && WEB_TOUCH_NONE]} onLayout={(event) => setBox(event.nativeEvent.layout)}
         onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true}
         onResponderGrant={start} onResponderStart={(event) => { if (swipe.current && event.nativeEvent.touches.length > 1) swipe.current.pinched = true; }} onResponderMove={move} onResponderRelease={finish} onResponderTerminate={() => { gesture.current = null; swipe.current = null; }}>
         <View pointerEvents="none" style={[StyleSheet.absoluteFillObject, { transform: [{ translateX: zoom.x }, { translateY: zoom.y }, { scale: zoom.scale }] }]}>
