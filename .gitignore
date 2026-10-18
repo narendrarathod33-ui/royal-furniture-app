@@ -45,3 +45,6 @@ bun-error.*
 # playwright artifacts
 test-results/
 playwright-report/
+
+# Google Drive connector download staging
+google_drive/
