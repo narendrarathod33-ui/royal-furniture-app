@@ -4,35 +4,7 @@ import { collapseSizeFamilies } from '../../app/data/sizeVariants';
 import { HomePromotions } from '../HomePromotions';
 import { HomePaymentCard } from '../HomePaymentCard';
 import { Header, ProductRail, SectionTitle } from './ProductCard';
-import { COLORS, categoryColors, categoryThumbnail, homeDealTiles, isBestSeller, styles } from './kit';
+import { COLORS, categoryColors, categoryThumbnail, homeDealTiles, styles } from './kit';
 import type { Product } from './kit';
 
-/** Section order: hero → quick categories → featured deals → shop by room &
- * collections → best sellers → new arrivals. Rails stay horizontally
- * scrollable on phones; every section header shares SectionTitle. */
-export function HomeContent({ onCustomize, onCategory, onProduct, onShop, onBestSellers, onArrivals, cartCount, onCart, onAccount }: { onCustomize: () => void; onCategory: (value: string) => void; onProduct: (product: Product) => void; onShop: () => void; onBestSellers: () => void; onArrivals: () => void; cartCount: number; onCart: () => void; onAccount: () => void }) {
-  const arrivals = collapseSizeFamilies(royalFurnitureData.products.slice(0, 24)).slice(0, 6);
-  const best = collapseSizeFamilies(royalFurnitureData.products.filter(isBestSeller)).slice(0, 6);
-  return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-    <Header count={cartCount} onCart={onCart} onAccount={onAccount} />
-    <HomePromotions onCustomize={onCustomize} onShop={onShop} onCategory={onCategory} />
-    <HomePaymentCard />
-    <SectionTitle compact title="Quick categories" action="All categories" onPress={() => onCategory('all')} />
-    <ScrollView horizontal style={styles.quickChipScroll} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickChipRow}>
-      {royalFurnitureData.cats.map((cat) => <Pressable key={cat.s} accessibilityRole="button" accessibilityLabel={`Show ${cat.n}`} onPress={() => onCategory(cat.s)} hitSlop={4} style={styles.quickChip}>
-        <Image source={categoryThumbnail(cat.s)} style={styles.quickChipThumb} resizeMode="cover" />
-        <Text style={styles.quickChipText}>{cat.n}</Text>
-      </Pressable>)}
-    </ScrollView>
-    <SectionTitle compact title="Amazing deals" action="Shop all" onPress={onShop} />
-    <View style={styles.dealTiles}>{homeDealTiles.map((tile) => <Pressable key={tile.label} style={styles.dealTile} onPress={() => onCategory(tile.category)}><Image source={tile.image} style={styles.dealTileImage} resizeMode="cover" /><View style={styles.dealTileShade} /><Text style={styles.dealTileLabel}>{tile.label}</Text></Pressable>)}</View>
-    <SectionTitle compact title="Shop by room" action="View all" onPress={() => onCategory('all')} />
-    <ScrollView horizontal style={{ flexGrow: 0 }} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalPad}>{royalFurnitureData.cats.map((cat) => <Pressable key={cat.s} style={[styles.roomCard, { backgroundColor: categoryColors[cat.s] || '#ddd' }]} onPress={() => onCategory(cat.s)}><Image source={categoryThumbnail(cat.s)} style={styles.roomPhoto} resizeMode="cover" /><View style={styles.roomShade} /><Text style={styles.roomLabel}>{cat.n}</Text></Pressable>)}</ScrollView>
-    <Pressable style={styles.officialFeature} onPress={() => onCategory('bedroom')}><Image source={require('../../assets/images/home-bedroom-feature-mobile.webp')} style={styles.officialFeatureImage} resizeMode="cover" /></Pressable>
-    <View style={styles.collectionStories}><Pressable style={styles.storyCard} onPress={() => onCategory('furniture:dining-room')}><Image source={require('../../assets/images/home-dining-feature-mobile.webp')} style={styles.storyImage} resizeMode="cover" /></Pressable><Pressable style={styles.storyCard} onPress={() => onCategory('cooltech-mattress')}><Image source={require('../../assets/images/home-mattress-feature-mobile.webp')} style={styles.storyImage} resizeMode="cover" /></Pressable></View>
-    <SectionTitle compact title="Best sellers" action="View all" onPress={onBestSellers} />
-    <ProductRail products={best} onProduct={onProduct} />
-    <SectionTitle compact title="New arrivals" action="See all new in" onPress={onArrivals} />
-    <ProductRail products={arrivals} onProduct={onProduct} />
-  </ScrollView>;
-}
+export function HomeContent({ onCustomize, onCategory, onProduct, onShop, onBestSellers, cartCount, onCart, onAccount }: { onCustomize: () => void; onCategory: (value: string) => void; onProduct: (product: Product) => void; onShop: () => void; onBestSellers: () => void; cartCount: number; onCart: () => void; onAccount: () => void }) { const best = collapseSizeFamilies(royalFurnitureData.products.slice(0, 6)); return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}><Header count={cartCount} onCart={onCart} onAccount={onAccount} /><HomePromotions onCustomize={onCustomize} onShop={onShop} onCategory={onCategory} /><HomePaymentCard /><SectionTitle compact title="Amazing deals" action="Shop all" onPress={onShop} /><View style={styles.dealTiles}>{homeDealTiles.map((tile) => <Pressable key={tile.label} style={styles.dealTile} onPress={() => onCategory(tile.category)}><Image source={tile.image} style={styles.dealTileImage} resizeMode="cover" /><View style={styles.dealTileShade} /><Text style={styles.dealTileLabel}>{tile.label}</Text></Pressable>)}</View><SectionTitle compact title="Shop by room" action="View all" onPress={() => onCategory('all')} /><ScrollView horizontal style={{ flexGrow: 0 }} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalPad}>{royalFurnitureData.cats.map((cat) => <Pressable key={cat.s} style={[styles.roomCard, { backgroundColor: categoryColors[cat.s] || '#ddd' }]} onPress={() => onCategory(cat.s)}><Image source={categoryThumbnail(cat.s)} style={styles.roomPhoto} resizeMode="cover" /><View style={styles.roomShade} /><Text style={styles.roomLabel}>{cat.n}</Text></Pressable>)}</ScrollView><Pressable style={styles.officialFeature} onPress={() => onCategory('bedroom')}><Image source={require('../../assets/images/home-bedroom-feature-mobile.webp')} style={styles.officialFeatureImage} resizeMode="cover" /></Pressable><View style={styles.collectionStories}><Pressable style={styles.storyCard} onPress={() => onCategory('furniture:dining-room')}><Image source={require('../../assets/images/home-dining-feature-mobile.webp')} style={styles.storyImage} resizeMode="cover" /></Pressable><Pressable style={styles.storyCard} onPress={() => onCategory('cooltech-mattress')}><Image source={require('../../assets/images/home-mattress-feature-mobile.webp')} style={styles.storyImage} resizeMode="cover" /></Pressable></View><SectionTitle compact title="Best sellers" action="View all" onPress={onBestSellers} /><ProductRail products={best} onProduct={onProduct} /></ScrollView>; }

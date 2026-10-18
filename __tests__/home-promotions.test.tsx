@@ -15,7 +15,7 @@ import { byProps, byType, flattenText } from './test-utils';
 const scrollViews = (root: any) => byType(root, 'RCTScrollView');
 
 test('promotions are height-bounded rather than square posters and adapt to short windows and enlarged text', async () => {
-  for (const [width, height, max] of [[320, 844, 196], [390, 844, 196], [768, 1000, 238], [1280, 900, 264], [700, 360, 148]] as const) {
+  for (const [width, height, max] of [[320, 844, 176], [390, 844, 176], [768, 1000, 204], [1280, 900, 204], [700, 360, 148]] as const) {
     dims.current = { width, height, fontScale: 1 };
     const screen = await render(<HomePromotions onShop={() => {}} onCategory={() => {}} onCustomize={() => {}} />);
     const scroll = scrollViews(screen.root)[0];
@@ -27,7 +27,7 @@ test('promotions are height-bounded rather than square posters and adapt to shor
   const screen = await render(<HomePromotions onShop={() => {}} onCategory={() => {}} onCustomize={() => {}} />);
   const scroll = scrollViews(screen.root)[0];
   const style = Array.isArray(scroll.props.style) ? Object.assign({}, ...scroll.props.style) : scroll.props.style;
-  expect(style.height).toBe(294);
+  expect(style.height).toBe(264);
 });
 
 test('actual viewport measurement controls every slide and snapping, not a capped partial slide', async () => {
@@ -75,14 +75,12 @@ test('promotions preserve Deals and kids-category destinations', async () => {
   expect(routes).toEqual(['deals', 'customization', 'kids-and-teens']);
 });
 
-test('hero photos fill the slide with cover (scrim keeps copy readable) and category posters stay banned', async () => {
+test('promotions contain complete product photos instead of cropping category posters', async () => {
   dims.current = { width: 390, height: 844, fontScale: 1 };
   const screen = await render(<HomePromotions onShop={() => {}} onCategory={() => {}} onCustomize={() => {}} />);
   const images = byType(screen.root, 'Image');
   expect(images.length).toBe(3);
-  expect(images.every((node) => node.props.resizeMode === 'cover')).toBe(true);
-  expect(byProps(screen.root, { resizeMode: 'fill' })).toHaveLength(0);
-  expect(byProps(screen.root, { resizeMode: 'stretch' })).toHaveLength(0);
+  expect(images.every((node) => node.props.resizeMode === 'contain')).toBe(true);
   const { readFileSync } = require('node:fs');
   const source = readFileSync('components/HomePromotions.tsx', 'utf8');
   expect(source.includes('home-kids.webp')).toBe(false);
@@ -118,7 +116,7 @@ test('compact section spacing is limited to Home and does not shrink the kids ca
   const home = readFileSync('components/catalog/HomeContent.tsx', 'utf8');
   const kit = readFileSync('components/catalog/kit.ts', 'utf8');
   const chrome = readFileSync('components/catalog/ProductCard.tsx', 'utf8');
-  expect((home.match(/<SectionTitle compact title=/g) || []).length).toBe(5);
+  expect((home.match(/<SectionTitle compact title=/g) || []).length).toBe(3);
   expect(kit.includes('homeSectionTitle: { paddingTop: 14, paddingBottom: 8 }')).toBe(true);
   expect(chrome.includes('compact = false')).toBe(true);
   expect(kit.includes('officialFeature: { marginHorizontal: 20, marginTop: 12,')).toBe(true);
