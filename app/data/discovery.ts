@@ -1,11 +1,14 @@
 import { collapseSizeFamilies } from './sizeVariants';
+import { suggestFor } from './recommend';
 import type { ListedProduct, Product } from '../../components/catalog/kit';
 
 /**
  * Discovery rails for the product page: "You may also like" and
  * "Recently viewed". Both work on the family-collapsed catalog — one card per
- * size family — so a six-size bed never shows up here as a single-price card,
- * and both caps match the prototype (four visible pieces per rail).
+ * size family — so a six-size bed never shows up here as a single-price card.
+ * Cross-sell ranking comes from the recommend engine (catalog-driven, no
+ * hand-picked items); both caps match the prototype (four visible pieces per
+ * rail, six remembered views).
  */
 const RAIL_SIZE = 4;
 
@@ -13,20 +16,16 @@ function collapsedReps(catalog: readonly Product[]): ListedProduct[] {
   return collapseSizeFamilies([...catalog]) as unknown as ListedProduct[];
 }
 
-/** Same subcategory first, then same category; never the product itself. */
-export function relatedProducts(product: { id: string; c: string; sc?: string }, catalog: readonly Product[]): ListedProduct[] {
-  const reps = collapsedReps(catalog);
-  const sameSub = product.sc ? reps.filter((p) => p.id !== product.id && p.sc === product.sc) : [];
-  const sameCat = reps.filter((p) => p.id !== product.id && p.c === product.c);
-  const seen = new Set<string>();
-  const out: ListedProduct[] = [];
-  for (const p of [...sameSub, ...sameCat]) {
-    if (seen.has(p.id)) continue;
-    seen.add(p.id);
-    out.push(p);
-    if (out.length === RAIL_SIZE) break;
-  }
-  return out;
+/**
+ * Cross-sell rail: ranked by the recommend engine (same subcategory first,
+ * "complete the room" complements next, social-proof and deal boosts, price
+ * affinity); never the product itself, never sold-out items.
+ */
+export function youMayAlsoLike(
+  anchor: { id: string; c: string; sc?: string; o: number },
+  catalog: readonly Product[],
+): ListedProduct[] {
+  return suggestFor(anchor, catalog, RAIL_SIZE).map((suggestion) => suggestion.product);
 }
 
 /** Recorded ids, most-recent first; unknown ids and dropped size siblings fall away. */

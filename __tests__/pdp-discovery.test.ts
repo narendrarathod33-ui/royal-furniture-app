@@ -1,4 +1,5 @@
-import { relatedProducts, recentProducts } from '../app/data/discovery';
+import { youMayAlsoLike, recentProducts } from '../app/data/discovery';
+import { suggestFor, upgradePicks, COMPLEMENT_SC } from '../app/data/recommend';
 import { catalogData } from '../app/data/catalogData';
 import { collapseSizeFamilies, getSizeVariants } from '../app/data/sizeVariants';
 import { RECENT_LIMIT, sanitizeRecentIds, useRecentlyViewedStore } from '../stores/recentlyViewed';
@@ -11,33 +12,76 @@ beforeEach(() => {
   useRecentlyViewedStore.getState().clear();
 });
 
-test('related picks same-subcategory pieces first and never the product itself', () => {
-  const p = reps.find((r) => (r.sc ? reps.filter((x) => x.sc === r.sc).length > 4 : false))!;
-  const rel = relatedProducts(p, catalog);
-  expect(rel).toHaveLength(4);
-  expect(rel.map((r) => r.id)).not.toContain(p.id);
-  // Every suggestion comes from the same subcategory (there are enough).
-  for (const r of rel) expect(r.sc).toBe(p.sc);
+test('cross-sell is relevant, in-stock, self-free and deterministic', () => {
+  const p = reps.find((r) => r.sc && reps.filter((x) => x.sc === r.sc).length > 6)!;
+  const run = () => youMayAlsoLike(p, catalog);
+  const first = run();
+  expect(first).toHaveLength(4);
+  expect(first.map((r) => r.id)).not.toContain(p.id);
+  expect(run()).toEqual(first); // deterministic: rails never flicker
+  const suggestions = suggestFor(p, catalog, 24);
+  const allowed = new Set([p.sc, p.c, ...(COMPLEMENT_SC[p.sc!] || [])]);
+  for (const s of suggestions) {
+    expect(s.product.st).not.toBe('out_of_stock');
+    expect(allowed.has(s.product.sc) || allowed.has(s.product.c)).toBe(true);
+  }
 });
 
-test('related falls back to the category when the subcategory is thin', () => {
-  // A product in a subcategory with a single piece still gets suggestions.
-  const lonely = reps.find((r) => r.sc && reps.filter((x) => x.sc === r.sc).length === 1)!;
-  const rel = relatedProducts(lonely, catalog);
-  expect(rel.length).toBeGreaterThan(0);
-  expect(rel.map((r) => r.id)).not.toContain(lonely.id);
-  for (const r of rel) expect(r.c).toBe(lonely.c);
+test('social proof lifts: a Best Seller outranks an equal-priced peer without labels', () => {
+  const anchor = { id: 'anchor', c: 'sofas', sc: 'ottomans', o: 1000 };
+  const pool = [
+    { id: 'a-best', n: 'A', c: 'sofas', sc: 'ottomans', o: 900, l: 900, st: 'in_stock', lb: ['Best Seller'] },
+    { id: 'b-plain', n: 'B', c: 'sofas', sc: 'ottomans', o: 900, l: 900, st: 'in_stock', lb: [] },
+  ] as unknown as Product[];
+  const ranked = suggestFor(anchor, pool, 2);
+  expect(ranked.map((s) => s.product.id)).toEqual(['a-best', 'b-plain']);
+  expect(ranked[0].reason).toBe('Best seller');
 });
 
-test('rail products are family reps: multi-size entries carry sizeCount', () => {
+test('price affinity: an 8x pricier same-range item loses to one in the budget band', () => {
+  const anchor = { id: 'anchor', c: 'sofas', sc: 'ottomans', o: 1000 };
+  const pool = [
+    { id: 'near', n: 'Near', c: 'sofas', sc: 'ottomans', o: 1100, l: 1100, st: 'in_stock', lb: [] },
+    { id: 'far', n: 'Far', c: 'sofas', sc: 'ottomans', o: 8000, l: 8000, st: 'in_stock', lb: [] },
+  ] as unknown as Product[];
+  expect(suggestFor(anchor, pool, 2).map((s) => s.product.id)).toEqual(['near', 'far']);
+});
+
+test('complete-the-room: a mattress anchor suggests beds across categories', () => {
+  const anchor = { id: 'mat-1', c: 'cooltech-mattress', sc: 'mattress', o: 1500 };
+  const pool = [
+    { id: 'bed-1', n: 'Bed', c: 'bedroom', sc: 'upholstered-bed', o: 1600, l: 1800, st: 'in_stock', lb: [] },
+    { id: 'sofa-1', n: 'Sofa', c: 'sofas', sc: 'corner-sofas', o: 1600, l: 1800, st: 'in_stock', lb: [] },
+  ] as unknown as Product[];
+  const ranked = suggestFor(anchor, pool, 2);
+  expect(ranked[0].product.id).toBe('bed-1');
+  expect(ranked[0].reason).toBe('Completes the room');
+  expect(ranked.map((s) => s.product.id)).not.toContain('sofa-1');
+});
+
+test('rail cards stay family reps with honest size counts', () => {
   const family = reps.find((r) => (r.sizeCount || 0) > 1)!;
-  for (const r of relatedProducts(family, catalog)) {
+  for (const r of youMayAlsoLike(family, catalog)) {
     expect(r.sizeCount || 1).toBe(Math.max(1, getSizeVariants(r.id).length));
   }
 });
 
+test('upsell chips: only pricier sizes, cheapest step first, exact deltas, capped at two', () => {
+  const variants = [
+    { name: 'Small', label: '90x200', price: 800, listPrice: 1000 },
+    { name: 'Medium', label: '120x200', price: 1000, listPrice: 1300 },
+    { name: 'Large', label: '160x200', price: 1300, listPrice: 1700 },
+    { name: 'King', label: '180x200', price: 1600, listPrice: 2100 },
+  ];
+  const picks = upgradePicks(1000, variants);
+  expect(picks.map((p) => p.label)).toEqual(['160x200', '180x200']);
+  expect(picks[0].delta).toBe(300);
+  expect(picks[1].delta).toBe(600);
+  expect(upgradePicks(1600, variants)).toEqual([]); // top size: nothing to upsell
+});
+
 test('recently viewed is most-recent first, excludes the current piece and drops unknown ids', () => {
-  const [a, b, c] = reps;
+  const [a, b] = reps;
   useRecentlyViewedStore.getState().record(a.id);
   useRecentlyViewedStore.getState().record(b.id);
   useRecentlyViewedStore.getState().record(a.id); // revisit moves it back to front

@@ -31,7 +31,8 @@ import { BlurView } from 'expo-blur';
 import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
-import { relatedProducts, recentProducts } from './data/discovery';
+import { youMayAlsoLike, recentProducts } from './data/discovery';
+import { upgradePicks } from './data/recommend';
 import { catalogData } from './data/catalogData';
 import { ProductRail } from '../components/catalog/ProductCard';
 import { useRecentlyViewedStore } from '../stores/recentlyViewed';
@@ -616,13 +617,18 @@ export default function ProductDetails({
   const productCategory = (product as { c: string; sc?: string }).c;
   const productSubcategory = (product as { sc?: string }).sc;
   const related = useMemo(
-    () => (onOpenProduct ? relatedProducts({ id: catalogId, c: productCategory, sc: productSubcategory }, catalogData as unknown as readonly Product[]) : []),
-    [onOpenProduct, catalogId, productCategory, productSubcategory],
+    () => (onOpenProduct ? youMayAlsoLike({ id: catalogId, c: productCategory, sc: productSubcategory, o: product.o }, catalogData as unknown as readonly Product[]) : []),
+    [onOpenProduct, catalogId, productCategory, productSubcategory, product.o],
   );
   const recentIds = useRecentlyViewedStore((state) => state.ids);
   const recentlyViewed = useMemo(
     () => (onOpenProduct ? recentProducts(recentIds, catalogId, catalogData as unknown as readonly Product[]) : []),
     [onOpenProduct, recentIds, catalogId],
+  );
+  // Upsell: the next sizes up from the current selection, one tap to switch.
+  const upgrades = useMemo(
+    () => (onOpenProduct ? upgradePicks(selectedPrice, (sizeVariants || []).map((variant) => ({ name: [variant.label, variant.sizeType].filter(Boolean).join(' · '), label: variant.label, price: variant.price, listPrice: variant.listPrice })), 2) : []),
+    [onOpenProduct, selectedPrice, sizeVariants],
   );
 
   // General Information, grouped the way the product page groups it.
@@ -976,6 +982,28 @@ export default function ProductDetails({
           </View>
         )}
 
+        {!!upgrades.length && (
+          <View style={styles.discoveryBlock}>
+            <Text style={styles.sectionTitle}>Upgrade your pick</Text>
+            <Text style={styles.discoverySub}>Bigger sizes of this piece — one tap to switch</Text>
+            <View style={styles.upgradeRow}>
+              {upgrades.map((upgrade) => (
+                <Pressable
+                  key={upgrade.name}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Upgrade to ${upgrade.name}, ${money(upgrade.price)}, ${money(upgrade.delta)} more`}
+                  onPress={() => onOpenProduct?.({ ...(product as unknown as Product), id: `${catalogId}::size=${encodeURIComponent(upgrade.name)}`, n: `${productName} — Size: ${upgrade.name}`, o: upgrade.price, l: upgrade.listPrice ?? product.l ?? product.o })}
+                  style={styles.upgradeChip}
+                >
+                  <Text style={styles.upgradeName} numberOfLines={1}>{upgrade.name}</Text>
+                  <Text style={styles.upgradePrice}>{money(upgrade.price)}</Text>
+                  <Text style={styles.upgradeDelta}>+{money(upgrade.delta)} more</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+
         {hasProductOptions && (
           <AccordionSection title="Product options">
             {!!madeToOrderText && <FactRow label="Made to order" value={madeToOrderText} />}
@@ -1161,6 +1189,12 @@ const styles = StyleSheet.create({
   detailsCard: { backgroundColor: COLORS.white, borderRadius: 16, padding: 16, marginBottom: 14 , ...GLASS.panelStrong },
   sectionTitle: { color: COLORS.ink, fontSize: 17, fontWeight: '800', marginBottom: 8 },
   discoveryBlock: { marginTop: 24 },
+  discoverySub: { color: COLORS.muted, fontSize: 11, marginTop: -4, marginBottom: 10 },
+  upgradeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  upgradeChip: { flexGrow: 0, minWidth: 132, maxWidth: 220, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1, borderColor: COLORS.line, ...GLASS.chip },
+  upgradeName: { color: COLORS.muted, fontSize: 10, fontWeight: '700' },
+  upgradePrice: { color: COLORS.ink, fontSize: 13, fontWeight: '800', marginTop: 2 },
+  upgradeDelta: { color: COLORS.red, fontSize: 10, fontWeight: '800', marginTop: 1 },
   factRow: { minHeight: 50, paddingVertical: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.line, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 },
   factLabel: { color: COLORS.muted, fontSize: 13, lineHeight: 19, flex: 0.8 },
   factTextGroup: { flex: 1.2, alignItems: 'flex-end' },

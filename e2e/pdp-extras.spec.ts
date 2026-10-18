@@ -59,4 +59,29 @@ test.describe('Royal Furniture PDP extras', () => {
     await expect(page.getByText('You may also like')).toBeVisible();
     await expect(page.getByText('Recently viewed')).toHaveCount(0);
   });
+
+  test('multi-size pieces offer one-tap upgrades that really switch the size', async ({ page }) => {
+    await openProduct(page, 'Nimbus Bed');
+
+    const addBefore = await page.getByRole('button', { name: /Add to bag/ }).getAttribute('aria-label');
+    const priceBefore = Number(/AED ([\d,]+)/.exec(addBefore!)![1].replace(/,/g, ''));
+
+    // Upsell chips announce the step-up price and delta.
+    const chip = page.getByRole('button', { name: /^Upgrade to .+, AED \d[\d,]*, AED \d[\d,]* more$/ }).first();
+    await expect(chip).toBeVisible();
+    const chipLabel = (await chip.getAttribute('aria-label'))!;
+    const chipPrice = Number(/, AED ([\d,]+),/.exec(chipLabel)![1].replace(/,/g, ''));
+    expect(chipPrice, 'upgrade offers a pricier size').toBeGreaterThan(priceBefore);
+
+    // Tapping the chip switches the whole page to that size: add-to-bag now
+    // carries the upgrade's price.
+    await chip.click();
+    // The page remounts for the chosen size; retry until the add button
+    // carries the upgrade's price (the old page may still be mounted briefly).
+    await expect(async () => {
+      const addAfter = await page.getByRole('button', { name: /Add to bag/ }).first().getAttribute('aria-label');
+      const priceAfter = Number(/AED ([\d,]+)/.exec(addAfter!)![1].replace(/,/g, ''));
+      expect(priceAfter).toBe(chipPrice);
+    }).toPass({ timeout: 15_000 });
+  });
 });
