@@ -21,6 +21,13 @@ Revoke the old credential at its provider first, replace it in server-side secre
 storage, and coordinate history cleanup if an exposure is found. Never paste real
 credentials into issues, documentation, examples, or scan reports.
 
+**Rotated on 2026-10-18:** the live-catalog bridge push token was committed in
+`data/tools/google-apps-script-sync.gs` (commits after 2026-10-18 00:00 UTC) and
+therefore remains in Git history. It has been replaced with a new token stored
+only in the receiver's private state file / `RECEIVER_TOKEN` (outside the repo);
+the old value is dead — the receiver rejects it. If you copied the script earlier,
+re-paste the script from the updated source and insert the current token.
+
 This is an Expo client, not a trusted backend. `EXPO_PUBLIC_*` values are embedded
 in the shipped bundle. Next.js `NEXT_PUBLIC_*` and React `REACT_APP_*` have the same
 public-exposure implications in their respective frameworks. An unprefixed variable
@@ -67,6 +74,22 @@ and no public-prefixed secret environment variables. No secrets needed migration
 | API responses | No server/API route handlers exist here; external product service responses cannot be audited from this checkout |
 | Public URLs | Product API, unsigned S3 image URLs, fonts/maps/support links; not credentials |
 | Environment-file protection | Broadened ignore to `.env*`, retaining `.env.example` |
+
+## Audit (2026-10-18)
+
+Full secret-safety pass before deployment, covering the 2026-10-17 scope plus the
+files added since (Excel bridge, live bridge, Drive receiver, catalog overrides):
+
+| Check | Result |
+| --- | --- |
+| Provider keys (Stripe, Supabase, AWS, OpenAI, SendGrid, Twilio, Firebase, Google) | None found in working tree or history (`scripts/check-secrets.py` and `--history`: 0 findings) |
+| Database/OAuth/JWT credentials, private keys, connection strings | None found |
+| Hardcoded shared secrets | **1 found & fixed:** bridge push token in `data/tools/google-apps-script-sync.gs`; rotated, working tree now holds a placeholder, the real token lives only in `RECEIVER_TOKEN`/private state file (mode 600, outside the repo) |
+| `EXPO_PUBLIC_`/`NEXT_PUBLIC_`/`REACT_APP_` exposure | No `process.env` reads in app code at all; env reads exist only in `server/`, `scripts/serve-production.mjs`, and local tooling |
+| `.gitignore` / `.env.example` | `.env*` ignored except `.env.example`; example documents every variable (APP_ORIGIN, PORT, PAYMENTS_ENABLED, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RECEIVER_TOKEN) with placeholders only |
+| Logs & responses | Server logs are structured events with generic codes; importer/receiver output contains cell-level change summaries, never env/token values; failed pushes return the importer's rejection reason without secrets |
+| Server Stripe handling | Test-mode keys only (`sk_test_`/`whsec_` enforced), env-sourced, fail-closed |
+| Git history | Contains the pre-rotation bridge token only (now dead); no other secrets in any reachable commit |
 
 Run the repeatable, redacted pattern check before deployment:
 

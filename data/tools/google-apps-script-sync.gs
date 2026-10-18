@@ -6,8 +6,12 @@
  * exports PDF), so this uses the spreadsheet's own xlsx export endpoint.
  */
 
+// Demo receiver - sandbox-specific; ask for a new URL if the demo moves.
+// SECURITY: paste your push token below before use. It is a shared secret for
+// the demo receiver - keep it out of source control; store it in your secret
+// manager or a private note. The receiver reads it from RECEIVER_TOKEN.
 const ENDPOINT = 'https://8081-ieyf6suwlxmlb9jknj5l4.e2b.app/upload';
-const TOKEN = '15b5abea0bf2c148bc81ece317cd8a41c81f638d01719b8a';
+const TOKEN = 'PASTE_PUSH_TOKEN_HERE';
 
 function onOpen() {
   SpreadsheetApp.getUi()

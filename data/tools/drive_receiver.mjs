@@ -21,18 +21,25 @@
  */
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
-import { readFileSync, writeFileSync, renameSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import path from 'node:path';
 
 const HOME = '/home/user';
 const REPO = path.join(HOME, 'royal-furniture-app');
 const IMPORTER = 'data/tools/catalog_xlsx.py';
 const OUT = path.join(HOME, 'google-drive-catalog.xlsx');
+// Secret is read from the RECEIVER_TOKEN environment variable, falling back to
+// the private state file (outside the repository, mode 600). Never hardcoded.
 const TOKEN_FILE = path.join(HOME, '.catalog-bridge', 'receiver-token');
+const TOKEN = process.env.RECEIVER_TOKEN || (existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf8').trim() : '');
 const PORT = Number(process.env.RECEIVER_PORT || 8081);
 const MAX_BYTES = 30 * 1024 * 1024;
 
-const TOKEN = readFileSync(TOKEN_FILE, 'utf8').trim();
+if (!TOKEN) {
+  console.error('No RECEIVER_TOKEN env var and no token file — refusing to start.');
+  process.exit(1);
+}
+
 const log = (...args) => console.log(new Date().toISOString(), ...args);
 
 function runImport(file) {
