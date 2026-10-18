@@ -31,6 +31,11 @@ import { BlurView } from 'expo-blur';
 import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
+import { relatedProducts, recentProducts } from './data/discovery';
+import { catalogData } from './data/catalogData';
+import { ProductRail } from '../components/catalog/ProductCard';
+import { useRecentlyViewedStore } from '../stores/recentlyViewed';
+import type { Product } from '../components/catalog/kit';
 import { GLASS, glassTilt } from './ui/glass';
 
 /** A selectable size of the same product, sourced from the official catalogue. */
@@ -457,6 +462,7 @@ export default function ProductDetails({
   onSave,
   onAdd,
   isSaved,
+  onOpenProduct,
 }: {
   product: ProductDetailsProduct;
   header?: ReactNode;
@@ -466,6 +472,8 @@ export default function ProductDetails({
   onSave: () => void;
   onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
   isSaved: boolean;
+  /** Opens a sibling product from the discovery rails (omitted = rails hidden). */
+  onOpenProduct?: (product: Product) => void;
 }) {
   const adaptive = useAdaptiveLayout();
   const sourceId = product.id.split('::size=')[0];
@@ -601,6 +609,21 @@ export default function ProductDetails({
   const displayColors = [...colorMap.values()];
   const titleColors = displayColors.length ? [] : extractTitleColors(productName);
   const detailRows = dedupeRows([...live.rows, ...local.rows]).slice(0, 10);
+
+  // Discovery rails — family-aware, so a size family never shows up here as a
+  // single-price card, and the current piece never recommends itself.
+  const catalogId = product.id.split('::size=')[0];
+  const productCategory = (product as { c: string; sc?: string }).c;
+  const productSubcategory = (product as { sc?: string }).sc;
+  const related = useMemo(
+    () => (onOpenProduct ? relatedProducts({ id: catalogId, c: productCategory, sc: productSubcategory }, catalogData as unknown as readonly Product[]) : []),
+    [onOpenProduct, catalogId, productCategory, productSubcategory],
+  );
+  const recentIds = useRecentlyViewedStore((state) => state.ids);
+  const recentlyViewed = useMemo(
+    () => (onOpenProduct ? recentProducts(recentIds, catalogId, catalogData as unknown as readonly Product[]) : []),
+    [onOpenProduct, recentIds, catalogId],
+  );
 
   // General Information, grouped the way the product page groups it.
   const specSections = baked?.sections?.length
@@ -1049,6 +1072,19 @@ export default function ProductDetails({
             {detailRows.map((row, index) => <FactRow key={`${row.label}-${index}`} label={row.label || ''} value={row.value || ''} />)}
           </AccordionSection>
         )}
+
+        {!!related.length && (
+          <View style={styles.discoveryBlock}>
+            <Text style={styles.sectionTitle}>You may also like</Text>
+            <ProductRail products={related} onProduct={onOpenProduct!} />
+          </View>
+        )}
+        {!!recentlyViewed.length && (
+          <View style={styles.discoveryBlock}>
+            <Text style={styles.sectionTitle}>Recently viewed</Text>
+            <ProductRail products={recentlyViewed} onProduct={onOpenProduct!} />
+          </View>
+        )}
         </View></View>
       </ScrollView>
 
@@ -1124,6 +1160,7 @@ const styles = StyleSheet.create({
   retryText: { color: COLORS.ink, fontSize: 12, fontWeight: '700' },
   detailsCard: { backgroundColor: COLORS.white, borderRadius: 16, padding: 16, marginBottom: 14 , ...GLASS.panelStrong },
   sectionTitle: { color: COLORS.ink, fontSize: 17, fontWeight: '800', marginBottom: 8 },
+  discoveryBlock: { marginTop: 24 },
   factRow: { minHeight: 50, paddingVertical: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.line, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 },
   factLabel: { color: COLORS.muted, fontSize: 13, lineHeight: 19, flex: 0.8 },
   factTextGroup: { flex: 1.2, alignItems: 'flex-end' },
