@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" dir="ltr"><head><meta charset="utf-8">
+<html lang="en" dir="ltr"><head>
+<meta name="referrer" content="no-referrer"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7D0707"><title>Royal Furniture</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;700&display=swap" rel="stylesheet">
@@ -71,9 +72,11 @@ const LB={'Best Seller':'الأكثر مبيعاً','Trending':'رائج','Hot s
 const EMIR=['Abu Dhabi','Dubai','Sharjah','Ajman','Al Ain','Ras Al Khaimah','Umm Al Quwain','Fujairah'];
 const PAYS=[['card','Credit / debit card'],['tabby','Tabby, split in 4'],['tamara','Tamara, split in 4'],['flexi','Flexi payment, 50% upfront'],['apple','Apple Pay'],['samsung','Samsung Pay'],['paypal','PayPal']];
 let s={tab:'home',cat:'all',sub:'',deal:'',q:'',sort:'best',pid:null,sel:null,cart:[],wish:[],orders:[],books:[],method:'home',store:0,emirate:'Dubai',pay:'card',lang:'en',more:null,bk:{store:0,day:1,slot:null,name:'',phone:''},done:null,bdone:null,err:false,cn:'',cp:''};
-try{const o=JSON.parse(localStorage.getItem('rf')||'{}');['cart','wish','orders','books','lang'].forEach(k=>o[k]!==undefined&&(s[k]=o[k]))}catch(e){}
+// Remove legacy persisted shopping/visit history; all demo data now stays in memory.
+try{localStorage.removeItem('rf')}catch(e){}
+const escapeInput=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=q=>document.querySelector(q),t=(k,o={})=>{let x=(T[s.lang][k]??T.en[k]??k);for(const a in o)x=x.replace('{'+a+'}',o[a]);return x},ar=()=>s.lang==='ar';
-const M=n=>(ar()?'د.إ ':'AED ')+Math.round(n).toLocaleString('en-US'),sync=()=>{try{localStorage.setItem('rf',JSON.stringify({cart:s.cart,wish:s.wish,orders:s.orders,books:s.books,lang:s.lang}))}catch(e){}};
+const M=n=>(ar()?'د.إ ':'AED ')+Math.round(n).toLocaleString('en-US'),sync=()=>{};
 const toast=m=>{const e=$('#toast');e.textContent=m;e.classList.remove('h');clearTimeout(toast.i);toast.i=setTimeout(()=>e.classList.add('h'),2000)};
 const dt=(n,o)=>{const d=new Date();d.setDate(d.getDate()+n);return d.toLocaleDateString(ar()?'ar-AE':'en-GB',o||{day:'numeric',month:'long'})};
 const cname=c=>ar()?CAR[c.s]:c.n,lbl=x=>ar()&&LB[x]?LB[x]:x;
@@ -101,7 +104,7 @@ function list(){let l=P.filter(p=>(s.cat==='all'||p.c===s.cat)&&(!s.sub||p.sc===
 const f={best:(a,b)=>rank(a)-rank(b),low:(a,b)=>a.o-b.o,high:(a,b)=>b.o-a.o,disc:(a,b)=>pct(b.o,b.l)-pct(a.o,a.l)}[s.sort];return l.sort(f)}
 const gridH=()=>{const l=list();return l.length?`<div class="grid">${l.map(card).join('')}</div>`:`<p class="note pad">${t('none')}</p>`};
 function shop(){const subs=[...new Map(P.filter(p=>s.cat==='all'||p.c===s.cat).map(p=>[p.sc,p.scn])).entries()].filter(x=>x[0]);
-return head()+`<div class="pad"><input class="srch" id="q" value="${s.q}" placeholder="${t('search')}" aria-label="${t('search')}"></div>${chips([['all',t('all')],...C.map(c=>[c.s,cname(c)])],s.cat,'cat')}
+return head()+`<div class="pad"><input class="srch" id="q" value="${escapeInput(s.q)}" placeholder="${t('search')}" aria-label="${t('search')}"></div>${chips([['all',t('all')],...C.map(c=>[c.s,cname(c)])],s.cat,'cat')}
 ${s.cat!=='all'&&subs.length>1?chips([['',t('all')],...subs],s.sub,'sub'):''}${chips([['',t('all')],['all',t('deals')],['100',t('u100')],['500',t('u500')]],s.deal,'deal')}
 <div class="sel"><select id="so" aria-label="Sort">${[['best','sBest'],['low','sLow'],['high','sHigh'],['disc','sDisc']].map(([k,l])=>`<option value="${k}" ${s.sort===k?'selected':''}>${t(l)}</option>`).join('')}</select></div><div id="grid">${gridH()}</div>`}
 function detail(){const p=P.find(x=>x.id===s.pid),l=s.sel,v=V(p,l),c=v.c,pc=pct(c[2],c[3]),g=(h,sub,b)=>`<div class="grp"><h3>${h}<span>${sub}</span></h3><div class="opts">${b}</div></div>`;
@@ -125,7 +128,7 @@ const sub=s.cart.reduce((a,i)=>a+i.o*i.q,0),sv=s.cart.reduce((a,i)=>a+(i.l-i.o)*
 return head()+`<div class="sec"><h2>${t('cart')}</h2></div>${s.cart.map((i,n)=>{const p=P.find(x=>x.id===i.id);return `<div class="line"><div class="t">${pic(p,Math.min(i.i||0,Math.max(p.im.length-1,0)))}</div><div style="flex:1"><div class="n" style="font-weight:600;font-size:12.5px">${i.n}</div><div class="note">${i.opt}</div><div class="row"><div class="qty"><button data-a="q" data-v="${n}" data-d="-1" aria-label="-">−</button>${i.q}<button data-a="q" data-v="${n}" data-d="1" aria-label="+">+</button></div><b>${M(i.o*i.q)}</b></div></div></div>`}).join('')}
 <div class="box"><h3 style="font-size:13px;margin-bottom:8px">${t('method')}</h3><div class="opts"><button class="opt ${col?'':'on'}" data-a="meth" data-v="home">${t('hd')}</button><button class="opt ${col?'on':''}" data-a="meth" data-v="collect">${t('cc')}</button></div>
 ${col?`<p class="note">${t('ccD')}</p><div class="grp"><h3>${t('from')}</h3><select id="stc">${S.map((x,i)=>`<option value="${i}" ${s.store===i?'selected':''}>${x.city}: ${x.addr.slice(0,38)}</option>`).join('')}</select></div>`:`<div class="grp"><h3>${t('emirate')}</h3><select id="em">${EMIR.map(e=>`<option ${s.emirate===e?'selected':''}>${e}</option>`).join('')}</select></div>`}
-<div class="grp"><h3>${t('nm')}</h3><input class="f" id="cn" value="${s.cn}" autocomplete="name"></div><div class="grp"><h3>${t('ph')}</h3><input class="f" id="cp" value="${s.cp}" inputmode="tel" autocomplete="tel"></div></div>
+<div class="grp"><h3>${t('nm')}</h3><input class="f" id="cn" value="${escapeInput(s.cn)}" autocomplete="name"></div><div class="grp"><h3>${t('ph')}</h3><input class="f" id="cp" value="${escapeInput(s.cp)}" inputmode="tel" autocomplete="tel"></div></div>
 <div class="box"><h3 style="font-size:13px;margin-bottom:8px">${t('payT')}</h3><div class="opts">${PAYS.map(([k,l])=>`<button class="opt ${s.pay===k?'on':''}" data-a="pay" data-v="${k}">${l}</button>`).join('')}</div>
 ${split?`<p class="note">${t('split',{p:M(sub/4)})}</p>`:''}${flexi?`<p class="note">${t('now')}: ${M(sub/2)} · ${t('later')}: ${M(sub/2)}</p>`:''}</div>
 <div class="box sum"><div class="row"><span>${t('sub')}</span><span>${M(sub)}</span></div>${sv?`<div class="row save"><span>${t('youSave')}</span><span>${M(sv)}</span></div>`:''}<div class="row"><span>${t('delivery')}</span><span>${col||allFree?t('free'):t('tbc')}</span></div><div class="row"><span>${t('asm')}</span><span>${t('free')}</span></div><div class="row tt"><span>${t('total')}</span><span>${M(sub)}</span></div></div>
@@ -137,7 +140,7 @@ return head()+`<div class="pad"><h1 style="font-size:19px">${t('visitT')}</h1><p
 <div class="sec" id="bk"><h2>${t('book')}</h2></div><div class="box"><div class="grp" style="margin-top:0"><h3>${t('pickStore')}</h3><select id="bs">${S.map((x,i)=>`<option value="${i}" ${b.store===i?'selected':''}>${x.city}: ${x.addr.slice(0,34)}</option>`).join('')}</select></div>
 <div class="grp"><h3>${t('day')}</h3><div class="opts">${[1,2,3,4,5,6,7].map(d=>`<button class="opt ${b.day===d?'on':''}" data-a="bday" data-v="${d}">${dt(d,{weekday:'short',day:'numeric'})}</button>`).join('')}</div></div>
 <div class="grp"><h3>${t('slot')}</h3><div class="slots">${['10:00','12:00','14:00','16:00','18:00','20:00'].map((x,i)=>`<button class="opt ${b.slot===x?'on':''}" ${(b.day*3+i)%4===0?'disabled':''} data-a="bslot" data-v="${x}">${x}</button>`).join('')}</div></div>
-<div class="grp"><h3>${t('nm')}</h3><input class="f" id="bn" value="${b.name}"></div><div class="grp"><h3>${t('ph')}</h3><input class="f" id="bp" value="${b.phone}" inputmode="tel"></div>${s.err?`<div class="err">${t('need')}</div>`:''}<button class="btn" style="margin-top:12px" data-a="bconf">${t('conf')}</button></div>`}
+<div class="grp"><h3>${t('nm')}</h3><input class="f" id="bn" value="${escapeInput(b.name)}"></div><div class="grp"><h3>${t('ph')}</h3><input class="f" id="bp" value="${escapeInput(b.phone)}" inputmode="tel"></div>${s.err?`<div class="err">${t('need')}</div>`:''}<button class="btn" style="margin-top:12px" data-a="bconf">${t('conf')}</button></div>`}
 const ORD=o=>`<div class="box"><div class="row"><b>${o.id}</b><b>${M(o.total)}</b></div><div class="note">${o.when} · ${o.c?t('cc'):t('eta')+': '+o.eta}</div><div class="note">${o.items}</div><div class="tl">${[0,1,2].map(i=>`<i class="${i<=o.st?'on':''}"></i>`).join('')}</div><div class="row"><b class="ok" style="font-size:12.5px">${t('st'+o.st)}</b>${o.st<2?`<button class="btn s g" data-a="adv" data-v="${o.id}">${t('adv')}</button>`:''}</div></div>`;
 const info={cc:()=>`<div class="box"><b>${t('ccT')}</b><p class="note">Order online, pick up in-store, at no delivery charge. Click & Collect is always free, regardless of order value, and you can collect during any showroom opening hour, 7 days a week.</p><ol class="note" style="padding-inline-start:18px"><li>Select Click & Collect at checkout</li><li>Choose your preferred showroom</li><li>Receive a ready-for-collection notification by SMS and email</li><li>Visit the showroom with your order confirmation</li></ol></div>`,
 warr:()=>`<div class="box"><b>${t('warrT')}</b><p class="note"><b>Sofas</b> (Royal Furniture manufactured): 5 years on frame and spring. 6 months on foam and fabric. 6 months on mechanisms and electricals.</p><p class="note"><b>Headboard & divan base</b>: 5 years on frame. 6 months on foam and fabric. 6 months on mechanisms and electricals.</p><p class="note"><b>Import items</b>: 1-year warranty.</p><p class="note"><b>Household</b>: no warranty. Raise a request within 7 days if an item is defective.</p><p class="note"><b>Cooltech mattresses</b>: 25 years on Cooltech spring mattresses (pocket spring, box top and non box). Medical mattress (pure foam): 5 years. The warranty covers components beneath the outer covering, not the covering or stitching. Repairing or replacing does not extend the warranty.</p><p class="note">Items are repaired or replaced according to the Customer Protection Act No. 24 2006. Products sold as is (open sofas, mattresses, unwrapped linen, damaged items) are not covered. Fabric such as leather, PU and PVC is not covered. The 5-year warranty applies to sofas and headboards or divan bases bought on or after 1 Jan 2023.</p></div><div class="box"><b>Returns & cancellations</b><p class="note">Made to Order products can't be cancelled or returned. Cancellation of off-the-shelf furniture, the mattress exchange policy and delivery terms are in the full Terms & Conditions on royalfurniture.ae.</p></div>`,
@@ -148,7 +151,7 @@ orders:()=>s.orders.length?s.orders.map(ORD).join('')+(s.books.length?`<div clas
 saved:()=>s.wish.length?`<div class="grid">${s.wish.map(id=>P.find(p=>p.id===id)).filter(Boolean).map(card).join('')}</div>`:`<p class="note pad">${t('noS')}</p>`};
 const MR=[['orders','orders'],['saved','savedI'],['support','support'],['cc','ccT'],['warr','warrT'],['pay','payM'],['about','about']];
 function more(){if(s.more)return head()+`<button class="back" data-a="mback">${ar()?'→':'←'} ${t('back')}</button><div class="pad" style="padding-top:6px">${info[s.more]()}</div>`;
-return head()+MR.map(([k,l])=>`<button class="mrow" data-a="mopen" data-v="${k}"><span>${t(l)}${k==='saved'&&s.wish.length?' ('+s.wish.length+')':''}${k==='orders'&&s.orders.length?' ('+s.orders.length+')':''}</span><span>${ar()?'‹':'›'}</span></button>`).join('')}
+return head()+MR.map(([k,l])=>`<button class="mrow" data-a="mopen" data-v="${k}"><span>${t(l)}${k==='saved'&&s.wish.length?' ('+s.wish.length+')':''}${k==='orders'&&s.orders.length?' ('+s.orders.length+')':''}</span><span>${ar()?'‹':'›'}</span></button>`).join('')+`<button class="mrow" data-a="delete-data">Delete all local demo data</button>`}
 const ic={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',shop:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',stores:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',cart:'<path d="M3 4h2l2.5 11h10L20 7H6.5"/><circle cx="9" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/>',more:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'};
 function nav(){const n=s.cart.reduce((a,i)=>a+i.q,0);$('#nav').innerHTML=['home','shop','stores','cart','more'].map(k=>`<button class="${s.tab===k&&s.pid==null?'on':''}" data-a="tab" data-v="${k}"><svg viewBox="0 0 24 24">${ic[k]}</svg>${t(k)}${k==='cart'&&n?`<span class="badge">${n}</span>`:''}</button>`).join('')}
 function render(){const v=s.pid!=null?detail():({home,shop,stores,cart,more})[s.tab]();$('#main').innerHTML=v;nav();document.documentElement.lang=s.lang;document.documentElement.dir=ar()?'rtl':'ltr'}
@@ -169,7 +172,7 @@ else if(a==='add'){const p=P.find(x=>x.id===s.pid),V_=V(p,s.sel),c=V_.c,opt=[V_.
 else if(a==='q'){const i=s.cart[+v];i.q+=+b.dataset.d;if(i.q<1)s.cart.splice(+v,1);keep=1}
 else if(a==='meth'){s.method=v;keep=1}else if(a==='pay'){s.pay=v;keep=1}
 else if(a==='order'){if(!s.cn.trim()||s.cp.trim().length<7){s.err=true;keep=1}else{s.err=false;const sub=s.cart.reduce((x,i)=>x+i.o*i.q,0),col=s.method==='collect',days=Math.max(...s.cart.map(i=>i.dl),1),id='RF-'+Math.floor(10000+Math.random()*89999),eta=dt(days);
-s.done={id,eta,c:col};s.orders.unshift({id,total:sub,eta,c:col,st:0,when:dt(0),items:s.cart.map(i=>i.q+'× '+i.n).join(', ').slice(0,120)});s.cart=[]}}
+s.done={id,eta,c:col};s.orders.unshift({id,total:sub,eta,c:col,st:0,when:dt(0),items:s.cart.map(i=>i.q+'× '+i.n).join(', ').slice(0,120)});s.cart=[];s.cn='';s.cp=''}}
 else if(a==='done'){s.done=null;s.tab='shop'}
 else if(a==='bst'){s.bk.store=+v;s.tab='stores';keep=0;setTimeout(()=>$('#bk')&&$('#bk').scrollIntoView(),0)}
 else if(a==='bday'){s.bk.day=+v;s.bk.slot=null;keep=1}else if(a==='bslot'){s.bk.slot=v;keep=1}
@@ -177,6 +180,7 @@ else if(a==='bconf'){const k=s.bk;if(!k.name.trim()||k.phone.trim().length<7||!k
 else if(a==='bdone'){s.bdone=null;s.tab='home'}
 else if(a==='mopen'){s.more=v}else if(a==='mback')s.more=null;
 else if(a==='adv'){const o=s.orders.find(x=>x.id===v);o.st=Math.min(2,o.st+1);keep=1}
+else if(a==='delete-data'){if(confirm('Delete all local demo data?')){try{localStorage.removeItem('rf')}catch(e){}location.reload();return}}
 else if(a==='lang'){s.lang=ar()?'en':'ar';keep=1}
 sync();render();m.scrollTop=keep?y:0});
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='q'||i==='hq'){s.q=e.target.value;if(i==='hq'){s.tab='shop';render();const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length)}else $('#grid').innerHTML=gridH()}

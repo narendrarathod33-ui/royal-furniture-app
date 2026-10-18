@@ -1,0 +1,101 @@
+{
+ "missing": [
+  {
+   "id": "6306-kesto-bed",
+   "category": "bedroom"
+  }
+ ],
+ "coverage": {
+  "sofas": {
+   "rows": 501,
+   "sku": 501,
+   "stock": 501,
+   "labels": 454,
+   "views": 283,
+   "sections": 496,
+   "colors": 501,
+   "fabrics": 501,
+   "sizes": 501,
+   "gallery": 491,
+   "info": 501
+  },
+  "household": {
+   "rows": 286,
+   "sku": 285,
+   "stock": 286,
+   "labels": 111,
+   "views": 106,
+   "sections": 180,
+   "colors": 285,
+   "fabrics": 285,
+   "sizes": 285,
+   "gallery": 284,
+   "info": 286
+  },
+  "amazing-deal": {
+   "rows": 1,
+   "sku": 1,
+   "stock": 1,
+   "labels": 1,
+   "views": 1,
+   "sections": 1,
+   "colors": 1,
+   "fabrics": 1,
+   "sizes": 1,
+   "gallery": 1,
+   "info": 1
+  },
+  "bedroom": {
+   "rows": 198,
+   "sku": 197,
+   "stock": 197,
+   "labels": 197,
+   "views": 165,
+   "sections": 197,
+   "colors": 197,
+   "fabrics": 197,
+   "sizes": 197,
+   "gallery": 185,
+   "info": 197
+  },
+  "kids-and-teens": {
+   "rows": 59,
+   "sku": 59,
+   "stock": 59,
+   "labels": 29,
+   "views": 27,
+   "sections": 29,
+   "colors": 59,
+   "fabrics": 59,
+   "sizes": 59,
+   "gallery": 58,
+   "info": 59
+  },
+  "furniture": {
+   "rows": 261,
+   "sku": 260,
+   "stock": 261,
+   "labels": 217,
+   "views": 197,
+   "sections": 245,
+   "colors": 260,
+   "fabrics": 260,
+   "sizes": 259,
+   "gallery": 258,
+   "info": 260
+  },
+  "cooltech-mattress": {
+   "rows": 54,
+   "sku": 54,
+   "stock": 54,
+   "labels": 54,
+   "views": 43,
+   "sections": 50,
+   "colors": 54,
+   "fabrics": 54,
+   "sizes": 54,
+   "gallery": 53,
+   "info": 54
+  }
+ }
+}
