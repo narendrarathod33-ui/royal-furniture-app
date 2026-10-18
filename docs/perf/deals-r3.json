@@ -1,0 +1,17 @@
+{
+  "protocol": "expo export build @ :4123, headless Chromium/SwiftShader, 390x844; Deals tab, 2.5s post-mount settle; wheel at list-center; 3 rounds x 3x1400px flings; rAF-delta sampling",
+  "harnessFix": "scroll metric = list scroller scrollTop ([data-testid=deals-results], overflow-y auto); window.scrollY is structurally 0 in this app (div-scroller SPA) — earlier window.scrollY-based readings were invalid",
+  "structure": { "scroller": "[data-testid=deals-results] div", "clientHeight": 791, "scrollHeightStart": 3262, "scrollHeightAfter": 14907, "scrollTopAfterRounds": [3727, 7927, 12127] },
+  "flingRounds": [
+    { "round": 1, "frames": 89, "dropped": 6, "droppedPct": 6.7, "worstMs": 550 },
+    { "round": 2, "frames": 165, "dropped": 7, "droppedPct": 4.2, "worstMs": 100 },
+    { "round": 3, "frames": 177, "dropped": 2, "droppedPct": 1.1, "worstMs": 83 }
+  ],
+  "retracted": [
+    "35.9% dropped / 'page never scrolls' (round-3 v1 attempt) — wrong scroll metric + wheel during mount",
+    "51.1% dropped (round-3 v2) — valid frame sampling but wheel window included tab-mount cost; superseded by settled numbers above"
+  ],
+  "heapSoak": "flat ~36MB across 40 flings, zero drift (no leak)",
+  "blurCensus": { "home": 8, "deals": 31, "browse": 32, "dealsOpaqueWithBlur": 1, "opaqueSurface": "selected category chip #40202B + blur(12)" },
+  "date": "2026-10-18"
+}

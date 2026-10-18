@@ -95,3 +95,65 @@ and is therefore **recommended, not implemented**.
    glass-over-content look). No scroll-path cost measured from them.
 4. Native side untested in this round — the same presets no-op on native
    (blurLayer drops the key off-web), so no native change shipped.
+
+## Round 3 — Deals page, memory soak, data-split verdict (2026-10-18)
+
+**Harness correction (two earlier numbers retracted).** This app scrolls inside
+a div scroller — the list's own ScrollView (`[data-testid=deals-results]`,
+`overflow-y: auto`), never `window`; `window.scrollY` is 0 at every scroll
+position by construction. The round-3 attempts that reported "Deals never
+scrolled / 35.9% dropped" and "51.1% dropped" read the wrong metric and/or
+fired the wheel inside tab-mount work. Both are retracted. Structure verified:
+after 9 × 1,400 px flings the scroller moved 0 → 12,127 px with content growing
+3,262 → 14,907 px (virtualized window mounting as it goes). Raw:
+`deals-r3.json`.
+
+**Corrected Deals scroll health (V1 tuning, mount settled before sampling).**
+Wheel over the list center, 3 rounds × 3 flings: dropped 6.7% (worst 550 ms)
+→ 4.2% (worst 100 ms) → 1.1% (worst 83 ms). That is the same band as the
+Search grid under V1 — the shared `AdaptiveProductList` batching is healthy on
+Deals too (Deals and Customization both render through it, so V1 propagates
+automatically). The one-off first-fling hitch (550 ms worst frame) is the first
+virtualization wave: ranked bottleneck #1 below, not a Deals-specific defect.
+
+**Memory soak: no leak.** 40 flings across tabs: JS heap flat at ~36 MB
+start-to-finish, zero drift. The "slows down over time" class is not
+reproducible in this build.
+
+**Data-split verdict (bottleneck #2 refined).** `productDetails.ts`
+(1.38 MB) import fan-out is exactly 1 (only the PDP imports it) — the ideal
+split candidate — but its data is read synchronously in a `useMemo` that feeds
+the description, fabrics, colors and the size list driving the add-to-bag
+label. A lazy boundary would transiently alter PDP CTA labels/sizes on slow
+networks, which crosses the no-behavior-change line: **recommended, not
+implemented.**
+
+**Live blur census (computed styles, production build, 390×844).** Home 8 /
+Deals 31 / Browse 32 `backdrop-filter` surfaces. Deals' single opaque-with-blur
+surface is the selected category chip (`#40201B`-family maroon + blur(12) —
+provably invisible work). The Deals header chips sit over the flat page
+backdrop, where blur is a visual no-op by the Round-1 rationale; however the
+Round-1 chip-swap experiment measured no gain beyond noise for exactly this
+class of change, so the header NoBlur swap stays a **documented candidate,
+not implemented** (no speculative changes without expected-gain evidence).
+
+**Remaining bottlenecks (re-ranked).**
+
+1. **First-window mount hitch (~270–550 ms worst frame)** — now observed on
+   both grids (Search worst 400–433 ms, Deals first fling 550 ms): new card
+   batch render + photo decode; production photos will decode slower still.
+   Candidate: `recyclingKey`/`getItemLayout` + precomputed heights, or
+   FlashList (P3 plan option).
+2. **Cold parse/transfer of the 5.6 MB (1.05 MB gzip) entry chunk** — lever =
+   move `productDetails.ts` out of the critical chunk (fan-out 1, but
+   behavior-changing; see verdict above). Needs a real-network measurement
+   before touching.
+3. **Deals tab-mount cost** — 31 glass surfaces over a flat backdrop plus the
+   initial card wave; candidate = header NoBlur swap, counter-evidenced by the
+   Round-1 chip test (expected gain ≈ noise), so parked.
+4. Native side untested in this round — blur layers and batching presets are
+   web-only or no-op on native; no native change shipped.
+
+*Operational note:* headless Chromium in this sandbox segfaults at launch after
+a re-provision; recovery is `rm -rf /tmp/chromium /tmp/al2 /tmp/fonts` and let
+`e2e/helpers/chromium.cjs` re-extract.
