@@ -46,7 +46,7 @@ export function DealsPage<T extends DealProduct>({ products, categories, header,
         <Text accessibilityRole="header" style={[s.heroTitle, adaptive.width >= 600 && { fontSize: 32, lineHeight: 37 }]}>Good design.{`\n`}Even better prices.</Text>
         <Text style={s.heroBody}>Considered pieces. Unexpected savings.{`\n`}Find something you’ll love coming home to.</Text>
       </View>
-      {adaptive.width >= 600 && <View style={s.heroPhotoWrap}><Image source={require('../assets/images/home-sofas.webp')} style={s.heroPhoto} resizeMode="cover" /><View style={s.photoLabel}><Text style={s.photoLabelText}>A little more home.</Text></View></View>}
+      {adaptive.width >= 600 && <View style={[s.heroPhotoWrap, adaptive.width >= 840 ? { width: 264, height: 192 } : { width: 208, height: 174 }]}><Image source={require('../assets/images/home-sofas.webp')} style={s.heroPhoto} resizeMode="cover" /><View style={s.photoLabel}><Text style={s.photoLabelText}>A little more home.</Text></View></View>}
     </View>
     <Pressable testID="deals-search-field" style={s.search} accessible={false} focusable={false} onPress={() => input.current?.focus()}>
       <Search size={19} color="#80767A" /><TextInput ref={input} accessibilityLabel="Search deals" placeholder="Find your next favourite piece" placeholderTextColor="#80767A"

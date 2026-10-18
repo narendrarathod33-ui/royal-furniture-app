@@ -1,0 +1,240 @@
+{
+ "small-phone": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 204,
+    "cardWidths": [
+     288
+    ],
+    "pageScrollW": 320,
+    "pageClientW": 320
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 584,
+    "cardWidths": [
+     288
+    ],
+    "pageScrollW": 320,
+    "pageClientW": 320
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1867,
+    "cardWidths": [
+     160
+    ],
+    "pageScrollW": 320,
+    "pageClientW": 320
+   }
+  }
+ },
+ "phone": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 186,
+    "cardWidths": [
+     166
+    ],
+    "pageScrollW": 375,
+    "pageClientW": 375
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 495,
+    "cardWidths": [
+     166
+    ],
+    "pageScrollW": 375,
+    "pageClientW": 375
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1872,
+    "cardWidths": [
+     160
+    ],
+    "pageScrollW": 375,
+    "pageClientW": 375
+   }
+  }
+ },
+ "large-phone": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 186,
+    "cardWidths": [
+     193
+    ],
+    "pageScrollW": 430,
+    "pageClientW": 430
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 483,
+    "cardWidths": [
+     193
+    ],
+    "pageScrollW": 430,
+    "pageClientW": 430
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1878,
+    "cardWidths": [
+     160
+    ],
+    "pageScrollW": 430,
+    "pageClientW": 430
+   }
+  }
+ },
+ "phone-landscape": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 186,
+    "cardWidths": [
+     308
+    ],
+    "pageScrollW": 667,
+    "pageClientW": 667
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 521,
+    "cardWidths": [
+     308
+    ],
+    "pageScrollW": 667,
+    "pageClientW": 667
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1873,
+    "cardWidths": [
+     200
+    ],
+    "pageScrollW": 667,
+    "pageClientW": 667
+   }
+  }
+ },
+ "tablet": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 186,
+    "cardWidths": [
+     232
+    ],
+    "pageScrollW": 768,
+    "pageClientW": 768
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 521,
+    "cardWidths": [
+     232
+    ],
+    "pageScrollW": 768,
+    "pageClientW": 768
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1929,
+    "cardWidths": [
+     200
+    ],
+    "pageScrollW": 768,
+    "pageClientW": 768
+   }
+  }
+ },
+ "tablet-land": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 186,
+    "cardWidths": [
+     285
+    ],
+    "pageScrollW": 1024,
+    "pageClientW": 1024
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 539,
+    "cardWidths": [
+     285
+    ],
+    "pageScrollW": 1024,
+    "pageClientW": 1024
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1929,
+    "cardWidths": [
+     200
+    ],
+    "pageScrollW": 1024,
+    "pageClientW": 1024
+   }
+  }
+ },
+ "desktop": {
+  "tabs": {
+   "Browse": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 104,
+    "cardWidths": [
+     228
+    ],
+    "pageScrollW": 1440,
+    "pageClientW": 1440
+   },
+   "Deals": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 539,
+    "cardWidths": [
+     230
+    ],
+    "pageScrollW": 1440,
+    "pageClientW": 1440
+   },
+   "Home": {
+    "distorted": [],
+    "hOverflow": [],
+    "firstCardTop": 1929,
+    "cardWidths": [
+     232
+    ],
+    "pageScrollW": 1440,
+    "pageClientW": 1440
+   }
+  }
+ }
+}

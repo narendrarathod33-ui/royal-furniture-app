@@ -37,13 +37,16 @@ const source = (uri?: string) => (uri ? { uri } : undefined);
 const card = async (wide = false) =>
   (await render(<ProductCard product={fakeProduct} onPress={() => {}} wide={wide} />)).root;
 
-test('grid and rail cards preserve product proportions with contain rather than crop/fill', async () => {
+test('grid and rail cards fill their square frame with cover and never stretch (no fill/stretch modes)', async () => {
   mockPhoto.current = source('wide-photo.webp');
   mockGridWidth.current = 240;
   const screen = await render(<ProductCard product={fakeProduct} onPress={() => {}} />);
-  expect(firstByProps(screen.root, { resizeMode: 'contain' }).props.accessibilityLabel).toBe('Sofa');
+  expect(firstByProps(screen.root, { resizeMode: 'cover' }).props.accessibilityLabel).toBe('Sofa');
+  // Cover crops inside the overflow-hidden square frame; fill/stretch would distort.
+  expect(byProps(screen.root, { resizeMode: 'fill' })).toHaveLength(0);
+  expect(byProps(screen.root, { resizeMode: 'stretch' })).toHaveLength(0);
   await screen.rerender(<ProductCard product={fakeProduct} onPress={() => {}} wide />);
-  expect(firstByProps(screen.root, { resizeMode: 'contain' }).props.accessibilityLabel).toBe('Sofa');
+  expect(firstByProps(screen.root, { resizeMode: 'cover' }).props.accessibilityLabel).toBe('Sofa');
   mockGridWidth.current = 320;
   await screen.rerender(<ProductCard product={fakeProduct} onPress={() => {}} wide />);
   // The card is the tree root; queryAll walks descendants only, so read the
@@ -55,7 +58,7 @@ test('grid and rail cards preserve product proportions with contain rather than 
 test('failed or missing photos use an accessible fallback without removing the image frame', async () => {
   mockPhoto.current = source('wide-photo.webp');
   const screen = await render(<ProductCard product={fakeProduct} onPress={() => {}} />);
-  await fireEvent(firstByProps(screen.root, { resizeMode: 'contain' }), 'error');
+  await fireEvent(firstByProps(screen.root, { resizeMode: 'cover' }), 'error');
   await screen.rerender(<ProductCard product={fakeProduct} onPress={() => {}} />);
   expect(byType(screen.root, 'Image')).toHaveLength(0);
   expect(byProps(screen.root, { accessibilityLabel: 'Photo unavailable for Sofa' })).toHaveLength(1);
@@ -70,12 +73,12 @@ test('failed or missing photos use an accessible fallback without removing the i
 test('a changed source retries normally, while a recreated failed source does not loop', async () => {
   mockPhoto.current = source('wide-photo.webp');
   const screen = await render(<ProductCard product={fakeProduct} onPress={() => {}} />);
-  await fireEvent(firstByProps(screen.root, { resizeMode: 'contain' }), 'error');
+  await fireEvent(firstByProps(screen.root, { resizeMode: 'cover' }), 'error');
   mockPhoto.current = source('portrait-photo.webp');
   await screen.rerender(<ProductCard product={fakeProduct} onPress={() => {}} />);
   expect(byType(screen.root, 'Image')).toHaveLength(1);
   // Re-failing on the new source must not loop the retry for the same photo.
-  await fireEvent(firstByProps(screen.root, { resizeMode: 'contain' }), 'error');
+  await fireEvent(firstByProps(screen.root, { resizeMode: 'cover' }), 'error');
   mockPhoto.current = source('portrait-photo.webp');
   await screen.rerender(<ProductCard product={fakeProduct} onPress={() => {}} />);
   expect(byType(screen.root, 'Image')).toHaveLength(0);
