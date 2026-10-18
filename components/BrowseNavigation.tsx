@@ -15,10 +15,12 @@ type Props = {
   leaf: string;
   onChange: (category: string, subcategory: string, leaf: string) => void;
   photo: (category: string) => ImageSourcePropType | undefined;
+  /** Phone layout: slim head + 34px chips instead of the editorial block. */
+  compact?: boolean;
 };
 const RED = '#DA1921';
 const ALL = { category: 'all', subcategory: 'all', leaf: 'all', label: 'All furniture', path: 'All furniture' };
-export function BrowseNavigation({ categories, products, leaves, category, subcategory, leaf, onChange, photo, sidebar = false }: Props) {
+export function BrowseNavigation({ categories, products, leaves, category, subcategory, leaf, onChange, photo, sidebar = false, compact = false }: Props) {
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -33,9 +35,9 @@ export function BrowseNavigation({ categories, products, leaves, category, subca
   const close = () => { setOpen(false); setQuery(''); };
   const choose = (destination: CategoryDestination) => { onChange(destination.category, destination.subcategory, destination.leaf); close(); };
   const showExplorer = () => { setExpanded(category === 'all' ? null : category); setQuery(''); setOpen(true); };
-  const shortcut = (id: string, label: string) => <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: category === id }} onPress={() => onChange(id, 'all', 'all')} style={[s.shortcut, category === id && s.shortcutSelected]}>
-    {id === 'all' ? <Grid2X2 size={17} color={category === id ? '#fff' : '#62616B'} /> : <Image source={photo(id)} style={s.shortcutPhoto} />}
-    <Text style={[s.shortcutLabel, category === id && s.shortcutLabelSelected]}>{label}</Text>
+  const shortcut = (id: string, label: string) => <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: category === id }} onPress={() => onChange(id, 'all', 'all')} hitSlop={compact ? 5 : undefined} style={[s.shortcut, compact && s.shortcutCompact, category === id && (compact ? s.shortcutCompactSelected : s.shortcutSelected)]}>
+    {id === 'all' ? <Grid2X2 size={compact ? 15 : 17} color={category === id ? '#fff' : '#62616B'} /> : <Image source={photo(id)} style={compact ? s.shortcutPhotoCompact : s.shortcutPhoto} />}
+    <Text style={[s.shortcutLabel, compact && s.shortcutLabelCompact, category === id && s.shortcutLabelSelected]}>{label}</Text>
     {category === id && <Check size={13} color="#fff" />}
   </Pressable>;
   const shortcuts = [shortcut('all', 'All'), ...categories.map((item) => shortcut(item.s, item.n))];
@@ -58,18 +60,27 @@ export function BrowseNavigation({ categories, products, leaves, category, subca
         {destinations.filter(entry => entry.category === item.s && entry.subcategory !== 'all').map(entry => destinationRow(entry, entry.leaf !== 'all'))}</>}
     </View>)}
   </ScrollView>;
-  return <View testID="browse-navigation" style={s.navigation}>
-    <View style={s.heading}>
+  return <View testID="browse-navigation" style={[s.navigation, compact && s.navigationCompact]}>
+    {compact ? <View style={s.compactHead}>
+      <Text accessibilityRole="header" style={s.compactTitle}>{parentName || 'Browse furniture'}</Text>
+      <Pressable ref={trigger} accessibilityRole="button" accessibilityLabel="All categories" accessibilityState={{ expanded: open }} onPress={showExplorer} hitSlop={6} style={s.exploreCompact}><Grid2X2 size={14} color={RED} /><Text style={s.exploreText}>All categories</Text></Pressable>
+    </View> : <View style={s.heading}>
       <View style={s.titleCopy}><Text style={s.eyebrow}>THE ROYAL EDIT</Text><Text accessibilityRole="header" style={s.title}>{parentName || 'Find your kind of home.'}</Text><Text style={s.subtitle}>{parentName ? 'Considered pieces. Made for your everyday.' : 'Good spaces start with something you love.'}</Text></View>
       <Pressable ref={trigger} accessibilityRole="button" accessibilityLabel="All categories" accessibilityState={{ expanded: open }} onPress={showExplorer} style={s.explore}><Grid2X2 size={17} color={RED} /><Text style={s.exploreText}>All categories</Text></Pressable>
-    </View>
-    {width >= 768 ? <View style={s.desktopShortcuts}>{shortcuts}</View> : <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.shortcutRow} style={s.shortcutScroll}>{shortcuts}</ScrollView>}
+    </View>}
+    {compact
+      ? <ScrollView horizontal showsHorizontalScrollIndicator={false} decelerationRate="fast" contentContainerStyle={s.shortcutRowCompact} style={s.shortcutScrollCompact}>
+          {shortcuts}
+          {!!parentName && children.length > 0 && <View style={s.inlineDivider} />}
+          {!!parentName && children.length > 0 && children.map((item) => <Pressable key={item.subcategory} accessibilityRole="button" accessibilityState={{ selected: subcategory === item.subcategory }} onPress={() => onChange(category, item.subcategory, 'all')} hitSlop={6} style={[s.contextChip, s.contextChipCompact, subcategory === item.subcategory && s.contextChipCompactSelected]}><Text style={[s.contextChipText, s.contextChipTextCompact, subcategory === item.subcategory && s.red]}>{item.label}</Text></Pressable>)}
+        </ScrollView>
+      : width >= 768 ? <View style={s.desktopShortcuts}>{shortcuts}</View> : <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.shortcutRow} style={s.shortcutScroll}>{shortcuts}</ScrollView>}
     {!!parentName && <View style={s.context}>
       <Pressable accessibilityRole="button" accessibilityLabel="Show all furniture" onPress={() => onChange('all', 'all', 'all')} style={s.breadcrumbButton}><Text style={s.breadcrumb}>Browse</Text></Pressable><ChevronRight size={12} color="#96939D" />
       <Pressable accessibilityRole="button" accessibilityLabel={`Choose a type in ${parentName}`} onPress={showExplorer} style={s.contextChoice}><Text numberOfLines={1} style={s.contextLabel}>{active?.label || `All ${parentName.toLocaleLowerCase()}`}</Text><ChevronDown size={14} color={RED} /></Pressable>
     </View>}
-    {!!parentName && children.length > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.contextScroll} contentContainerStyle={s.contextRow}>
-      {[{ category, subcategory: 'all', leaf: 'all', label: `All ${parentName.toLocaleLowerCase()}`, path: parentName }, ...children].map((item) => <Pressable key={item.subcategory} accessibilityRole="button" accessibilityState={{ selected: subcategory === item.subcategory }} onPress={() => onChange(category, item.subcategory, 'all')} style={[s.contextChip, subcategory === item.subcategory && s.contextChipSelected]}><Text style={[s.contextChipText, subcategory === item.subcategory && s.red]}>{item.label}</Text></Pressable>)}
+    {!compact && !!parentName && children.length > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} decelerationRate="fast" style={compact ? s.contextScrollCompact : s.contextScroll} contentContainerStyle={s.contextRow}>
+      {[{ category, subcategory: 'all', leaf: 'all', label: `All ${parentName.toLocaleLowerCase()}`, path: parentName }, ...children].map((item) => <Pressable key={item.subcategory} accessibilityRole="button" accessibilityState={{ selected: subcategory === item.subcategory }} onPress={() => onChange(category, item.subcategory, 'all')} hitSlop={compact ? 7 : undefined} style={[s.contextChip, compact && s.contextChipCompact, subcategory === item.subcategory && (compact ? s.contextChipCompactSelected : s.contextChipSelected)]}><Text style={[s.contextChipText, compact && s.contextChipTextCompact, subcategory === item.subcategory && s.red]}>{item.label}</Text></Pressable>)}
     </ScrollView>}
     <Modal transparent visible={open} animationType={Platform.OS === 'web' ? 'none' : 'slide'} onRequestClose={close} onDismiss={() => trigger.current?.focus()}>
       <AdaptiveFrame><View style={s.scrim}>
@@ -97,8 +108,18 @@ export function BrowseNavigation({ categories, products, leaves, category, subca
   </View>;
 }
 const s = StyleSheet.create({
-  navigation: { paddingTop: 12, backgroundColor: '#F6F6F7', ...GLASS.transparent }, heading: { paddingHorizontal: 18, flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginBottom: 15 }, titleCopy: { flex: 1, minWidth: 0 }, eyebrow: { color: '#8D4F46', fontSize: 9, fontWeight: '800', letterSpacing: 1.6, marginBottom: 7 }, title: { color: '#28252C', fontSize: 24, lineHeight: 29, fontWeight: '800', letterSpacing: -0.7 }, subtitle: { color: '#726E78', fontSize: 11, lineHeight: 17, marginTop: 5 }, explore: { minHeight: 44, borderWidth: 1, borderColor: '#E4DCD9', backgroundColor: '#FFF', borderRadius: 14, paddingHorizontal: 10, flexDirection: 'row', gap: 6, alignItems: 'center', marginTop: 10, ...GLASS.chip }, exploreText: { color: '#B61117', fontSize: 11, fontWeight: '700' },
-  shortcutScroll: { flexGrow: 0, height: 54 }, shortcutRow: { paddingHorizontal: 18, gap: 8, alignItems: 'flex-start', paddingBottom: 6 }, desktopShortcuts: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 18, paddingBottom: 8 }, shortcut: { minHeight: 46, borderRadius: 15, paddingLeft: 6, paddingRight: 12, flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FFF', borderWidth: 1, borderColor: '#E6E2DF', ...GLASS.chip }, shortcutSelected: { backgroundColor: '#28252C', borderColor: '#28252C', ...GLASS.chipDarkActive }, shortcutPhoto: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#EEE9E4' }, shortcutLabel: { color: '#504C54', fontSize: 12, fontWeight: '600' }, shortcutLabelSelected: { color: '#FFF' },
-  context: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 5 }, breadcrumbButton: { minHeight: 44, justifyContent: 'center' }, breadcrumb: { color: '#726E78', fontSize: 11 }, contextChoice: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, flexShrink: 1 }, contextLabel: { color: '#28252C', fontSize: 11, fontWeight: '700', flexShrink: 1 }, contextScroll: { height: 48, flexGrow: 0 }, contextRow: { paddingHorizontal: 18, gap: 7 }, contextChip: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 13, borderWidth: 1, borderColor: '#E6E2DF', backgroundColor: '#FFF', ...GLASS.chip }, contextChipSelected: { borderColor: '#D8A6A0', backgroundColor: '#F8EEEC', ...GLASS.chipActive }, contextChipText: { color: '#625D66', fontSize: 11, fontWeight: '600' }, red: { color: '#B61117' },
+  navigation: { paddingTop: 12, backgroundColor: '#F6F6F7', ...GLASS.transparent },
+  navigationCompact: { paddingTop: 4, paddingBottom: 0 },
+  compactHead: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 },
+  compactTitle: { color: '#28252C', fontSize: 13, fontWeight: '800', flexShrink: 1 },
+  exploreCompact: { minHeight: 32, borderWidth: 1, borderColor: '#E4DCD9', backgroundColor: '#FFF', borderRadius: 11, paddingHorizontal: 8, flexDirection: 'row', gap: 5, alignItems: 'center', ...GLASS.chip },
+  inlineDivider: { width: 1, height: 20, backgroundColor: '#E6E2DF', marginLeft: 2 }, heading: { paddingHorizontal: 18, flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginBottom: 15 }, titleCopy: { flex: 1, minWidth: 0 }, eyebrow: { color: '#8D4F46', fontSize: 9, fontWeight: '800', letterSpacing: 1.6, marginBottom: 7 }, title: { color: '#28252C', fontSize: 24, lineHeight: 29, fontWeight: '800', letterSpacing: -0.7 }, subtitle: { color: '#726E78', fontSize: 11, lineHeight: 17, marginTop: 5 }, explore: { minHeight: 44, borderWidth: 1, borderColor: '#E4DCD9', backgroundColor: '#FFF', borderRadius: 14, paddingHorizontal: 10, flexDirection: 'row', gap: 6, alignItems: 'center', marginTop: 10, ...GLASS.chip }, exploreText: { color: '#B61117', fontSize: 11, fontWeight: '700' },
+  shortcutScroll: { flexGrow: 0, height: 54 }, shortcutRow: { paddingHorizontal: 18, gap: 8, alignItems: 'flex-start', paddingBottom: 6 },
+  shortcutScrollCompact: { flexGrow: 0, height: 42 }, shortcutRowCompact: { paddingHorizontal: 16, gap: 8, alignItems: 'flex-start', paddingBottom: 6 },
+  shortcutCompact: { minHeight: 34, borderRadius: 17, paddingLeft: 5, paddingRight: 11, gap: 6 },
+  shortcutCompactSelected: { backgroundColor: '#28252C', borderColor: '#28252C' },
+  shortcutLabelCompact: { fontSize: 13 },
+  shortcutPhotoCompact: { width: 24, height: 24, borderRadius: 8, backgroundColor: '#EEE9E4' }, desktopShortcuts: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 18, paddingBottom: 8 }, shortcut: { minHeight: 46, borderRadius: 15, paddingLeft: 6, paddingRight: 12, flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FFF', borderWidth: 1, borderColor: '#E6E2DF', ...GLASS.chip }, shortcutSelected: { backgroundColor: '#28252C', borderColor: '#28252C', ...GLASS.chipDarkActive }, shortcutPhoto: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#EEE9E4' }, shortcutLabel: { color: '#504C54', fontSize: 12, fontWeight: '600' }, shortcutLabelSelected: { color: '#FFF' },
+  context: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, gap: 5 }, breadcrumbButton: { minHeight: 44, justifyContent: 'center' }, breadcrumb: { color: '#726E78', fontSize: 11 }, contextChoice: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, flexShrink: 1 }, contextLabel: { color: '#28252C', fontSize: 11, fontWeight: '700', flexShrink: 1 }, contextScroll: { height: 48, flexGrow: 0 }, contextRow: { paddingHorizontal: 18, gap: 7 }, contextScrollCompact: { height: 38, flexGrow: 0, marginTop: 1 }, contextChipCompact: { minHeight: 30, paddingHorizontal: 10, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.72)' }, contextChipCompactSelected: { borderColor: '#D8A6A0', backgroundColor: '#F8EEEC' }, contextChipTextCompact: { fontSize: 12 }, contextChip: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 13, borderWidth: 1, borderColor: '#E6E2DF', backgroundColor: '#FFF', ...GLASS.chip }, contextChipSelected: { borderColor: '#D8A6A0', backgroundColor: '#F8EEEC', ...GLASS.chipActive }, contextChipText: { color: '#625D66', fontSize: 11, fontWeight: '600' }, red: { color: '#B61117' },
   scrim: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: '#211B2866' }, sheet: { width: '100%', maxWidth: 640, maxHeight: '88%', backgroundColor: '#FAF8F5', borderTopLeftRadius: 26, borderTopRightRadius: 26, paddingTop: 24, flexShrink: 1, ...GLASS.sheet }, sheetHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 22, gap: 10 }, sheetTitle: { color: '#28252C', fontWeight: '800', fontSize: 25, letterSpacing: -0.6 }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 16, ...GLASS.chip }, search: { margin: 20, borderWidth: 1, borderColor: '#E3DDD7', borderRadius: 15, minHeight: 50, backgroundColor: '#FFF', flexDirection: 'row', alignItems: 'center', paddingLeft: 14, gap: 9, ...GLASS.input }, searchInput: { flex: 1, minWidth: 0, minHeight: 48, color: '#28252C', fontSize: 13, paddingVertical: 12 }, sheetContent: { paddingHorizontal: 20, paddingBottom: 16 }, destination: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 }, destinationSelected: { backgroundColor: '#F5E8E4' }, destinationCopy: { flex: 1, minWidth: 0 }, destinationLabel: { color: '#504C54', fontSize: 13, fontWeight: '600' }, destinationPath: { color: '#726E78', fontSize: 11, lineHeight: 16, marginTop: 4 }, nested: { paddingLeft: 30 }, results: { color: '#726E78', fontSize: 11, marginBottom: 8 }, noResults: { padding: 20, alignItems: 'center' }, reset: { minHeight: 44, justifyContent: 'center', marginTop: 10 }, group: { borderTopWidth: 1, borderColor: '#E8E2DC', marginTop: 8, paddingTop: 8 }, groupHeading: { flexDirection: 'row', alignItems: 'center' }, groupLink: { flex: 1, flexDirection: 'row', gap: 12, alignItems: 'center', minHeight: 64, paddingVertical: 8, paddingLeft: 8 }, groupPhoto: { width: 45, height: 45, borderRadius: 13, backgroundColor: '#EEE9E4' }, groupName: { color: '#28252C', fontSize: 15, fontWeight: '700' }, groupHint: { color: '#8D4F46', fontSize: 10, marginTop: 4 }, sheetFooter: { borderTopWidth: 1, borderColor: '#E8E2DC', padding: 16 }, footerText: { color: '#82746E', textAlign: 'center', fontSize: 10, letterSpacing: 0.5 },
 });

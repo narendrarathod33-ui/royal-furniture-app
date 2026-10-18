@@ -13,7 +13,9 @@ jest.mock('../components/AdaptiveProductList', () => {
     AdaptiveProductList: (props: any) => {
       useEffect(() => { mounts += 1; }, []);
       captured.current.push({ ...props, __mount: mounts + 1 });
-      return null;
+      // The compact toolbar rides in the list header (sticky on device/web);
+      // render it so the suite can drive the real controls.
+      return props.ListHeaderComponent ?? null;
     },
     useGridCardWidth: () => 240,
   };
