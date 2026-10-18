@@ -1,0 +1,32 @@
+{
+  "label": "cura",
+  "viewport": "390x844",
+  "coldLoad": {
+    "ttfbMs": 67,
+    "domContentLoadedMs": 263,
+    "loadMs": 265,
+    "transferKB": 0,
+    "decodedKB": 0,
+    "requests": 27,
+    "interactiveMs": 893,
+    "longTasksDuringLoad": 0
+  },
+  "scrollBrowse": {
+    "blurredSurfacesOnScreen": 8,
+    "frames": 159,
+    "droppedOver32ms": 21,
+    "droppedPct": 13.3,
+    "worstMs": 433,
+    "p95Ms": 167,
+    "longTasksDuringScroll": 0
+  },
+  "tapToPdp": {
+    "reps": [
+      1707,
+      1820,
+      1975
+    ],
+    "medianMs": 1820
+  },
+  "at": "2026-10-18T16:30:44.923Z"
+}

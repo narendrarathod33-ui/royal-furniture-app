@@ -1,0 +1,32 @@
+{
+  "label": "curc",
+  "viewport": "390x844",
+  "coldLoad": {
+    "ttfbMs": 3,
+    "domContentLoadedMs": 172,
+    "loadMs": 174,
+    "transferKB": 0,
+    "decodedKB": 0,
+    "requests": 24,
+    "interactiveMs": 728,
+    "longTasksDuringLoad": 0
+  },
+  "scrollBrowse": {
+    "blurredSurfacesOnScreen": 8,
+    "frames": 198,
+    "droppedOver32ms": 15,
+    "droppedPct": 7.6,
+    "worstMs": 400,
+    "p95Ms": 117,
+    "longTasksDuringScroll": 0
+  },
+  "tapToPdp": {
+    "reps": [
+      1684,
+      1873,
+      2268
+    ],
+    "medianMs": 1873
+  },
+  "at": "2026-10-18T16:31:59.537Z"
+}

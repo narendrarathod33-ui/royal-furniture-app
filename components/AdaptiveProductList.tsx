@@ -30,10 +30,10 @@ export function AdaptiveProductList<T extends { id: string }>(props: Omit<FlatLi
       <FlatList {...props} ref={list} key={`columns-${columns}`} numColumns={columns}
         // Catalog-sized lists: keep memory bounded and batches small so
         // scrolling never queues a long JS render ahead of the next frame.
-        windowSize={7}
+        windowSize={5}
         initialNumToRender={8}
-        maxToRenderPerBatch={8}
-        updateCellsBatchingPeriod={50}
+        maxToRenderPerBatch={4}
+        updateCellsBatchingPeriod={40}
         removeClippedSubviews={Platform.OS !== 'web'}
         initialScrollIndex={index ? Math.floor(index / columns) : undefined}
         onScrollToIndexFailed={({ index: row, averageItemLength }) => {

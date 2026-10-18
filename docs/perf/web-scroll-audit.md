@@ -52,6 +52,34 @@ Pixel diff of the grid screen before vs after (same viewport, settled):
 **0.001% of pixels differ** (4 px of 329 k — antialiasing noise). Screenshots:
 `scroll-before.png` / `scroll-after.png`.
 
+## Round 2 — list batching (worst-frame spike) + bundle quantification
+
+**V1 batching change (`components/AdaptiveProductList.tsx`):** `windowSize 7→5`,
+`maxToRenderPerBatch 8→4`, `updateCellsBatchingPeriod 50→40`. Same rendering,
+different batching rhythm — work per frame-boundary is halved. Measured same
+session, 3 runs per config (sandbox noise drifts between sessions; medians):
+
+| Metric (3-run median) | Committed config | V1 | Δ |
+|---|---|---|---|
+| Dropped frames | 13.3% | **6.5%** | ~2× |
+| p95 frame interval | 150 ms | **83 ms** | −45% |
+| Worst frame | 433 ms | 400 ms | mild |
+
+Raw runs: `perf-cur{a,b,c}.json` vs `perf-v1{a,b,c}.json` (written by the same
+harness). Gates after V1: tsc, jest 45/45, legacy 57/57, Playwright 10/10.
+
+**Bundle quantification (bottleneck #2):** prod entry is 5.6 MB raw / 1.05 MB
+gzip; the two catalog data sources alone are 2.3 MB of TS source
+(`catalogData.ts` 964 KB + `productDetails.ts` 1.38 MB). Throttled cold load
+(CDP Fast-3G emulation, 1.6 Mbps/150 ms): **28.6 s to interactive on a
+non-compressing server** — arithmetic matches raw-byte transfer; GitHub Pages
+serves gzip, so production first load is ~5–6 s transfer + parse on the same
+link. Route-level splitting (`asyncRoutes`) is a **dead end here**: the app is
+a single route with in-app tab state — there is nothing to split. The real
+lever would be moving the catalog data out of the critical chunk
+(fetch-after-interactive), which changes behavior (search empty until loaded)
+and is therefore **recommended, not implemented**.
+
 ## Remaining bottlenecks (ranked)
 
 1. **Worst-frame spike (~270–450 ms) on list-window mounts** — new card batch
