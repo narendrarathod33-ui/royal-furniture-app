@@ -38,6 +38,14 @@ export function forgetLang() {
   removeSaved(LANG_STORAGE_KEY);
 }
 
+/** Reloads so a language switch takes effect everywhere (web relaunches the SPA;
+ * on native the direction applies at next launch — never crash on missing window). */
+export function reloadForLang() {
+  if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
+    window.location.reload();
+  }
+}
+
 /** True when the running layout is right-to-left (Arabic). */
 export const isRTL = () => useLangStore.getState().lang === 'ar';
 
@@ -76,6 +84,8 @@ const STRINGS: Record<string, { en: string; ar: string }> = {
   'nav.search': { en: 'Search', ar: 'بحث' },
   'nav.deals': { en: 'Deals', ar: 'العروض' },
   'nav.new': { en: 'New in', ar: 'وصل حديثاً' },
+  'nav.stores': { en: 'Stores', ar: 'الفروع' },
+  'nav.more': { en: 'More', ar: 'المزيد' },
 
   // Header
   'header.cartBadge': { en: 'Cart, {count} items', ar: 'السلة، {count} منتج' },
@@ -227,6 +237,18 @@ const STRINGS: Record<string, { en: string; ar: string }> = {
   'account.email': { en: 'Email address', ar: 'البريد الإلكتروني' },
   'account.mobile': { en: 'Mobile number', ar: 'رقم الجوال' },
   'account.language': { en: 'Language', ar: 'اللغة' },
+  'stores.title': { en: 'Royal Furniture stores', ar: 'فروع رويال فيرنيتشر' },
+  'stores.sub': { en: 'Visit us across the UAE.', ar: 'زورونا في جميع أنحاء الإمارات.' },
+  'stores.call': { en: 'Call', ar: 'اتصال' },
+  'stores.directions': { en: 'Directions', ar: 'الاتجاهات' },
+  'stores.callA11y': { en: 'Call the {c} store', ar: 'اتصل بفرع {c}' },
+  'stores.directionsA11y': { en: 'Directions to the {c} store', ar: 'الاتجاهات إلى فرع {c}' },
+  'more.title': { en: 'More', ar: 'المزيد' },
+  'more.sub': { en: 'Everything else in one place.', ar: 'كل شيء آخر في مكان واحد.' },
+  'more.newIn': { en: 'New arrivals', ar: 'وصل حديثاً' },
+  'more.saved': { en: 'Saved items', ar: 'المحفوظات' },
+  'more.orders': { en: 'My orders', ar: 'طلباتي' },
+  'more.account': { en: 'Profile & support', ar: 'الملف الشخصي والدعم' },
 };
 
 /** Translates one key, filling `{placeholder}` vars. Unknown keys return the key (never crash). */

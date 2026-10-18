@@ -13,7 +13,7 @@ export type WidenProduct<T> = T extends { id: string; n: string; o: number; l: n
 export type Product = WidenProduct<(typeof royalFurnitureData.products)[number]> & { paymentProductId?: string };
 /** A listing product: one card per product, with the number of selectable sizes. */
 export type ListedProduct = Product & { sizeCount?: number; baseName?: string };
-export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'cart' | 'account';
+export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'stores' | 'more' | 'cart' | 'account';
 export type OrderRecord = { id: string; purchasedAt: string; deliveryDate: string; status: string; total: number; items: { name: string; category: string }[] };
 
 export const COLORS = { ink: '#050000', red: '#DA1921', redDeep: '#B61117', maroon: '#830406', navy: '#282984', gold: '#B45309', cream: '#FBF5EE', line: '#E3E3E5', muted: '#444444', sage: '#DCE4D7' };
