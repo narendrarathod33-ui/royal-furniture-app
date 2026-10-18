@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start --tunnel --port 4000",
     "build:web": "expo export --platform web",
+    "build:web:pages": "PAGES_BASE_PATH=/royal-furniture-app expo export --platform web",
     "typecheck": "tsc --noEmit",
     "start": "node scripts/serve-production.mjs",
     "test:production": "node --test scripts/production.test.mjs",

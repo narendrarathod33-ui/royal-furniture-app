@@ -57,6 +57,25 @@ npm run ota:publish     # eas update --channel production --auto
 Channels map 1:1 to build profiles, so a `preview` build only ever receives
 `preview` updates.
 
+## Public web demo (GitHub Pages) — P5
+
+The compiled web app lives on the `gh-pages` branch, built for the project
+site sub-path (`/royal-furniture-app/`) via `experiments.baseUrl`
+(`npm run build:web:pages`; `app.config.js` injects it only when
+`PAGES_BASE_PATH` is set, so dev/preview are untouched). It ships with
+`404.html` (SPA fallback) and `.nojekyll`. Verified serving under the
+sub-path in a real browser before push.
+
+One manual toggle remains (the Arena GitHub integration cannot manage
+Pages): repo **Settings → Pages → Deploy from a branch → `gh-pages` → Save**.
+The site then goes live at
+`https://narendrarathod33-ui.github.io/royal-furniture-app/`.
+Note: Pages on a **private** repository requires GitHub Pro — on the free
+plan either make the repo public (source becomes visible; the gh-pages
+branch only ever contains the compiled app) or host `royal-furniture-web.zip`
+on any static host instead (Netlify Drop etc.). Re-deploy after changes:
+`npm run build:web:pages`, then push the new export to `gh-pages`.
+
 ## Prebuild verified in-sandbox
 
 `npx expo prebuild --platform android` and `--platform ios` were both run and
