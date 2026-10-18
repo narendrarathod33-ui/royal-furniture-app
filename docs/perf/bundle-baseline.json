@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-18T03:36:44.128Z",
+  "gitSha": "7ca625c",
+  "platform": "web (Metro dev bundle, hermes-stable)",
+  "rawBytes": 10922749,
+  "gzipBytes": 1638753,
+  "url": "http://localhost:4000/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable"
+}

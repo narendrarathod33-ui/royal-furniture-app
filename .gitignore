@@ -41,3 +41,7 @@ bun-error.*
 .ideavo/project
 
 *.log
+
+# playwright artifacts
+test-results/
+playwright-report/

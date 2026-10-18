@@ -1,6 +1,13 @@
 # React-Native Standards Alignment Plan
 
-Status: **draft for review — no code changed yet.**
+Status: **P0 complete** (Playwright smoke + bundle baseline, see §2 Phase 0).
+
+> P0 outcome: `e2e/smoke.spec.ts` 7/7 green against the live preview;
+> baseline 10.92 MB raw / 1.64 MB gzip (`docs/perf/bundle-baseline.json`).
+> Sandbox browser: no system browser / apt / Playwright CDN — Chromium is
+> provisioned from the npm-hosted `@sparticuz/chromium` tarball (see
+> `e2e/helpers/chromium.cjs`, which also drops its Lambda-only
+> `--single-process` flag) with its bundled NSS libs on `LD_LIBRARY_PATH`.
 Standards source: the RN/Expo standards brief (New Architecture, Expo SDK 50+,
 Reanimated/Gesture, Zustand+MMKV, TanStack Query, FlashList, Jest+RNTL+Maestro).
 
