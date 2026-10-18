@@ -470,7 +470,11 @@ def cmd_import(xlsx_path: Path) -> None:
     # One import at a time, across every caller (Drive receiver, file-watcher
     # bridge, CLI): the import is a read-modify-write of shared data files, so
     # concurrent runs would interleave and silently drop each other's changes.
-    lock_path = ROOT / ".catalog-bridge-import.lock"
+    # Live outside the repo: the repo tree must stay clean for deploys, and the
+    # bridge home is already watcher-ignored (nothing re-imports the lock file).
+    lock_dir = Path(os.environ.get("CATALOG_BRIDGE_DIR", Path.home() / ".catalog-bridge"))
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = lock_dir / "catalog-bridge-import.lock"
     with open(lock_path, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:
