@@ -79,6 +79,7 @@ async function processFile(file) {
 
 async function markExisting() {
   // Remember files that already exist so a bridge restart does not re-import old uploads.
+  const pending = [];
   const scan = (dir) => {
     let entries = [];
     try {
@@ -92,11 +93,18 @@ async function markExisting() {
       if (IGNORE.some((part) => full.includes(part))) continue;
       if (entry.isDirectory()) scan(full);
       else if (entry.name.toLowerCase().endsWith('.xlsx') && !entry.name.startsWith('~$')) {
-        fingerprint(full).then((fp) => { if (fp && !state[full]) { state[full] = fp; } });
+        pending.push(
+          fingerprint(full)
+            .then((fp) => { if (fp && !state[full]) { state[full] = fp; } })
+            .catch((err) => log('…could not fingerprint', full, '-', err.message))
+        );
       }
     }
   };
   scan(HOME);
+  // Every pre-existing file is fingerprinted before the first state write, so
+  // a bridge restart cannot forget (and later re-import) an old upload.
+  await Promise.all(pending);
   saveState();
 }
 

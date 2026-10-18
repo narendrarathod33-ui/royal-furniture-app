@@ -10,8 +10,15 @@ export function SandboxCheckout({ items }: { items: Item[] }) {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     let active = true;
-    fetch('/api/payments/config').then((response) => response.ok ? response.json() : null)
-      .then((config) => { if (active) setEnabled(config?.enabled === true); }).catch(() => {});
+    (async () => {
+      try {
+        const response = await fetch('/api/payments/config');
+        const config = response.ok ? await response.json() : null;
+        if (active) setEnabled(config?.enabled === true);
+      } catch {
+        // Payments stay disabled when the config endpoint is unreachable.
+      }
+    })();
     return () => { active = false; };
   }, []);
   if (!enabled) return <View style={styles.panel}><Text style={styles.title}>Stripe sandbox not enabled</Text><Text style={styles.body}>You can still use local demo checkout below. Hosted payments need the configured sandbox server.</Text></View>;

@@ -564,15 +564,16 @@ export default function ProductDetails({
       return null;
     };
 
-    load()
-      .then((data) => {
+    (async () => {
+      try {
+        const data = await load();
         if (!active) return;
         if (data) setDetail(data);
         else setError(true);
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    })();
 
     return () => { active = false; };
   }, [slugBase, slugHashless, reload]);
