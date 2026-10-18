@@ -14,7 +14,7 @@ test('the real adaptive list measures its pane, supports one column, and keeps t
   const jsx=(type,props,key)=>({type,props:props||{},key});
   const hooks={createContext:()=>({Provider:'CardProvider'}),useContext:()=>null,useEffect:()=>{},useRef:v=>{const i=cursor++; return slots[i]??=( {current:v} );},useState:v=>{const i=cursor++; if(!(i in slots))slots[i]=v;return[slots[i],v=>slots[i]=v];}};
   hooks.createElement=(type,props,...children)=>jsx(type,{...props, ...(children.length ? {children:children.length===1?children[0]:children} : {})},props?.key);
-  const module={exports:{},require:name=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='react-native'?{FlatList:'FlatList',View:'View'}:name.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>layout}:utility.exports};
+  const module={exports:{},require:name=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='react-native'?{FlatList:'FlatList',View:'View',Platform:{OS:'ios'}}:name.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>layout}:utility.exports};
   vm.runInNewContext(compile(read('components/AdaptiveProductList.tsx')), module);
   const props={data:Array.from({length:100},(_,i)=>({id:String(i)}))};
   const render=()=>{cursor=0;const tree=module.exports.AdaptiveProductList(props);return{tree,list:tree.props.children.props.children};};

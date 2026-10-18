@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { FlatList, View, type FlatListProps, type ViewToken } from 'react-native';
+import { FlatList, Platform, View, type FlatListProps, type ViewToken } from 'react-native';
 import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
 import { gridMetrics } from '../utils/adaptiveLayout';
 
@@ -28,6 +28,13 @@ export function AdaptiveProductList<T extends { id: string }>(props: Omit<FlatLi
   return <View style={{ flex: 1, minWidth: 0 }} onLayout={e => setMeasured(e.nativeEvent.layout.width)}>
     <CardWidth.Provider value={cardWidth}>
       <FlatList {...props} ref={list} key={`columns-${columns}`} numColumns={columns}
+        // Catalog-sized lists: keep memory bounded and batches small so
+        // scrolling never queues a long JS render ahead of the next frame.
+        windowSize={7}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={Platform.OS !== 'web'}
         initialScrollIndex={index ? Math.floor(index / columns) : undefined}
         onScrollToIndexFailed={({ index: row, averageItemLength }) => {
           if (attempts.current++ >= 3) return;

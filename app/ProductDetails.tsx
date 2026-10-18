@@ -624,6 +624,7 @@ export default function ProductDetails({
   const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
   const webGallerySurface = useRef<View>(null);
   const galleryIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current); }, []);
   const activeSlide = wrapSlideIndex(galleryIndex, slides.length);
   // Identical end caps let touch swipes and arrow clicks continue in either direction.
   const loopingSlides = slides.length > 1
