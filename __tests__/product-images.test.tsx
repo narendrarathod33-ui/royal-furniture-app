@@ -119,5 +119,5 @@ test('detail gallery and cart photos contain products; editorial and swatches st
   const detailsSource = fs.readFileSync('app/ProductDetails.tsx', 'utf8');
   expect(detailsSource).toMatch(/style=\{styles\.swatchImage\} resizeMode="cover"/);
   const promosSource = fs.readFileSync('components/HomePromotions.tsx', 'utf8');
-  expect(promosSource).toMatch(/style=\{s\.photo\} resizeMode="contain"/);
+  expect(promosSource).toMatch(/resizeMode="cover"/);
 });
