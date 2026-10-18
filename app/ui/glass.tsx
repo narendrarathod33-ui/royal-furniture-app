@@ -18,7 +18,7 @@ import { Platform, StyleSheet, View, type TextStyle, type ViewStyle } from 'reac
  */
 
 /** Soft luminous wash the whole app sits on, so the glass has light to refract. */
-export const GLASS_BG_BASE = '#EFEAF0';
+export const GLASS_BG_BASE = '#FBF5EE';
 
 type GlassStyle = ViewStyle & { backdropFilter?: string };
 
@@ -294,8 +294,8 @@ const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, overflow: 'hidden', backgroundColor: GLASS_BG_BASE },
   blob: { position: 'absolute', borderRadius: 999 },
   blobSheen: { width: 460, height: 320, top: -70, right: -80, backgroundColor: 'rgba(255,255,255,0.85)', filter: 'blur(60px)' },
-  blobRed: { width: 320, height: 320, top: -60, left: -90, backgroundColor: 'rgba(218,25,33,0.22)', filter: 'blur(72px)' },
-  blobIndigo: { width: 420, height: 420, top: 130, right: -150, backgroundColor: 'rgba(40,41,132,0.2)', filter: 'blur(88px)' },
-  blobGold: { width: 300, height: 300, bottom: -110, left: 30, backgroundColor: 'rgba(180,83,9,0.16)', filter: 'blur(80px)' },
-  blobMaroon: { width: 240, height: 240, bottom: 40, right: -70, backgroundColor: 'rgba(131,4,6,0.14)', filter: 'blur(78px)' },
+  blobRed: { width: 320, height: 320, top: -60, left: -90, backgroundColor: 'rgba(142,27,44,0.15)', filter: 'blur(72px)' },
+  blobIndigo: { width: 420, height: 420, top: 130, right: -150, backgroundColor: 'rgba(227,188,106,0.22)', filter: 'blur(88px)' },
+  blobGold: { width: 300, height: 300, bottom: -110, left: 30, backgroundColor: 'rgba(243,211,200,0.45)', filter: 'blur(80px)' },
+  blobMaroon: { width: 240, height: 240, bottom: 40, right: -70, backgroundColor: 'rgba(251,227,214,0.5)', filter: 'blur(78px)' },
 });

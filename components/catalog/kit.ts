@@ -16,7 +16,7 @@ export type ListedProduct = Product & { sizeCount?: number; baseName?: string };
 export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'cart' | 'account';
 export type OrderRecord = { id: string; purchasedAt: string; deliveryDate: string; status: string; total: number; items: { name: string; category: string }[] };
 
-export const COLORS = { ink: '#050000', red: '#DA1921', redDeep: '#B61117', maroon: '#830406', navy: '#282984', gold: '#B45309', cream: '#F6F6F7', line: '#E3E3E5', muted: '#444444', sage: '#DCE4D7' };
+export const COLORS = { ink: '#050000', red: '#DA1921', redDeep: '#B61117', maroon: '#830406', navy: '#282984', gold: '#B45309', cream: '#FBF5EE', line: '#E3E3E5', muted: '#444444', sage: '#DCE4D7' };
 export const categoryColors: Record<string, string> = { furniture: '#D7C2AD', sofas: '#C7D4C9', bedroom: '#D8C7D2', household: '#E5D6B8', 'cooltech-mattress': '#C8DCE2', 'kids-and-teens': '#E5C8B4' };
 export const homeCategoryImages: Record<string, number> = {
   furniture: require('../../assets/images/home-furniture.webp'),
