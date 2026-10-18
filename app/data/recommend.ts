@@ -97,6 +97,7 @@ export function suggestFor(
   anchor: { id: string; c: string; sc?: string; o: number },
   catalog: readonly Product[],
   limit = 4,
+  opts: { complementBonus?: number } = {},
 ): Suggestion[] {
   const baseId = anchor.id.split('::size=')[0];
   const reps = collapseSizeFamilies([...catalog]) as unknown as ListedProduct[];
@@ -109,7 +110,7 @@ export function suggestFor(
     const sameCategory = p.c === anchor.c;
     if (!sameSub && !complement && !sameCategory) continue;
 
-    const relevance = sameSub ? RELEVANCE.sameSub : complement ? RELEVANCE.complement : RELEVANCE.sameCategory;
+    const relevance = sameSub ? RELEVANCE.sameSub : complement ? RELEVANCE.complement + (opts.complementBonus ?? 0) : RELEVANCE.sameCategory;
 
     const labels = (p.lb as readonly string[] | undefined) || [];
     const discount = p.l && p.l > p.o ? (p.l - p.o) / p.l : 0;
@@ -157,4 +158,34 @@ export function upgradePicks(
     .sort((a, b) => a.price - b.price || a.name.localeCompare(b.name))
     .slice(0, limit)
     .map((v) => ({ name: v.name, label: v.label, price: v.price, listPrice: v.listPrice, delta: v.price - currentPrice }));
+}
+
+/**
+ * "Complete your order" — cart cross-sell. Scores every candidate against
+ * every item already in the bag (best anchor wins), so a bed in the cart
+ * pulls mattresses and nightstands, a sofa pulls ottomans and décor.
+ * Items already in the cart (any size variant of them) are never suggested;
+ * scoring and guardrails are otherwise identical to the product-page rail.
+ */
+export function suggestForCart(
+  cartItems: readonly { id: string; c: string; sc?: string; o: number }[],
+  catalog: readonly Product[],
+  limit = 4,
+): Suggestion[] {
+  const inCart = new Set(cartItems.map((item) => item.id.split('::size=')[0]));
+  if (!inCart.size) return [];
+  const anchors = [...inCart].map((baseId) => cartItems.find((item) => item.id.split('::size=')[0] === baseId)!);
+  const merged = new Map<string, Suggestion>();
+  for (const anchor of anchors) {
+    // Cart surface: completing the room decisively outranks more of the
+    // same range (60 bonus > sameSub 60 + any label/deal boosts).
+    for (const suggestion of suggestFor(anchor, catalog, 8, { complementBonus: 60 })) {
+      if (inCart.has(suggestion.product.id)) continue;
+      const kept = merged.get(suggestion.product.id);
+      if (!kept || suggestion.score > kept.score) merged.set(suggestion.product.id, suggestion);
+    }
+  }
+  return [...merged.values()]
+    .sort((a, b) => b.score - a.score || a.product.id.localeCompare(b.product.id))
+    .slice(0, limit);
 }

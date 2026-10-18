@@ -1,5 +1,5 @@
 import { youMayAlsoLike, recentProducts } from '../app/data/discovery';
-import { suggestFor, upgradePicks, COMPLEMENT_SC } from '../app/data/recommend';
+import { suggestFor, suggestForCart, upgradePicks, COMPLEMENT_SC } from '../app/data/recommend';
 import { catalogData } from '../app/data/catalogData';
 import { collapseSizeFamilies, getSizeVariants } from '../app/data/sizeVariants';
 import { RECENT_LIMIT, sanitizeRecentIds, useRecentlyViewedStore } from '../stores/recentlyViewed';
@@ -78,6 +78,35 @@ test('upsell chips: only pricier sizes, cheapest step first, exact deltas, cappe
   expect(picks[0].delta).toBe(300);
   expect(picks[1].delta).toBe(600);
   expect(upgradePicks(1600, variants)).toEqual([]); // top size: nothing to upsell
+});
+
+test('cart cross-sell: empty-safe, complements first, cart items never re-suggested', () => {
+  expect(suggestForCart([], catalog)).toEqual([]);
+
+  // A mattress in the bag: the engine should pull beds ("complete the room"),
+  // never the mattress itself and never another mattress first.
+  const mattress = reps.find((r) => r.sc === 'mattress')!;
+  const picks = suggestForCart([{ id: mattress.id, c: mattress.c, sc: mattress.sc, o: mattress.o }], catalog);
+  expect(picks.length).toBeGreaterThan(0);
+  expect(picks.length).toBeLessThanOrEqual(4);
+  expect(picks.map((s) => s.product.id)).not.toContain(mattress.id);
+  const bedSlugs = ['upholstered-bed', 'bed-set', 'bed-with-storage', 'beds', 'kids-bed', 'bunk-bed'];
+  expect(bedSlugs.includes(picks[0].product.sc || '')).toBe(true);
+
+  // A size-variant cart line (::size= id) still excludes the whole family.
+  const variantPicks = suggestForCart([{ id: `${mattress.id}::size=${encodeURIComponent('180x200')}`, c: mattress.c, sc: mattress.sc, o: mattress.o }], catalog);
+  expect(variantPicks.map((s) => s.product.id)).not.toContain(mattress.id);
+  expect(variantPicks.map((s) => s.product.id)).toEqual(picks.map((s) => s.product.id)); // deterministic
+
+  // Synthetic pool: bed in the bag pulls its complements, not another bed.
+  const pool = [
+    { id: 'cart-bed', n: 'Cart Bed', c: 'bedroom', sc: 'upholstered-bed', o: 2000, l: 2000, st: 'in_stock', lb: [] },
+    { id: 'mat-2', n: 'Mattress', c: 'cooltech-mattress', sc: 'mattress', o: 1500, l: 1800, st: 'in_stock', lb: [] },
+    { id: 'bed-9', n: 'Other Bed', c: 'bedroom', sc: 'beds', o: 1900, l: 1900, st: 'in_stock', lb: [] },
+  ] as unknown as Product[];
+  const ranked = suggestForCart([{ id: 'cart-bed', c: 'bedroom', sc: 'upholstered-bed', o: 2000 }], pool);
+  expect(ranked.map((s) => s.product.id)).not.toContain('cart-bed');
+  expect(ranked.map((s) => s.product.id).slice(0, 2)).toEqual(['mat-2', 'bed-9']); // complement outranks same-category
 });
 
 test('recently viewed is most-recent first, excludes the current piece and drops unknown ids', () => {
