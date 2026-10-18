@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glassmorphism — 8 background schemes preview</title>
+<style>
+  :root { --page: #0f1014; --page-ink: #e8e6ef; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--page-ink); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 22px 18px 60px; }
+  h1 { font-size: 19px; margin: 4px 0 4px; } .sub { color: #9a95ab; font-size: 12.5px; margin: 0 0 18px; }
+
+  /* ---------- top switches ---------- */
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; }
+  .switch { display: inline-flex; align-items: center; gap: 9px; background: #1a1b22; border: 1px solid #2c2d38; border-radius: 999px; padding: 8px 14px 8px 10px; cursor: pointer; user-select: none; }
+  .switch input { display: none; }
+  .knob { width: 34px; height: 20px; border-radius: 999px; background: #3a3b48; position: relative; transition: background .2s; flex: none; }
+  .knob::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #cfcbdd; transition: transform .2s; }
+  .switch input:checked + .knob { background: #7c5cff; }
+  .switch input:checked + .knob::after { transform: translateX(14px); background: #fff; }
+  .switch span.lbl { font-size: 12.5px; font-weight: 600; }
+
+  /* ---------- grid ---------- */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 20px; max-width: 1840px; }
+  @media (max-width: 1500px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px)  { .grid { grid-template-columns: 1fr; } }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+  /* ---------- phone frame ---------- */
+  .frame { width: 410px; max-width: 100%; border: 10px solid #17171c; border-radius: 46px; background: #17171c; box-shadow: 0 24px 60px rgba(0,0,0,.5); flex: none; }
+  @media (max-width: 449px) { .frame { width: 100%; border-width: 6px; border-radius: 34px; } .screen { transform: scale(calc((100vw - 52px) / 390)); transform-origin: top left; } .frame { height: calc((100vw - 52px) / 390 * 844 + 12px); } }
+  .screen { position: relative; width: 390px; max-width: 100%; height: 844px; border-radius: 36px; overflow: hidden; background-color: var(--base);
+    background-image:
+      radial-gradient(420px 420px at 82% 6%,  var(--w1) 0%, transparent 62%),
+      radial-gradient(460px 460px at 8% 34%,  var(--w2) 0%, transparent 62%),
+      radial-gradient(430px 430px at 88% 62%, var(--w3) 0%, transparent 62%),
+      radial-gradient(480px 480px at 22% 96%, var(--w4) 0%, transparent 62%);
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ---------- bubbles ---------- */
+  .bubble { position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+    background: radial-gradient(circle at 30% 25%, #ffffff 0%, var(--bA) 22%, var(--bB) 68%, var(--bC) 100%); }
+  .bubble.one   { width: 180px; height: 180px; top: -46px;  right: -58px; opacity: .52; }
+  .bubble.two   { width: 150px; height: 150px; bottom: -52px; left: -60px; opacity: .48; }
+  .bubble.three { width: 130px; height: 130px; top: 54%; left: -38px; opacity: .45; display: var(--third, none); }
+  body.animated .bubble { animation: float 11s ease-in-out infinite alternate; will-change: transform; }
+  body.animated .bubble.two { animation-delay: -5s; }
+  body.animated .bubble.three { animation-delay: -2.6s; }
+  @keyframes float { from { transform: translateY(0) scale(1); } to { transform: translateY(-18px) scale(1.04); } }
+
+  /* ---------- glass ---------- */
+  .glass { background: linear-gradient(145deg, var(--gA), var(--gB)); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid var(--gBorder); box-shadow: 0 14px 30px var(--glow), inset 0 1px 0 var(--gInset); }
+  @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+    .glass { background: var(--gFallback); }
+  }
+  .ui { position: relative; z-index: 1; padding-bottom: 108px; color: var(--ink); }
+
+  header.bar { position: sticky; top: 0; z-index: 5; margin: 12px 12px 0; border-radius: 18px; padding: 10px 12px; }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo .mark { width: 24px; height: 24px; border-radius: 8px; background: linear-gradient(135deg, var(--bB), var(--b2B)); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+  .logo .word { font-weight: 800; letter-spacing: 2.5px; font-size: 12.5px; }
+  .search { margin-top: 9px; display: flex; align-items: center; gap: 8px; height: 40px; border-radius: 13px; padding: 0 10px;
+    background: var(--fieldBg); border: 1px solid var(--gBorder); box-shadow: inset 0 1px 0 var(--gInset); }
+  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12.5px; }
+  .search input::placeholder { color: var(--muted); }
+  .sort { display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 9px; background: var(--fieldBg); flex: none; }
+  .chips { display: flex; gap: 7px; margin-top: 9px; padding: 2px 1px 2px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; height: 30px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+    color: var(--ink); background: var(--chipBg); border: 1px solid var(--gBorder); white-space: nowrap; }
+  .chip.active { background: #232b66; border-color: #232b66; color: #fff; box-shadow: 0 6px 14px rgba(35,43,102,.35); }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+  .card { border-radius: 16px; padding: 8px; position: relative; }
+  .thumb { position: relative; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; background:
+    linear-gradient(160deg, var(--w1), var(--w3)); box-shadow: inset 0 0 0 1px var(--gBorder); }
+  .thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(90px 90px at 32% 26%, rgba(255,255,255,.55), transparent 70%); }
+  .heart { position: absolute; top: 6px; inset-inline-end: 6px; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 4px 10px rgba(20,10,30,.18); }
+  .name { font-size: 11.5px; font-weight: 700; margin: 8px 2px 0; line-height: 1.35; min-height: 31px; }
+  .price { font-size: 12px; font-weight: 800; margin: 4px 2px 2px; }
+  .was { color: var(--muted); font-weight: 600; font-size: 10.5px; text-decoration: line-through; margin-inline-start: 5px; }
+
+  .navpill { position: absolute; z-index: 6; inset-inline: 14px; bottom: 14px; border-radius: 26px; display: flex; justify-content: space-around; align-items: center;
+    padding: 8px 6px; background: linear-gradient(145deg, var(--gA), var(--gB)); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--gBorder); box-shadow: 0 16px 34px var(--glow), inset 0 1px 0 var(--gInset); }
+  @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) { .navpill { background: var(--gFallback); } }
+  .nav { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; min-width: 52px; font-size: 8.5px; font-weight: 700; color: var(--muted); }
+  .nav.active { color: var(--navActive); }
+  svg { display: block; }
+
+  /* ---------- meta under each frame ---------- */
+  .meta { width: 410px; max-width: 100%; }
+  .meta h2 { font-size: 14px; margin: 0 0 7px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 10px; }
+  .sw { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: #b7b2c6; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .sw i { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,.25); }
+  .count { display: inline-flex; border: 1px solid #2c2d38; border-radius: 999px; overflow: hidden; }
+  .count button { border: 0; background: #1a1b22; color: #b7b2c6; font-size: 11.5px; font-weight: 700; padding: 7px 14px; cursor: pointer; }
+  .count button[aria-pressed="true"] { background: #7c5cff; color: #fff; }
+
+  /* ---------- PNG export mode (?only=N) ---------- */
+  body.export { padding: 0; }
+  body.export h1, body.export .sub, body.export .controls, body.export .meta { display: none; }
+  body.export .grid { display: block; max-width: none; }
+  body.export .grid .cell { display: none; }
+  body.export .grid .cell.on { display: flex; }
+  body.export .frame { border: 0; border-radius: 0; box-shadow: none; width: 390px; height: 844px; }
+  body.export .screen { border-radius: 0; }
+
+</style>
+</head>
+<body>
+  <h1>Glassmorphism shopping app — 8 background schemes</h1>
+  <p class="sub">Standalone preview · identical UI on every phone, only colours change · 390 × 844 frames</p>
+
+  <div class="controls">
+    <label class="switch"><input type="checkbox" id="animate"><span class="knob"></span><span class="lbl">Animate bubbles</span></label>
+    <label class="switch"><input type="checkbox" id="rtl"><span class="knob"></span><span class="lbl">Show Arabic (right to left)</span></label>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="i-home"><path d="M3 10.5 12 3l9 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 9.5V20h13V9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-shop"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></g>
+  <g id="i-store"><path d="M4 9.5 5.5 4h13L20 9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 9.5a2.6 2.6 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.6 2.6 0 0 0 5.3 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 12.5V20h13v-7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+  <g id="i-cart"><path d="M6.5 8h11l-1 12h-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8a3 3 0 0 1 6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+  <g id="i-more"><circle cx="5.5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor"/></g>
+  <g id="i-heart"><path d="M12 20s-7.5-4.6-9.3-9.2C1.5 7.6 3.6 4.8 6.6 4.8c2 0 3.6 1.1 4.4 2.7.8-1.6 2.4-2.7 4.4-2.7 3 0 5.1 2.8 3.9 6C17.5 15.4 12 20 12 20z" fill="none" stroke="#c2404f" stroke-width="1.8" stroke-linejoin="round"/></g>
+  <g id="i-search"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+  <g id="i-sort"><path d="M4 7h16M6.5 12h11M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+</defs></svg>
+
+<script>
+const rgba = (hex, a) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+};
+
+const SCHEMES = [
+  { name: "Royal Classic", slug: "royal-classic",
+    base: "#F7F2EF", washes: ["#FFD2C9", "#FFE3AD", "#E6D3FF", "#BFE0FF"],
+    b1: ["#FFB9AD", "#C0392B", "#6B0606"], b2: ["#FFE0A6", "#E6A23C", "#8A4B00"],
+    dark: false },
+  { name: "Navy and Ice", slug: "navy-and-ice",
+    base: "#F2F6FB", washes: ["#CFE0FF", "#E3ECFF", "#D6F0F5", "#DDE6FF"],
+    b1: ["#C9D6FF", "#2B3A8C", "#0E1646"], b2: ["#D9F4FF", "#5BB8E0", "#1B5E86"],
+    dark: false },
+  { name: "Rose and Blush", slug: "rose-and-blush",
+    base: "#FBF3F3", washes: ["#FFD9DE", "#FFE8D6", "#F3D9FF", "#FFE1E6"],
+    b1: ["#FFD1D9", "#E0607A", "#7A1F36"], b2: ["#FFF1D6", "#E8C27A", "#8A6A22"],
+    dark: false },
+  { name: "Emerald and Champagne", slug: "emerald-and-champagne",
+    base: "#F3F7F3", washes: ["#CDEBDD", "#FFF1CF", "#D9EEF2", "#DDF3E6"],
+    b1: ["#C9F2DC", "#2E9E6E", "#0C4A33"], b2: ["#FFF1D6", "#E8C27A", "#8A6A22"],
+    dark: false },
+  { name: "Lavender and Peach", slug: "lavender-and-peach",
+    base: "#F8F4FB", washes: ["#E4D6FF", "#FFDCCB", "#D9E8FF", "#F3E1FF"],
+    b1: ["#E3D4FF", "#8A63D2", "#3E2480"], b2: ["#FFE0CF", "#F2A07B", "#9A4A2A"],
+    dark: false },
+  { name: "Teal and Sand", slug: "teal-and-sand",
+    base: "#F6F4EF", washes: ["#CDEDEA", "#F5E6C8", "#E9DCCB", "#D5EFEA"],
+    b1: ["#C8F1EE", "#2A9D9A", "#0B4F52"], b2: ["#F8E8C6", "#D9B26B", "#7A5A1E"],
+    dark: false },
+  { name: "Midnight Glass", slug: "midnight-glass",
+    base: "#0E1220", washes: ["#1B2A5E", "#3A1B4F", "#0F3B4A", "#2A1A5E"],
+    b1: ["#FFC2F0", "#C03BA8", "#4B0F45"], b2: ["#C6F6FF", "#29B6D6", "#0B3F52"],
+    dark: true },
+  { name: "Burgundy and Cream", slug: "burgundy-and-cream",
+    base: "#FBF5EE", washes: ["#F3D3C8", "#F7E4C4", "#E8D2D9", "#FBE3D6"],
+    b1: ["#E9B7B7", "#8E1B2C", "#3F0610"], b2: ["#FFF3D6", "#E3BC6A", "#7A5A1E"],
+    dark: false },
+];
+
+const L = {
+  en: {
+    logo: "ROYAL", search: "Search sofas, beds, décor…",
+    chips: ["All", "Furniture", "Bedroom", "Kitchen", "Décor"],
+    products: [["Serafina Corner Sofa", "AED 3,800", "AED 4,090"], ["Alana Coffee Table", "AED 899", "AED 1,180"]],
+    nav: ["Home", "Shop", "Stores", "Cart", "More"], counter: "2 results",
+  },
+  ar: {
+    logo: "رويال", search: "ابحث عن أثاث وديكور…",
+    chips: ["الكل", "أثاث", "غرف النوم", "مطبخ", "ديكور"],
+    products: [["كنب سيرافينا الزاوية", "د.إ 3,800", "د.إ 4,090"], ["طاولة ألانا", "د.إ 899", "د.إ 1,180"]],
+    nav: ["الرئيسية", "المتجر", "الفروع", "السلة", "المزيد"], counter: "نتيجتان",
+  },
+};
+
+const T = {
+  header: `<header class="bar glass"><div class="logo"><span class="mark"></span><span class="word" data-k="logo"></span></div>
+    <div class="search" style="color:var(--muted)"><svg width="17" height="17"><use href="#i-search"/></svg><input data-k="search" placeholder="" aria-label="Search"><span class="sort"><svg width="15" height="15"><use href="#i-sort"/></svg></span></div>
+    <div class="chips" data-k="chips"></div></header>`,
+  cards: (lang) => `<div class="cards">${lang.products.map(([n, p, w]) => `
+    <div class="card glass"><div class="thumb"><button class="heart" aria-label="wishlist"><svg width="16" height="16"><use href="#i-heart"/></svg></button></div>
+      <div class="name">${n}</div><div class="price">${p}<span class="was">${w}</span></div></div>`).join("")}
+    <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:10.5px;font-weight:600" data-k="counter"></div></div>`,
+  nav: `<nav class="navpill glass" aria-label="bottom navigation"></nav>`,
+};
+
+const NAVI = ["#i-home", "#i-shop", "#i-store", "#i-cart", "#i-more"];
+
+function fillText(root, lang) {
+  root.querySelector("[data-k=logo]").textContent = lang.logo;
+  const s = root.querySelector("[data-k=search]"); s.placeholder = lang.search;
+  const chips = root.querySelector("[data-k=chips]");
+  chips.innerHTML = lang.chips.map((c, i) => `<span class="chip${i === 0 ? " active" : ""}">${c}</span>`).join("");
+  root.querySelector("[data-k=counter]").textContent = lang.counter;
+  const nav = root.querySelector(".navpill");
+  nav.innerHTML = lang.nav.map((n, i) => `<span class="nav${i === 0 ? " active" : ""}"><svg width="19" height="19"><use href="${NAVI[i]}"/></svg>${n}</span>`).join("");
+}
+
+function schemeVars(s) {
+  const w = s.washes, dark = s.dark;
+  const wA = dark ? .85 : .6;
+  return {
+    "--base": s.base,
+    "--w1": rgba(w[0], wA), "--w2": rgba(w[1], wA), "--w3": rgba(w[2], wA), "--w4": rgba(w[3], wA),
+    "--bA": s.b1[0], "--bB": s.b1[1], "--bC": s.b1[2],
+    "--b2A": s.b2[0], "--b2B": s.b2[1], "--b2C": s.b2[2],
+    "--gA": dark ? "rgba(255,255,255,.14)" : "rgba(255,255,255,.72)",
+    "--gB": dark ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.38)",
+    "--gBorder": dark ? "rgba(255,255,255,.28)" : "rgba(255,255,255,.75)",
+    "--gInset": dark ? "rgba(255,255,255,.35)" : "#ffffff",
+    "--gFallback": dark ? "rgba(16,20,36,.92)" : "rgba(255,255,255,.92)",
+    "--glow": rgba(s.b1[1], dark ? .3 : .16),
+    "--ink": dark ? "#F4F6FF" : "#2A2230",
+    "--muted": dark ? "rgba(244,246,255,.68)" : "#8B8090",
+    "--fieldBg": dark ? "rgba(255,255,255,.10)" : "rgba(255,255,255,.55)",
+    "--chipBg": dark ? "rgba(255,255,255,.10)" : "rgba(255,255,255,.55)",
+    "--navActive": dark ? "#9FD8FF" : "#A3272E",
+  };
+}
+
+const grid = document.getElementById("grid");
+SCHEMES.forEach((s) => {
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.innerHTML = `
+    <div class="frame"><div class="screen" dir="ltr">
+      <div class="bubble one"></div><div class="bubble two"></div><div class="bubble three"></div>
+      <div class="ui">${T.header}${T.cards(L.en)}${T.nav}</div>
+    </div></div>
+    <div class="meta">
+      <h2>${s.name}</h2>
+      <div class="swatches">
+        <span class="sw"><i style="background:${s.base}"></i>${s.base}</span>
+        ${s.washes.map((c) => `<span class="sw"><i style="background:${c}"></i>${c}</span>`).join("")}
+        <span class="sw"><i style="background:${s.b1[1]}"></i>${s.b1[1]}</span>
+        <span class="sw"><i style="background:${s.b2[1]}"></i>${s.b2[1]}</span>
+      </div>
+      <span class="count" role="group" aria-label="bubble count">
+        <button data-n="2" aria-pressed="true">2 bubbles</button><button data-n="3" aria-pressed="false">3 bubbles</button>
+      </span>
+    </div>`;
+  const screen = cell.querySelector(".screen");
+  const vars = schemeVars(s);
+  for (const [k, v] of Object.entries(vars)) screen.style.setProperty(k, v);
+  screen.querySelector(".bubble.two").style.background =
+    `radial-gradient(circle at 30% 25%, #ffffff 0%, ${s.b2[0]} 22%, ${s.b2[1]} 68%, ${s.b2[2]} 100%)`;
+  fillText(screen, L.en);
+  cell.querySelectorAll(".count button").forEach((b) => b.addEventListener("click", () => {
+    cell.querySelectorAll(".count button").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    screen.style.setProperty("--third", b.dataset.n === "3" ? "block" : "none");
+  }));
+  grid.appendChild(cell);
+});
+
+/* switches */
+const animate = document.getElementById("animate");
+const rtl = document.getElementById("rtl");
+function applyAnimate() { document.body.classList.toggle("animated", animate.checked); }
+function applyRtl() {
+  const on = rtl.checked;
+  document.querySelectorAll(".screen").forEach((sc) => { sc.setAttribute("dir", on ? "rtl" : "ltr"); fillText(sc, on ? L.ar : L.en); });
+}
+animate.addEventListener("change", applyAnimate);
+rtl.addEventListener("change", applyRtl);
+/* respect prefers-reduced-motion: start with animation off for those users */
+animate.checked = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+applyAnimate();
+
+/* PNG export mode: preview.html?only=N renders scheme N alone at exactly 390x844 */
+const only = new URLSearchParams(location.search).get("only");
+if (only) {
+  document.body.classList.add("export");
+  animate.checked = false;
+  applyAnimate();
+  const idx = parseInt(only, 10);
+  const cell = document.querySelector(`.grid .cell:nth-child(${idx})`);
+  if (cell) cell.classList.add("on");
+}
+</script>
+</body>
+</html>
