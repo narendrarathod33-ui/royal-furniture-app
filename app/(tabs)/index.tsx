@@ -22,14 +22,18 @@ import { ToastHost, showToast } from '../../components/catalog/Toast';
 import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
 import { QuickViewSheet } from '../../components/catalog/QuickView';
 import { useSessionStore } from '../../stores/session';
+import { useLangStore } from '../../app/i18n';
 
 export default function HomeScreen() {
   const [session, setSession] = useState(0);
+  // Language changes remount the whole session instantly: every label reads
+  // the dictionary at render, and stores (cart/session) survive untouched.
+  const lang = useLangStore((state) => state.lang);
   useEffect(() => {
     // Purge the standalone prototype's old history on this origin, if present.
     try { if (typeof window !== 'undefined') window.localStorage?.removeItem('rf'); } catch { /* Storage may be blocked. */ }
   }, []);
-  return <AppSession key={session} onDeleteData={async () => {
+  return <AppSession key={`${session}:${lang}`} onDeleteData={async () => {
     if (Platform.OS === 'web') {
       const configResponse = await fetch('/api/payments/config');
       const config = configResponse.ok && configResponse.headers.get('content-type')?.includes('application/json') ? await configResponse.json() : null;

@@ -38,14 +38,6 @@ export function forgetLang() {
   removeSaved(LANG_STORAGE_KEY);
 }
 
-/** Reloads so a language switch takes effect everywhere (web relaunches the SPA;
- * on native the direction applies at next launch — never crash on missing window). */
-export function reloadForLang() {
-  if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
-    window.location.reload();
-  }
-}
-
 /** True when the running layout is right-to-left (Arabic). */
 export const isRTL = () => useLangStore.getState().lang === 'ar';
 
@@ -56,11 +48,25 @@ export const isRTL = () => useLangStore.getState().lang === 'ar';
  */
 export function bootDirection() {
   I18nManager.allowRTL(true);
-  I18nManager.forceRTL(isRTL());
-  if (Platform.OS === 'web' && typeof document !== 'undefined') {
-    document.documentElement.lang = isRTL() ? 'ar' : 'en';
-    document.documentElement.dir = isRTL() ? 'rtl' : 'ltr';
+  if (Platform.OS === 'web') {
+    // Web: styles are computed once from the layout direction, so forceRTL
+    // stays off and mirroring is driven by the document direction instead —
+    // flexbox follows it live, which is what makes instant switching possible.
+    I18nManager.forceRTL(false);
+    applyDocumentDir();
+    // Keep the document direction in step with the store for every switch.
+    useLangStore.subscribe(() => applyDocumentDir());
+  } else {
+    // Native: the OS applies RTL at launch; a language change takes full
+    // effect on the next app start (text still switches immediately).
+    I18nManager.forceRTL(isRTL());
   }
+}
+
+function applyDocumentDir() {
+  if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+  document.documentElement.lang = isRTL() ? 'ar' : 'en';
+  document.documentElement.dir = isRTL() ? 'rtl' : 'ltr';
 }
 
 /**

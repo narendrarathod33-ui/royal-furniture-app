@@ -19,12 +19,12 @@ async function openAccount(page) {
 }
 
 test.describe('Royal Furniture languages', () => {
-  test('switching to Arabic relaunches the app in RTL and persists', async ({ page }) => {
+  test('switching to Arabic is instant, flips to RTL and persists', async ({ page }) => {
     await openAccount(page);
     await page.getByRole('button', { name: 'العربية' }).click();
 
-    // The app reloads into Arabic: navigation and chrome come back translated.
-    await expect(page.getByRole('tab', { name: 'الرئيسية' })).toBeVisible({ timeout: 30_000 });
+    // No reload: the very same page flips to Arabic in place.
+    await expect(page.getByRole('tab', { name: 'الرئيسية' })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('tab', { name: 'تصفح' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
 
@@ -38,10 +38,24 @@ test.describe('Royal Furniture languages', () => {
     await expect(page.getByText('سلتك', { exact: true })).toBeVisible();
   });
 
+  test('product names render in Arabic on cards (generated dictionary)', async ({ page }) => {
+    await openAccount(page);
+    await page.getByRole('button', { name: 'العربية' }).click();
+    await expect(page.getByRole('tab', { name: 'بحث' })).toBeVisible({ timeout: 15_000 });
+
+    await page.getByRole('tab', { name: 'بحث' }).click();
+    const field = page.getByTestId('product-search-field');
+    await expect(field).toBeVisible();
+    await field.locator('input').fill('Serafina');
+    // Search still matches the English catalog name; the card displays the
+    // Arabic translation from the generated dictionary.
+    await expect(page.getByText('أريكة زاوية Serafina').first()).toBeVisible();
+  });
+
   test('card overlays stay non-overlapping in the mirrored Arabic layout', async ({ page }) => {
     await openAccount(page);
     await page.getByRole('button', { name: 'العربية' }).click();
-    await expect(page.getByRole('tab', { name: 'بحث' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: 'بحث' })).toBeVisible({ timeout: 15_000 });
 
     await page.getByRole('tab', { name: 'بحث' }).click();
     const field = page.getByTestId('product-search-field');
@@ -58,15 +72,15 @@ test.describe('Royal Furniture languages', () => {
     expect(overlaps, 'mirrored eye and pill must not intersect').toBe(false);
   });
 
-  test('switching back to English restores the original chrome', async ({ page }) => {
+  test('switching back to English restores the original chrome instantly', async ({ page }) => {
     await openAccount(page);
     await page.getByRole('button', { name: 'العربية' }).click();
-    await expect(page.getByRole('tab', { name: 'الرئيسية' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: 'الرئيسية' })).toBeVisible({ timeout: 15_000 });
 
     await page.getByRole('button', { name: 'الحساب' }).click();
     await expect(page.getByText('اللغة')).toBeVisible({ timeout: 15_000 });
     await page.getByRole('button', { name: 'English' }).click();
-    await expect(page.getByRole('tab', { name: 'Home' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: 'Home' })).toBeVisible({ timeout: 15_000 });
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
   });
 });

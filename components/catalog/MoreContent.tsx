@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Bell, Bookmark, ChevronRight, MapPin, Package, UserRound } from 'lucide-react-native';
 import { Header } from './ProductCard';
 import { COLORS, styles } from './kit';
-import { t, switchLang, reloadForLang, useLangStore } from '../../app/i18n';
+import { t, switchLang, useLangStore } from '../../app/i18n';
 
 /**
  * The More hub: the destinations that don't need a tab of their own — new
@@ -47,7 +47,7 @@ export function MoreContent({ onArrivals, onStores, onCart, onAccount, cartCount
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="English"
-          onPress={() => { if (switchLang('en')) reloadForLang(); }}
+          onPress={() => { switchLang('en'); }}
           style={[styles.claimButton, lang === 'en' && { backgroundColor: COLORS.red }]}
         >
           <Text style={[styles.claimButtonText, lang === 'en' && { color: '#fff' }]}>English</Text>
@@ -55,7 +55,7 @@ export function MoreContent({ onArrivals, onStores, onCart, onAccount, cartCount
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="العربية"
-          onPress={() => { if (switchLang('ar')) reloadForLang(); }}
+          onPress={() => { switchLang('ar'); }}
           style={[styles.claimButton, lang === 'ar' && { backgroundColor: COLORS.red }]}
         >
           <Text style={[styles.claimButtonText, lang === 'ar' && { color: '#fff' }]}>العربية</Text>
