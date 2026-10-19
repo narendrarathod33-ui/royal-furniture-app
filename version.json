@@ -1,7 +1,7 @@
 {
   "app": "royal-furniture-app",
-  "round": "3.7",
-  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing", "prototype glass header", "shopping support per royalfurniture.ae", "New in tab replaces Stores; new arrivals page in the nav"],
-  "branch_commit": "b776d9c",
-  "note": "3.7 navigation: home / browse / search / deals / New in / more — stores page removed, arrivals no longer behind More"
+  "round": "3.8",
+  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing", "prototype glass header", "shopping support per royalfurniture.ae", "New in tab", "search hint: single line, short label on small screens"],
+  "branch_commit": "6283278",
+  "note": "3.8 header search pill no longer wraps or overlaps; shows Search… when space is tight"
 }
