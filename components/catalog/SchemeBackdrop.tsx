@@ -25,8 +25,8 @@ export function SchemeBackdrop() {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <LinearGradient colors={['#F8DFD3', '#FBF5EE', '#F6E3C6']} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
-      <Blob color="#E9B7B7" size={460} opacity={0.3} style={{ top: -160, end: -150 }} />
-      <Blob color="#E3BC6A" size={420} opacity={0.26} style={{ bottom: -170, start: -150 }} />
+      <Blob color="#E9B7B7" size={560} opacity={0.32} style={{ top: -210, end: -190 }} />
+      <Blob color="#E3BC6A" size={520} opacity={0.3} style={{ bottom: -220, start: -190 }} />
     </View>
   );
 }
