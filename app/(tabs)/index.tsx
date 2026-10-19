@@ -14,7 +14,6 @@ import { ShopContent } from '../../components/catalog/ShopContent';
 import { CartContent } from '../../components/catalog/CartContent';
 import { AccountContent } from '../../components/catalog/AccountContent';
 import { SearchContent, NewArrivalsContent, BestSellersContent } from '../../components/catalog/Screens';
-import { StoresContent } from '../../components/catalog/StoresContent';
 import { MoreContent } from '../../components/catalog/MoreContent';
 import { Header, ProductCard } from '../../components/catalog/ProductCard';
 import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
@@ -118,8 +117,7 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
         {tab === 'categories' && <ShopContent catalogSort={catalogSort} onCatalogSortChange={setCatalogSort} products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} catalogOnly cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'search' && <SearchContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'arrivals' && <NewArrivalsContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'stores' && <StoresContent cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'more' && <MoreContent onArrivals={() => setTab('arrivals')} onStores={() => setTab('stores')} onCart={openCart} onAccount={openAccount} cartCount={cartCount} />}
+        {tab === 'more' && <MoreContent onCart={openCart} onAccount={openAccount} cartCount={cartCount} />}
         {tab === 'bestSellers' && <BestSellersContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'account' && <AccountContent onDeleteData={onDeleteData} orders={orders} onBag={openCart} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'cart' && <CartContent onCart={openCart} onAccount={openAccount} onProduct={openProduct} onShop={openShop} />}

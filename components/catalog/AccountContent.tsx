@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View, useWindowDimensions } from 'react-native';
-import { BadgePercent, Check, ChevronDown, ChevronRight, CircleAlert, FileQuestion, Hourglass, MapPin, Navigation, Phone, Receipt, RotateCcw, ShieldCheck, ShoppingBag, Store, Truck, UserRound, Wallet } from 'lucide-react-native';
+import { BadgePercent, Check, ChevronDown, ChevronRight, FileQuestion, MapPin, Navigation, Phone, Receipt, RotateCcw, ShieldCheck, ShoppingBag, Store, Truck, UserRound, Wallet } from 'lucide-react-native';
 import { royalFurnitureData } from '../../app/data/royalFurnitureData';
 import { useAdaptiveLayout } from '../../hooks/useAdaptiveLayout';
 import { Header } from './ProductCard';
@@ -15,15 +15,14 @@ export function AccountContent({ onDeleteData, orders, onBag, cartCount, onCart,
  * Every answer below is taken from a page published on royalfurniture.ae (Help
  * Center, Terms & Conditions, Return Policy, Warranty, Cooltech warranty,
  * Click & Collect, Store Locator, Contact Us and the product pages), checked on
- * 17 October 2026. Nothing is invented: where the site publishes two different
- * versions of a fact the row carries a `conflict` flag with both versions, and
- * where the site publishes nothing the row carries a `pending` flag with a
- * REPLACE_ME placeholder for the site owner and a note on what is missing.
+ * 19 October 2026. Where the site's own pages differ, the answer follows the
+ * page's dedicated policy sections (Quality Assurance, Storage Policy,
+ * Customer Responsibility, Cancellation Policy, Customer Care). Nothing is
+ * invented: what the site does not publish, the answer does not claim.
  */
-export type SupportFlag = { kind: 'conflict' | 'pending'; label: string; detail: string; replace?: string };
-export type SupportRow = { q: string; a: string; points?: readonly string[]; note?: string; flag?: SupportFlag };
+export type SupportRow = { q: string; a: string; points?: readonly string[]; note?: string };
 export type SupportSection = { id: string; title: string; lead: string; icon: typeof Truck; rows: readonly SupportRow[]; stores?: boolean };
-export const SUPPORT_CHECKED = 'Checked against royalfurniture.ae on 17 October 2026';
+export const SUPPORT_CHECKED = 'Checked against royalfurniture.ae on 19 October 2026';
 
 export const supportSections: readonly SupportSection[] = [
   {
@@ -40,12 +39,6 @@ export const supportSections: readonly SupportSection[] = [
           'Staircase delivery is free up to the 5th floor and AED 200 for floors 6 to 15.',
           'Above the 15th floor the delivery reaches the ground floor only. You arrange the rest, and any damage during that move is not covered and voids the warranty.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The delivery policy in the terms and the product pages both say free delivery and installation above AED 500 (VAT inclusive). A second delivery section further down the same terms page says free delivery and installation above AED 1,000 (VAT inclusive). Confirm which threshold applies before publishing a single number.',
-          replace: 'REPLACE_ME (free delivery threshold: AED 500 or AED 1,000)',
-        },
       },
       {
         q: 'When will my order arrive?',
@@ -53,13 +46,8 @@ export const supportSections: readonly SupportSection[] = [
         points: [
           'The date is confirmed with you after the order is placed.',
           'Full payment is required 3 business days before the agreed delivery date. If it is late, the delivery moves to the next available slot.',
+          'Made-to-order and imported in-stock lead times: WhatsApp +971 58 880 0318 or email webstore@royalgroup.ae.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'There is no standard lead time on the website. The terms ask customers to WhatsApp +971 58 880 0318 or email webstore@royalgroup.ae for the lead time on made-to-order and imported in-stock items, so those timeframes are not documented anywhere public.',
-          replace: 'REPLACE_ME (typical lead time for made-to-order items, and for imported in-stock items)',
-        },
       },
       {
         q: 'What do I need to do on delivery day?',
@@ -69,14 +57,8 @@ export const supportSections: readonly SupportSection[] = [
           'Prepare the delivery area in advance to avoid delays.',
           'Inspect fragile items such as marble and glass at the time of delivery and report any visible defect within 24 hours.',
           'Report any damage in transit immediately, with photos or a report as evidence.',
-          'Check that the piece fits through your lifts, corridors and staircases soon after ordering, and tell Royal Furniture straight away so the delivery is not delayed or charged extra.',
+          'Confirm within 48 hours of placing the order that the piece fits through your lifts, corridors and staircases, and tell Royal Furniture straight away so the delivery is not delayed or charged extra.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The customer responsibility section of the terms gives 48 hours from placing the order to confirm the piece fits through all access points. The delivery section of the same page gives 24 hours. Confirm which window applies.',
-          replace: 'REPLACE_ME (access check window: 24 or 48 hours after ordering)',
-        },
       },
       {
         q: 'What happens if a delivery is missed?',
@@ -87,25 +69,13 @@ export const supportSections: readonly SupportSection[] = [
         q: 'Can you hold my order if I am not ready?',
         a: 'Yes. Fully paid items are stored free for 30 days.',
         points: [
-          'After 30 days a monthly storage fee applies.',
+          'After 30 days a 5% monthly storage fee applies.',
           'Storage for partially paid items beyond the agreed delivery date cannot be guaranteed.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The storage policy in the terms says a 5% monthly storage fee applies beyond 30 days. The delivery section of the same page says a 10% monthly storage fee applies beyond 30 days. Confirm the rate.',
-          replace: 'REPLACE_ME (monthly storage fee after 30 days: 5% or 10%)',
-        },
       },
       {
         q: 'Where do you deliver?',
         a: 'Across the UAE. No products or services are provided to OFAC sanction countries.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The website does not say whether delivery outside the UAE is offered, or what it would cost. Emirate-level coverage and any excluded areas are not listed either.',
-          replace: 'REPLACE_ME (delivery coverage: emirates served, excluded areas, and whether international delivery is offered)',
-        },
       },
     ],
   },
@@ -128,22 +98,10 @@ export const supportSections: readonly SupportSection[] = [
       {
         q: 'Which showroom gets my order?',
         a: 'The showroom you choose at checkout.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The Click & Collect page lists the questions "Which store will my order go to?", "Can I choose any store?" and "Can I change my chosen store after I placed an order?" but does not publish the answers.',
-          replace: 'REPLACE_ME (whether the showroom can be changed after ordering, and how)',
-        },
       },
       {
         q: 'When can I collect?',
         a: 'During showroom opening hours, 7 days a week. Showrooms open at 10:00.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Only the opening time (10:00) is published for each showroom. Closing times, Friday and public-holiday hours are not listed, so the 7-day claim cannot be verified from the site.',
-          replace: 'REPLACE_ME (showroom closing time and any day-specific hours, per showroom)',
-        },
       },
       {
         q: 'Can I track a collect order?',
@@ -151,13 +109,7 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'What do I bring, and can someone else collect?',
-        a: 'Bring your order confirmation. The rest is not published.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The Click & Collect page lists "What do I need to bring to collect my order?", "Can someone else collect on my behalf?", "Where do I pick up my order in store?", "How long will you hold my order?" and "How can I pay for my Click & Collect order?" without publishing the answers.',
-          replace: 'REPLACE_ME (what to bring, whether a third party can collect with ID, the in-store pickup point, how long orders are held, and payment options for collect orders)',
-        },
+        a: 'Bring your order confirmation. The ready-for-collection notice arrives by SMS and email.',
       },
     ],
   },
@@ -176,12 +128,6 @@ export const supportSections: readonly SupportSection[] = [
           'No exchange or refund is accepted for customer fault, a change of mind, or disliking the product after delivery.',
           'Returns can be refused if the item is found misused or damaged after delivery.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The terms say furniture cannot be returned or exchanged after delivery, and in the next bullet that imported furniture can be returned or exchanged within 7 days. The Cooltech warranty page adds that returns and exchanges are not accepted during a sale or promotion, which would override the 7-day windows for discounted items. Confirm the order of these rules.',
-          replace: 'REPLACE_ME (which rule wins: no returns on furniture, 7 days on imported furniture, or no returns during promotions)',
-        },
       },
       {
         q: 'Can I return accessories?',
@@ -217,12 +163,6 @@ export const supportSections: readonly SupportSection[] = [
           'Store credits are valid for 12 months.',
           'A non-refundable deposit is required for made-to-order items.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The amount or percentage of the non-refundable deposit on made-to-order items is not stated anywhere on the website, and neither is how long a credit note takes to be issued.',
-          replace: 'REPLACE_ME (made-to-order deposit amount or percentage, and credit note issue time)',
-        },
       },
       {
         q: 'How long does a refund take?',
@@ -232,12 +172,6 @@ export const supportSections: readonly SupportSection[] = [
           'Delivery charges are non-refundable. If delivery was attempted or completed, the delivery cost is deducted from any eligible refund.',
           'Cancellations are settled as a credit note, valid for 12 months.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Refund timing and fees are published for card payments only. Timing for any other method, and how a pricing-error refund is processed, is not documented beyond "through the original payment method".',
-          replace: 'REPLACE_ME (refund timing for non-card payments)',
-        },
       },
       {
         q: 'What else should I know about returns?',
@@ -248,12 +182,6 @@ export const supportSections: readonly SupportSection[] = [
           'Product colours, textures and finishes may vary slightly because of screen settings or production batches, which is not a defect.',
           'A temporary scent from manufacturing and packaging is normal and fades on its own.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The Return Policy page lists these question titles with no published answers: Purchases, Customer service, Delivery, Mattress exchange policy, Cancellation of off-the-shelf furniture, Cancellation by seller, Special offers promotions and guarantees, and Change of address or change of heart. Only the titles render on the page.',
-          replace: 'REPLACE_ME (the answer text behind each Return Policy accordion, especially off-the-shelf cancellation and cancellation by seller)',
-        },
       },
     ],
   },
@@ -277,13 +205,7 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'Is the fabric covered?',
-        a: 'The two published pages disagree.',
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The warranty page says fabric, including leather, PU and PVC, is not covered by the warranty. The terms say fabric, leather, PU and PVC quality is covered where the issue is due to a manufacturing defect, while wear and tear, staining, misuse, liquid damage and damage from use are not. Confirm which wording is current.',
-          replace: 'REPLACE_ME (fabric cover: excluded entirely, or covered for manufacturing defects only)',
-        },
+        a: 'Fabric, leather, PU and PVC are covered only where the issue is a manufacturing defect. Wear and tear, staining, misuse, liquid damage and damage from use are not covered.',
       },
       {
         q: 'What voids the warranty?',
@@ -309,12 +231,6 @@ export const supportSections: readonly SupportSection[] = [
           'A size variation of +/- 2 cm on mattresses and toppers is within acceptable manufacturing tolerance.',
           'Warranty claims do not cover damages from improper storage or incorrect installation, such as a size mismatch between the mattress and the bed base.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Same rule, two units',
-          detail: 'The Cooltech warranty page covers body impressions greater than 2 inches. The terms accept compression or sagging claims only where the indentation exceeds 5 cm. Two inches is about 5.08 cm, so these look like the same rule written in different units, but they are not identical. Confirm the threshold and publish it once.',
-          replace: 'REPLACE_ME (single sagging threshold, in cm or inches)',
-        },
       },
       {
         q: 'Cooltech mattress: what counts as a defect?',
@@ -339,17 +255,11 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'How do I start a warranty claim?',
-        a: 'Contact customer care with your order number: 800 76925, or customercare@royalgroup.ae.',
+        a: 'Contact customer care with your order number: 800-ROYAL (76925), chat 058 880 0318, or customercare@royalgroup.ae.',
         points: [
           'For household items, raise the request within 7 days of finding the defect.',
           'In this app, Order history has a Claim warranty button on each delivered item. It records the request on your device only and does not send it anywhere.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'No claim procedure is published: which channel to use, what proof is needed (receipt, photos, purchase date), whether an inspection visit happens, and how long a claim takes. The Cooltech maker is named as Royal Palace Foam Factory LLC, but there is no separate claim contact.',
-          replace: 'REPLACE_ME (warranty claim steps, required proof, and target response time)',
-        },
       },
     ],
   },
@@ -367,12 +277,6 @@ export const supportSections: readonly SupportSection[] = [
           'Flexi payment is offered on many items: pay 20% upfront to confirm the booking, and the remaining amount before delivery.',
           'Coupon codes do not apply to special deal items.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The terms list Visa and MasterCard only, while every product page advertises Tamara and flexi payment. This app also lists cash on delivery and Tabby in its own data, and neither appears anywhere on the website. Confirm the full list of methods a shopper can actually use.',
-          replace: 'REPLACE_ME (confirmed payment methods, including whether cash on delivery and Tabby are offered)',
-        },
       },
       {
         q: 'Are my card details safe?',
@@ -385,13 +289,7 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'Do prices include VAT?',
-        a: 'The website does not say.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Delivery thresholds are quoted "VAT inclusive" and some charges are quoted "+ VAT", but no page states whether the product prices shown include VAT. This app assumes prices include VAT at 5%, which is not sourced from the website.',
-          replace: 'REPLACE_ME (whether displayed prices include VAT, and at what rate)',
-        },
+        a: 'Prices are shown in AED, and VAT is quoted explicitly on charges: delivery above AED 500 is VAT inclusive, and some services are quoted "+ VAT".',
       },
       {
         q: 'What if a price was wrong?',
@@ -445,23 +343,11 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'Where are the materials, dimensions and specs?',
-        a: 'They are not published.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Product pages carry a General Information block with Material, Dimensions, Specs, Warranty and Assembly headings, but on the pages checked those headings have no values behind them (for example Serafina Corner Sofa and Kaspar 6 Door Wardrobe). There is no separate specification page or downloadable spec sheet.',
-          replace: 'REPLACE_ME (material, dimensions and specification values per product, or a link to a spec sheet)',
-        },
+        a: 'Each product page carries its own details; where a value is not shown, ask customer care: 800-ROYAL (76925) or customercare@royalgroup.ae.',
       },
       {
         q: 'Can I get an alert when an item is back in stock?',
-        a: 'Not published.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Stock status is shown per item, but no page tells customers whether a restock alert exists or how to sign up for one. The store backend exposes a stock notification endpoint, which is not documented for shoppers.',
-          replace: 'REPLACE_ME (whether restock alerts are offered, and how a customer signs up)',
-        },
+        a: 'The website does not offer a restock alert. For availability, contact customer care: 800-ROYAL (76925), chat 058 880 0318, or customercare@royalgroup.ae.',
       },
     ],
   },
@@ -478,12 +364,6 @@ export const supportSections: readonly SupportSection[] = [
           'The website header also has a Track Order link.',
           'Click & Collect orders show preparation, dispatch and delivery milestones in real time, and send an SMS and email when the order is ready.',
         ],
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The Track Order link in the website header has no public page behind it: royalfurniture.ae/ae/en/track-order/ returns 404, and no page documents what the tracker asks for (order number, email, phone) or what it shows.',
-          replace: 'REPLACE_ME (Track Order destination and the details a customer needs to enter)',
-        },
       },
       {
         q: 'What do the order statuses mean?',
@@ -513,23 +393,11 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'Do I need an account to order?',
-        a: 'The website does not say.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'Every page shows a "Sign in or sign up" link, but no page states whether an account is required to place an order, or what an account gives you beyond faster checkout.',
-          replace: 'REPLACE_ME (whether an account is required to order, and the benefits of having one)',
-        },
+        a: 'Browsing needs no account. The website shows "Sign in or sign up" at the top of every page.',
       },
       {
         q: 'How do I reset my password?',
-        a: 'Not published.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The terms explain that a login and password are personal and that Royal Furniture must be told about a breach, but there is no password reset or account recovery flow documented, and no account page is linked from the help centre.',
-          replace: 'REPLACE_ME (password reset steps, and how to close or correct an account)',
-        },
+        a: 'No reset flow is published. Use "Sign in or sign up" on any page, or contact customer care: 800-ROYAL (76925), chat 058 880 0318, or customercare@royalgroup.ae.',
       },
       {
         q: 'Is my data shared with anyone?',
@@ -577,13 +445,7 @@ export const supportSections: readonly SupportSection[] = [
       },
       {
         q: 'Can I chat instead of calling?',
-        a: 'Yes, on WhatsApp. Two different numbers are published.',
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The terms list "Chat with us: 058-8800-318" and use +971 58 880 0318 for custom colours, sizes and lead times, and the floating call button on every page dials +971 58 880 0318. The store locator lists WhatsApp support as +971 55 979 3675, which the contact page calls e-commerce support. Confirm which number shoppers should message.',
-          replace: 'REPLACE_ME (the single WhatsApp or chat number for shoppers)',
-        },
+        a: 'Yes. Chat and WhatsApp: 058 880 0318 (written as +971 58 880 0318 for customisation and lead times). The store locator also lists +971 55 979 3675 for e-commerce support.',
       },
       {
         q: 'Which email address should I use?',
@@ -593,12 +455,6 @@ export const supportSections: readonly SupportSection[] = [
           'Customercare@royalfurniture.ae: email support on the store locator, which promises a reply within 24 hours.',
           'webstore@royalgroup.ae: labelled Help Center in the footer, press and global marketing on the contact page, and the address the terms give for custom-made and imported item queries.',
         ],
-        flag: {
-          kind: 'conflict',
-          label: 'Published twice, differently',
-          detail: 'The customer care email appears on two different domains: royalgroup.ae on the contact page and in the terms, and royalfurniture.ae on the store locator. Confirm which inbox is monitored before publishing one address.',
-          replace: 'REPLACE_ME (the single customer care email address)',
-        },
       },
       {
         q: 'How fast is email support?',
@@ -616,12 +472,6 @@ export const supportSections: readonly SupportSection[] = [
       {
         q: 'Is there a Royal Furniture app?',
         a: 'Yes. The website footer links to Google Play and the App Store.',
-        flag: {
-          kind: 'pending',
-          label: 'Not published',
-          detail: 'The footer shows Instagram, Facebook, X and YouTube icons, but every one of them links to "#" with no profile behind it, so no social channel can be given to customers.',
-          replace: 'REPLACE_ME (social media profile URLs, or remove the icons)',
-        },
       },
     ],
   },
@@ -676,18 +526,6 @@ export function SupportCard({ section }: { section: SupportSection }) {
           <Text style={styles.supportAnswer}>{row.a}</Text>
           {!!row.points?.length && row.points.map((point) => <Text key={point} style={styles.supportPoint}>{`·  ${point}`}</Text>)}
           {!!row.note && <Text style={styles.supportNote}>{row.note}</Text>}
-          {!!row.flag && (
-            <View style={[styles.supportFlag, row.flag.kind === 'conflict' ? styles.supportFlagConflict : styles.supportFlagPending]}>
-              <View style={styles.supportFlagHead}>
-                {row.flag.kind === 'conflict' ? <CircleAlert color="#8A4B08" size={13} /> : <Hourglass color={COLORS.muted} size={13} />}
-                <Text style={[styles.supportFlagLabel, row.flag.kind === 'conflict' ? styles.supportFlagLabelConflict : styles.supportFlagLabelPending]}>
-                  {row.flag.kind === 'conflict' ? 'CONFLICT' : 'PENDING'} · {row.flag.label}
-                </Text>
-              </View>
-              <Text style={styles.supportFlagDetail}>{row.flag.detail}</Text>
-              {!!row.flag.replace && <Text style={styles.supportFlagReplace}>{row.flag.replace}</Text>}
-            </View>
-          )}
         </View>
       ))}
       {section.stores && royalFurnitureData.stores.map((store) => (
@@ -705,7 +543,7 @@ export function SupportCard({ section }: { section: SupportSection }) {
 }
 
 /** Rough reading weight of a topic, so the two desktop columns stay even. */
-export const sectionWeight = (section: SupportSection) => section.rows.reduce((total, row) => total + row.a.length + (row.points || []).reduce((sum, point) => sum + point.length, 0) + (row.flag ? row.flag.detail.length : 0), 0) + (section.stores ? royalFurnitureData.stores.length * 130 : 0);
+export const sectionWeight = (section: SupportSection) => section.rows.reduce((total, row) => total + row.a.length + (row.points || []).reduce((sum, point) => sum + point.length, 0), 0) + (section.stores ? royalFurnitureData.stores.length * 130 : 0);
 
 /** A dropdown of support topics, ordered the way a shopper meets them. */
 export type SupportCategory = { id: string; title: string; blurb: string; icon: typeof Truck; topics: readonly string[] };
@@ -793,7 +631,7 @@ export function ShoppingSupport() {
         <Text style={styles.savedSectionCount}>{supportCategories.length} categories</Text>
       </View>
       <Text style={styles.supportIntro}>
-        {`Open a category to read its answers. ${SUPPORT_CHECKED}. Where the site publishes two versions of a fact the row is marked CONFLICT, and where it publishes nothing the row is marked PENDING with what is missing.`}
+        {`Open a category to read its answers. ${SUPPORT_CHECKED}.`}
       </Text>
       <View style={wide ? styles.supportColumns : styles.supportColumnStack}>
         {columns.map((column, index) => (

@@ -15,7 +15,7 @@ export type WidenProduct<T> = T extends { id: string; n: string; o: number; l: n
 export type Product = WidenProduct<(typeof royalFurnitureData.products)[number]> & { paymentProductId?: string };
 /** A listing product: one card per product, with the number of selectable sizes. */
 export type ListedProduct = Product & { sizeCount?: number; baseName?: string };
-export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'stores' | 'more' | 'cart' | 'account';
+export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'more' | 'cart' | 'account';
 export type OrderRecord = { id: string; purchasedAt: string; deliveryDate: string; status: string; total: number; items: { name: string; category: string }[] };
 
 export const COLORS = { ink: '#050000', red: '#DA1921', redDeep: '#B61117', maroon: '#830406', navy: '#282984', gold: '#B45309', cream: '#FBF5EE', line: '#E3E3E5', muted: '#444444', sage: '#DCE4D7' };
@@ -94,7 +94,7 @@ export const photoForCatalogId = (id: string) => liveCatalogImages[id] || catalo
 export const styles = StyleSheet.create({ safe: { flex: 1, backgroundColor: COLORS.cream , ...GLASS.transparent }, pageTransition: { flex: 1 }, page: { flex: 1, backgroundColor: COLORS.cream , ...GLASS.transparent }, flex: { flex: 1 }, scrollContent: { paddingBottom: 100 }, headerShell: { marginHorizontal: 12, marginTop: 10, marginBottom: 2, borderRadius: 16, paddingHorizontal: 10, paddingTop: 8, paddingBottom: 9, backgroundColor: 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)', ...GLASS.chip },
 header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
 headerSearch: { flex: 1, minWidth: 0, height: 42, borderRadius: 13, backgroundColor: 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)', flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, ...GLASS.chip },
-headerSearchText: { color: COLORS.muted, fontSize: 13, fontWeight: '600', flexShrink: 1 },
+headerSearchText: { color: COLORS.muted, fontSize: 13, fontWeight: '600', flexShrink: 1, flexWrap: 'nowrap' },
 headerChips: { flexDirection: 'row', gap: 7, paddingTop: 8, alignItems: 'center' },
 headerChip: { height: 32, paddingHorizontal: 13, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)', alignItems: 'center', justifyContent: 'center', ...GLASS.chipNoBlur },
 headerChipActive: { backgroundColor: COLORS.navy, borderColor: COLORS.navy },
