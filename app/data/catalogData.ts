@@ -6,7 +6,7 @@ export const catalogData = [
     "sc": "corner-sofas",
     "scn": "Corner Sofas",
     "d": "Elevate your living space with this elegant and comfortable corner sofa, where modern design seamlessly meets the sumptuous texture of premium fabric and the supportive feel of PU foam.\r\n\r\nSet includes: Corner Sofa",
-    "o": 3800,
+    "o": 3000,
     "l": 4000,
     "pc": 25,
     "lb": [
