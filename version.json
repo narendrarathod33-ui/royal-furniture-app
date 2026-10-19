@@ -1,7 +1,7 @@
 {
   "app": "royal-furniture-app",
-  "round": "3.5",
-  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing", "prototype glass header"],
-  "branch_commit": "139e1f5",
-  "note": "3.5 removes Version 2 entirely: one app (Version 1) at the root URL; /v2 retired"
+  "round": "3.6",
+  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing", "prototype glass header", "shopping support verified against royalfurniture.ae 19 Oct 2026, no conflict flags"],
+  "branch_commit": "2db73c8",
+  "note": "3.6 shopping support page: same information as the website, cleanly presented (no CONFLICT/PENDING labels)"
 }
