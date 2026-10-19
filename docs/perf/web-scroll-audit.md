@@ -194,3 +194,22 @@ parse+execute of the 5.8 MB chunk, then `SplashGate` replayed its scripted
 Cold-load unaffected beyond Cause-1's fix: transfer numbers from Round 2
 stand. The remaining structural lever (splitting `productDetails.ts`, −24%
 of boot parse) stays recommended-not-implemented per Round 3's verdict.
+
+---
+
+## CORRECTION (2026-10-19) — the live-site outage was a missing `.nojekyll`, not app code
+
+After the revert round kept failing live while the sandbox preview worked, the
+live host was finally probed for the actual bundle file: GitHub Pages returned
+its 404 page for **every** `entry-*.js`. Root cause: the r3.7 wipe deploy
+(978bc84) deleted `.nojekyll` (and the published companions) and 5a34837
+restored only the entry files. Without `.nojekyll`, Pages runs Jekyll, which
+excludes the `_expo/` directory — so from r3.7 through r3.5.1 every deploy
+published an index.html whose app bundle 404ed. All "still not working"
+reports in that window were this, not bundle size or connection speed; the
+r3.9 records-split conclusion stands as measured locally, but it did not —
+and could not — fix the live site. Fixed in gh-pages 7885a10 (`.nojekyll` +
+companions restored from 636ae7a); `deploy-pages.sh` now self-heals the
+marker on every deploy. Lesson: post-deploy verification must fetch the
+**entry bundle from the CDN** (this file), not just version.json / git
+contents.
