@@ -37,8 +37,16 @@ export async function createProductionServer(config, directory = resolve('dist')
       'X-Request-ID': id, 'Cache-Control': 'no-store' };
     for (const [key, value] of Object.entries(headers)) res.setHeader(key, value);
     const fail = (status) => {
-      res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ error: status === 500 ? 'Something went wrong.' : 'Request could not be completed.', correlationId: id }));
+      const title = { 400: 'Bad Request', 403: 'Forbidden', 404: 'Not Found', 405: 'Method Not Allowed', 409: 'Conflict', 429: 'Too Many Requests', 500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable' }[status] || 'Request Error';
+      res.writeHead(status, { 'Content-Type': 'application/problem+json; charset=utf-8' });
+      res.end(JSON.stringify({
+        type: `https://httpstatuses.com/${status}`,
+        title,
+        status,
+        detail: status >= 500 ? 'The request could not be completed.' : 'The request could not be completed with the supplied data or credentials.',
+        instance: req.url,
+        correlationId: id,
+      }));
     };
     try {
       const apiPath = new URL(req.url, config.origin).pathname;

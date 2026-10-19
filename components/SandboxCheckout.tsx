@@ -26,7 +26,8 @@ export function SandboxCheckout({ items }: { items: Item[] }) {
     if (busy) return;
     setBusy(true); setError('');
     try {
-      const response = await fetch('/api/payments/session', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) });
+      const idempotencyKey = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const response = await fetch('/api/payments/session', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey }, body: JSON.stringify({ items }) });
       const result = await response.json();
       if (!response.ok) {
         setError(response.status === 400 ? 'This item or size is not available in the server sandbox catalog. Choose another size or product.' : response.status === 429 ? 'Too many attempts. Wait a minute before retrying.' : `Checkout could not start. Reference: ${result.correlationId || 'unavailable'}`);

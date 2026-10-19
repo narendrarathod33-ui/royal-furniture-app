@@ -23,8 +23,10 @@ test('built production responses are hardened including failures', async () => {
       assert.equal(response.headers.get('access-control-allow-origin'), null);
       if (status !== 200) {
         const body = await response.json();
-        assert.deepEqual(Object.keys(body).sort(), ['correlationId', 'error']);
+        assert.deepEqual(Object.keys(body).sort(), ['correlationId', 'detail', 'instance', 'status', 'title', 'type']);
         assert.equal(body.correlationId, response.headers.get('x-request-id'));
+        assert.equal(body.status, status);
+        assert.match(response.headers.get('content-type'), /^application\/problem\+json/);
         assert(!JSON.stringify(body).includes('Error:'));
       } else if (path === '/') {
         const html = await response.text();

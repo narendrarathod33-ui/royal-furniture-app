@@ -1,0 +1,159 @@
+openapi: 3.1.0
+info:
+  title: Royal Furniture Sandbox Payments API
+  version: 1.0.0
+  description: Test-mode hosted checkout endpoints.
+servers:
+  - url: /
+  - name: Payments
+paths:
+  /api/payments/config:
+    get:
+      tags: [Payments]
+      operationId: getPaymentConfig
+      responses:
+        '200':
+          description: Payment capability
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaymentConfig' }
+  /api/payments/session:
+    post:
+      tags: [Payments]
+      operationId: createCheckoutSession
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateSessionRequest' }
+      responses:
+        '200':
+          description: Hosted checkout session
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CheckoutSession' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /api/payments/status:
+    get:
+      tags: [Payments]
+      operationId: getCheckoutStatus
+      parameters:
+        - in: query
+          name: session_id
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 255 }
+      responses:
+        '200':
+          description: Checkout status
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaymentStatus' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/payments/local-session:
+    delete:
+      tags: [Payments]
+      operationId: deleteLocalSession
+      responses:
+        '200':
+          description: Local checkout session deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [deleted]
+                properties: { deleted: { type: boolean } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /api/payments/webhook:
+    post:
+      tags: [Payments]
+      operationId: receiveStripeWebhook
+      security: [{ stripeSignature: [] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200': { description: Webhook accepted }
+        '400': { $ref: '#/components/responses/BadRequest' }
+components:
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: false
+      schema: { type: string, minLength: 1, maxLength: 128 }
+  securitySchemes:
+    stripeSignature:
+      type: apiKey
+      in: header
+      name: Stripe-Signature
+  schemas:
+    PaymentConfig:
+      type: object
+      required: [enabled]
+      properties:
+        enabled: { type: boolean }
+        mode: { type: string, enum: [sandbox] }
+    CreateSessionRequest:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            required: [productId, quantity]
+            properties:
+              productId: { type: string, maxLength: 400 }
+              quantity: { type: integer, minimum: 1, maximum: 10 }
+    CheckoutSession:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string, format: uri }
+    PaymentStatus:
+      type: object
+      required: [state, amount, currency]
+      properties:
+        state: { type: string, enum: [pending, paid, expired] }
+        amount: { type: integer, minimum: 0 }
+        currency: { type: string, enum: [aed] }
+    Problem:
+      type: object
+      required: [type, title, status, detail, instance]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+        correlationId: { type: string }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }
+    Forbidden:
+      description: Origin or authorization rejected
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }
+    NotFound:
+      description: Resource not found
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }
+    Conflict:
+      description: Idempotency key reused with different data
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers: { Retry-After: { schema: { type: integer } } }
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }
+    Unavailable:
+      description: Temporary capacity or upstream failure
+      content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } }

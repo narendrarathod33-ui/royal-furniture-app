@@ -74,13 +74,15 @@ export async function createSandboxPayments({ origin, settings, stripe: injected
   const catalog = injectedCatalog || await loadCatalog();
   const owners = new Map();
   const orders = new Map();
+  const idempotency = new Map();
   const attempts = new Map();
   const TTL = 24 * 60 * 60 * 1000;
-  const reply = (res, data) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(data)); };
+  const reply = (res, data, status = 200) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(data)); };
   return async (req, res, path, fail) => {
     const now = Date.now();
-    for (const [id, value] of owners) if (now - value > TTL) owners.delete(id);
-    for (const [id, value] of orders) if (now - value.created > TTL) orders.delete(id);
+      for (const [id, value] of owners) if (now - value > TTL) owners.delete(id);
+      for (const [id, value] of orders) if (now - value.created > TTL) orders.delete(id);
+      for (const [id, value] of idempotency) if (now - value.created > TTL) idempotency.delete(id);
     for (const [ip, value] of attempts) if (now - value.start >= 60000) attempts.delete(ip);
     if (path === '/api/payments/webhook') {
       if (req.method !== 'POST') return fail(405);
@@ -99,6 +101,8 @@ export async function createSandboxPayments({ origin, settings, stripe: injected
     if (path === '/api/payments/config' && req.method === 'GET') return reply(res, { enabled: true, mode: 'sandbox' });
     if (path === '/api/payments/session' && req.method === 'POST') {
       if (req.headers.origin !== origin || !req.headers['content-type']?.startsWith('application/json')) return fail(403);
+      const idempotencyKey = req.headers['idempotency-key'];
+      if (idempotencyKey && (!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey) || idempotencyKey.length > 128)) return fail(400);
       const ip = req.socket.remoteAddress; // Never trust arbitrary X-Forwarded-For.
       const rate = attempts.get(ip) || { start: now, count: 0 };
       if (attempts.size >= 10000 && !attempts.has(ip)) return fail(503);
@@ -114,6 +118,12 @@ export async function createSandboxPayments({ origin, settings, stripe: injected
         res.setHeader('Set-Cookie', `__Host-rf_checkout=${owner}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`);
       }
       const fingerprint = createHash('sha256').update(JSON.stringify(priced.lines)).digest('hex');
+      if (idempotencyKey) {
+        const key = `${owner}:${idempotencyKey}`;
+        const previousKey = idempotency.get(key);
+        if (previousKey && previousKey.fingerprint !== fingerprint) return fail(409);
+        if (previousKey) return reply(res, { url: previousKey.url });
+      }
       const previous = [...orders.entries()].find(([, order]) => order.owner === owner && order.fingerprint === fingerprint && order.state === 'pending' && now - order.created < 25 * 60000);
       if (previous) return reply(res, { url: previous[1].url });
       if (orders.size >= 1000) return fail(503);
@@ -126,6 +136,7 @@ export async function createSandboxPayments({ origin, settings, stripe: injected
         }, { idempotencyKey: createHash('sha256').update(`${owner}:${fingerprint}:${Math.floor(now / 1800000)}`).digest('hex') });
         if (session.livemode !== false || !session.url?.startsWith('https://checkout.stripe.com/')) throw new Error();
         orders.set(session.id, { owner, total: priced.total, fingerprint, state: 'pending', created: now, url: session.url });
+        if (idempotencyKey) idempotency.set(`${owner}:${idempotencyKey}`, { fingerprint, url: session.url, created: now });
         return reply(res, { url: session.url });
       } catch { return fail(502); }
     }

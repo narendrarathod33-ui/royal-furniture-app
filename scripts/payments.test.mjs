@@ -35,7 +35,7 @@ async function fixture() {
   const handler = await createSandboxPayments({ origin, settings: { enabled: true, key: testKey, webhookSecret: signing }, stripe, catalog });
   const server = http.createServer((req, res) => {
     res.setHeader('X-Request-ID', 'test-reference');
-    const fail = (status) => { res.writeHead(status, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Request could not be completed.', correlationId: 'test-reference' })); };
+    const fail = (status) => { res.writeHead(status, { 'Content-Type': 'application/problem+json' }); res.end(JSON.stringify({ type: `https://httpstatuses.com/${status}`, title: 'Request Error', status, detail: 'The request could not be completed.', instance: '/api/payments', correlationId: 'test-reference' })); };
     handler(req, res, new URL(req.url, origin).pathname, fail).catch(() => fail(500));
   });
   await new Promise((done) => server.listen(0, '127.0.0.1', done));
