@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { catName } from './catalog/kit';
 import { Image, Modal, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View, type ImageSourcePropType } from 'react-native';
 import { ArrowRight, BadgePercent, Check, Search, SlidersHorizontal, X } from 'lucide-react-native';
 import { AdaptiveFrame, useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
@@ -56,7 +57,7 @@ export function DealsPage<T extends DealProduct>({ products, categories, header,
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.categories}>
       {[{ s: 'all', n: 'All deals' }, ...categories].map(c => <Pressable key={c.s} accessibilityRole="button" accessibilityState={{ selected: filters.category === c.s }}
         onPress={() => setFilters(current => ({ ...current, category: c.s }))} style={[s.category, filters.category === c.s && s.categorySelected]}>
-        <Text style={[s.categoryText, filters.category === c.s && { color: '#FFF' }]}>{c.n}</Text>
+        <Text style={[s.categoryText, filters.category === c.s && { color: '#FFF' }]}>{catName(c)}</Text>
       </Pressable>)}
     </ScrollView>
     <View style={s.toolbar}><View style={{ flex: 1, minWidth: 0 }}><Text accessibilityRole="header" accessibilityLiveRegion="polite" style={s.resultTitle}>{results.length} {results.length === 1 ? 'deal' : 'deals'} to discover</Text><Text style={s.resultSubtitle}>{summary}</Text></View>
@@ -89,7 +90,7 @@ export function DealsPage<T extends DealProduct>({ products, categories, header,
               {[{ s: 'all', n: 'All categories' }, ...categories].map(c => <Pressable key={c.s} accessibilityRole="radio" accessibilityLabel={c.n} accessibilityState={{ checked: draft.category === c.s }} onPress={() => change('category', c.s)}
                 style={[s.categoryTile, { width: adaptive.width < 350 ? '100%' : '48.5%' }, draft.category === c.s && s.choiceSelected]}>
                 {c.s === 'all' ? <View style={s.tileIcon}><BadgePercent size={20} color={RED} /></View> : <Image source={photo(c.s)} resizeMode="cover" style={s.tileImage} />}
-                <Text style={[s.tileText, draft.category === c.s && s.red]}>{c.n}</Text>{draft.category === c.s && <Check size={14} color={RED} />}
+                <Text style={[s.tileText, draft.category === c.s && s.red]}>{catName(c)}</Text>{draft.category === c.s && <Check size={14} color={RED} />}
               </Pressable>)}
             </View>
             <View style={s.rule} /><Text accessibilityRole="header" style={s.sectionTitle}>Minimum saving</Text><Text style={s.sectionHint}>Every deal starts at more than 40% off.</Text>

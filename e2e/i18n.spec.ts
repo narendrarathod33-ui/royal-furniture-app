@@ -38,6 +38,19 @@ test.describe('Royal Furniture languages', () => {
     await expect(page.getByText('سلتك', { exact: true })).toBeVisible();
   });
 
+  test('home deal tiles and room chips render in Arabic after switching', async ({ page }) => {
+    await openAccount(page);
+    await page.getByRole('button', { name: 'العربية' }).click();
+    await expect(page.getByRole('tab', { name: 'الرئيسية' })).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('tab', { name: 'الرئيسية' }).click();
+    // "Amazing deals" tiles…
+    await expect(page.getByText('كراسي استرخاء', { exact: true })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('أرائك زاوية', { exact: true })).toBeVisible();
+    // …and the "Shop by room" chips.
+    await expect(page.getByText('أثاث', { exact: true })).toBeVisible();
+    await expect(page.getByText('مراتب كولتك', { exact: true })).toBeVisible();
+  });
+
   test('product names render in Arabic on cards (generated dictionary)', async ({ page }) => {
     await openAccount(page);
     await page.getByRole('button', { name: 'العربية' }).click();

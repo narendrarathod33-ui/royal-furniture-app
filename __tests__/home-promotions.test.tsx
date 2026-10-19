@@ -142,5 +142,5 @@ test('Shop by room keeps its photos and category actions without decorative icon
   expect(home.includes("'◒'")).toBe(false);
   expect(home.includes('onPress={() => onCategory(cat.s)}')).toBe(true);
   expect(home.includes('source={categoryThumbnail(cat.s)}')).toBe(true);
-  expect(home.includes('<Text style={styles.roomLabel}>{cat.n}</Text>')).toBe(true);
+  expect(home.includes('<Text style={styles.roomLabel}>{catName(cat)}</Text>')).toBe(true);
 });

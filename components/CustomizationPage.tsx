@@ -1,3 +1,4 @@
+import { catName } from './catalog/kit';
 import { useMemo, useRef, type ReactNode } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChevronLeft, Palette, Ruler, Search, Sparkles, X } from 'lucide-react-native';
@@ -27,7 +28,7 @@ export function CustomizationPage<T extends MadeToOrderProduct>({ products, cate
     <View style={s.benefits}><View style={s.benefit}><Palette size={18} color="#A3272E" /><Text style={s.benefitText}>Colour & fabric</Text></View><View style={s.benefit}><Ruler size={18} color="#A3272E" /><Text style={s.benefitText}>Size possibilities</Text></View><View style={s.benefit}><Sparkles size={18} color="#A3272E" /><Text style={s.benefitText}>A personal touch</Text></View></View>
     <Text style={s.guidance}>Choose a piece to see its listed options. Confirm custom requirements, availability and lead times with the Royal Furniture team before ordering.</Text>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.categories}>
-      {[{ s: 'all', n: 'All made to order' }, ...availableCategories].map(c => <Pressable key={c.s} accessibilityRole="button" accessibilityLabel={`Show ${c.n}`} accessibilityState={{ selected: filters.category === c.s }} onPress={() => update({ category: c.s })} style={[s.chip, filters.category === c.s && s.selected]}><Text style={[s.chipText, filters.category === c.s && s.selectedText]}>{c.n}</Text></Pressable>)}
+      {[{ s: 'all', n: 'All made to order' }, ...availableCategories].map(c => <Pressable key={c.s} accessibilityRole="button" accessibilityLabel={`Show ${c.n}`} accessibilityState={{ selected: filters.category === c.s }} onPress={() => update({ category: c.s })} style={[s.chip, filters.category === c.s && s.selected]}><Text style={[s.chipText, filters.category === c.s && s.selectedText]}>{catName(c)}</Text></Pressable>)}
     </ScrollView>
     <View style={s.results}><Text accessibilityRole="header" accessibilityLiveRegion="polite" style={s.resultTitle}>{results.length} made-to-order {results.length === 1 ? 'piece' : 'pieces'}</Text>
       {(filters.category !== 'all' || filters.query || filters.sort !== 'featured') && <Pressable accessibilityRole="button" accessibilityLabel="Clear customization filters" onPress={reset} style={s.clear}><Text style={s.clearText}>Clear filters</Text></Pressable>}

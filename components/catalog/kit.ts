@@ -29,10 +29,10 @@ export const homeCategoryImages: Record<string, number> = {
   'kids-and-teens': require('../../assets/images/home-kids.webp'),
 };
 export const homeDealTiles = [
-  { label: 'Corner sofas', category: 'sofas:corner-sofas', image: require('../../assets/images/deal-sofas.webp') },
-  { label: 'Recliners', category: 'sofas:recliner', image: require('../../assets/images/deal-recliners.webp') },
-  { label: 'Coffee tables', category: 'furniture:living-room:coffee-table', image: require('../../assets/images/deal-coffee-tables.webp') },
-  { label: 'Home decor', category: 'household:decor-items', image: require('../../assets/images/deal-decor.webp') },
+  { label: 'Corner sofas', ar: 'أرائك زاوية', category: 'sofas:corner-sofas', image: require('../../assets/images/deal-sofas.webp') },
+  { label: 'Recliners', ar: 'كراسي استرخاء', category: 'sofas:recliner', image: require('../../assets/images/deal-recliners.webp') },
+  { label: 'Coffee tables', ar: 'طاولات قهوة', category: 'furniture:living-room:coffee-table', image: require('../../assets/images/deal-coffee-tables.webp') },
+  { label: 'Home decor', ar: 'ديكور المنزل', category: 'household:decor-items', image: require('../../assets/images/deal-decor.webp') },
 ] as const;
 export const bedroomFeatureProduct = catalogData.find((product) => product.c === 'bedroom' && product.remoteImage) as { remoteImage?: string } | undefined;
 export const diningFeatureProduct = catalogData.find((product) => product.c === 'furniture' && product.sc === 'dining-room' && product.remoteImage) as { remoteImage?: string } | undefined;
@@ -60,6 +60,20 @@ export const pname = (product: { id: string; n: string }) => {
 };
 /** Subcategory display name in the active language. */
 export const pscn = (scn: string) => (useLangStore.getState().lang === 'ar' ? SCN_AR[scn] || scn : scn);
+/** Arabic names for the top-level shop categories (keyed by slug). */
+export const CAT_AR: Record<string, string> = {
+  all: 'كل الأقسام',
+  furniture: 'أثاث',
+  sofas: 'أرائك وجلسات',
+  bedroom: 'غرفة النوم',
+  household: 'أدوات المنزل',
+  'cooltech-mattress': 'مراتب كولتك',
+  'kids-and-teens': 'الأطفال واليافعين',
+};
+/** Shop-category display name in the active language (top-level map, then the
+ * subcategory dictionary, then the stored English name). */
+export const catName = (cat: { s: string; n: string }) =>
+  useLangStore.getState().lang !== 'ar' ? cat.n : CAT_AR[cat.s] || SCN_AR[cat.n] || cat.n;
 export const photoFor = (product: Product) => { const sourceId = product.id.split('::size=')[0]; return liveCatalogImages[sourceId] || catalogImages[sourceId] || photoByProductId[sourceId] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined); };
 
 /** Photo for a catalogue entry id — used by the official size dropdown. */

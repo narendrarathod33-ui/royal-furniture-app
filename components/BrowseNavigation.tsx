@@ -1,4 +1,6 @@
 import { GLASS } from '../app/ui/glass';
+import { t } from '../app/i18n';
+import { catName, pscn } from './catalog/kit';
 import { AdaptiveFrame } from '../hooks/useAdaptiveLayout';
 import { useMemo, useRef, useState } from 'react';
 import { Platform, Image, type ImageSourcePropType, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
@@ -80,7 +82,7 @@ export function BrowseNavigation({ categories, products, leaves, category, subca
       <Pressable accessibilityRole="button" accessibilityLabel={`Choose a type in ${parentName}`} onPress={showExplorer} style={s.contextChoice}><Text numberOfLines={1} style={s.contextLabel}>{active?.label || `All ${parentName.toLocaleLowerCase()}`}</Text><ChevronDown size={14} color={RED} /></Pressable>
     </View>}
     {!compact && !!parentName && children.length > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} decelerationRate="fast" style={compact ? s.contextScrollCompact : s.contextScroll} contentContainerStyle={s.contextRow}>
-      {[{ category, subcategory: 'all', leaf: 'all', label: `All ${parentName.toLocaleLowerCase()}`, path: parentName }, ...children].map((item) => <Pressable key={item.subcategory} accessibilityRole="button" accessibilityState={{ selected: subcategory === item.subcategory }} onPress={() => onChange(category, item.subcategory, 'all')} hitSlop={compact ? 7 : undefined} style={[s.contextChip, compact && s.contextChipCompact, subcategory === item.subcategory && (compact ? s.contextChipCompactSelected : s.contextChipSelected)]}><Text style={[s.contextChipText, compact && s.contextChipTextCompact, subcategory === item.subcategory && s.red]}>{item.label}</Text></Pressable>)}
+      {[{ category, subcategory: 'all', leaf: 'all', label: `All ${parentName.toLocaleLowerCase()}`, path: parentName }, ...children].map((item) => <Pressable key={item.subcategory} accessibilityRole="button" accessibilityState={{ selected: subcategory === item.subcategory }} onPress={() => onChange(category, item.subcategory, 'all')} hitSlop={compact ? 7 : undefined} style={[s.contextChip, compact && s.contextChipCompact, subcategory === item.subcategory && (compact ? s.contextChipCompactSelected : s.contextChipSelected)]}><Text style={[s.contextChipText, compact && s.contextChipTextCompact, subcategory === item.subcategory && s.red]}>{pscn(item.label)}</Text></Pressable>)}
     </ScrollView>}
     <Modal transparent visible={open} animationType={Platform.OS === 'web' ? 'none' : 'slide'} onRequestClose={close} onDismiss={() => trigger.current?.focus()}>
       <AdaptiveFrame><View style={s.scrim}>

@@ -133,6 +133,12 @@ const STRINGS: Record<string, { en: string; ar: string }> = {
   'shop.dealsTitle': { en: 'Amazing Deals', ar: 'عروض مذهلة' },
 
   // Search screen
+  'browse.title': { en: 'Browse furniture', ar: 'تصفح الأثاث' },
+  'browse.allCategories': { en: 'All categories', ar: 'كل الأقسام' },
+  'browse.all': { en: 'All', ar: 'الكل' },
+  'browse.headline': { en: 'Find your kind of home.', ar: 'ابحث عن بيتك على ذوقك.' },
+  'browse.headlineSub': { en: 'Good spaces start with something you love.', ar: 'المساحات الجميلة تبدأ من شيء تحبه.' },
+  'browse.contextSub': { en: 'Considered pieces. Made for your everyday.', ar: 'قطع مدروسة. صُنعت ليومك.' },
   'search.title': { en: 'Search Royal Furniture', ar: 'ابحث في رويال فيرنيتشر' },
   'search.sub': { en: 'Find products, rooms, categories, and subcategories.', ar: 'ابحث عن منتجات وغرف وفئات وأقسام.' },
   'search.placeholder': { en: 'Search sofas, beds, coffee tables...', ar: 'ابحث عن أرائك، أسرّة، طاولات...' },
