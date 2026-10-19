@@ -1,5 +1,5 @@
 {
-  "version": "3.9.1",
-  "commit": "f03b72c",
-  "note": "Connects checkout to the seller-deployed Google Orders inbox (Apps Script): new order requests submit to the private Royal Furniture Orders sheet, WhatsApp confirmation remains, and Account order history can sync seller-set status/delivery date. Gates: tsc OK, Jest 85/85, legacy 57/57, Playwright 27 pass/1 skip. Sandbox cannot POST to script.google.com, so final Sheet proof is one live-browser test order."
+  "version": "3.9.2",
+  "commit": "b7c29ad",
+  "note": "Catalog sync from the Drive workbook: Serafina Corner Sofa price corrected AED 3,800 -> AED 3,000 (list AED 4,000 at 25% off). One-field data change; same 1360 products. Gates: tsc OK, Jest 85/85, legacy 57/57, Playwright 27 pass/1 skip."
 }
