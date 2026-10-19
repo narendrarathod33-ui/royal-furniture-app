@@ -1,0 +1,10 @@
+{
+  "app": "royal-furniture-app",
+  "round": "4",
+  "versions": {
+    "v1": "current app — glass header, scheme 8, Arabic, honest pricing",
+    "v2": "prototype pitch look — pastel icon category tiles + icon-first cards (same data, engine and prices)"
+  },
+  "branch_commit": "3f40c73",
+  "note": "Version 1 stays at the root URL; Version 2 lives at /v2/ for the pitch"
+}
