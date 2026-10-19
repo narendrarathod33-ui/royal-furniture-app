@@ -30,7 +30,9 @@ const WEB_TOUCH_ACTION = { touchAction: 'pan-y pinch-zoom' } as unknown as ViewS
 import { BlurView } from 'expo-blur';
 import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
-import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
+import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE } from './data/productDetails';
+import { loadDetailStore } from '../data/loadDetailStore';
+import type { DetailStore } from '../data/productDetailDecode';
 import { youMayAlsoLike, recentProducts } from './data/discovery';
 import { upgradePicks } from './data/recommend';
 import { catalogData } from './data/catalogData';
@@ -498,6 +500,18 @@ export default function ProductDetails({
     || localSizePrices[0];
   const hasDifferentSizePrices = new Set(localSizePrices.map((option) => option.price)).size > 1;
   const [selectedSize, setSelectedSize] = useState(defaultSizeOption?.name || '');
+  // The harvested detail records (~1.3 MB) live outside the app-shell bundle
+  // (web: a JSON asset fetched on demand; native: a lazily-imported module),
+  // so boot stays light. Until they arrive the page renders catalogue/live
+  // data; if they never load, those fallbacks already cover it.
+  const [detailStore, setDetailStore] = useState<DetailStore | null>(null);
+  useEffect(() => {
+    let live = true;
+    loadDetailStore().then((store) => { if (live) setDetailStore(store); })
+      .catch(() => { /* catalogue / live-API fallbacks already cover this */ });
+    return () => { live = false; };
+  }, []);
+  const imageUrl = (path: string) => (detailStore ? detailStore.productImageUrl(path) : path);
   const selectedSizeOption = localSizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
   const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
   const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? product.l : product.l;
@@ -598,7 +612,7 @@ export default function ProductDetails({
 
   // Everything the product page shows is read from the baked harvest first, with
   // the live API as a fallback, and the catalogue itself as the last resort.
-  const baked = useMemo(() => getProductDetails(product.id), [product.id]);
+  const baked = useMemo(() => detailStore?.getProductDetails(product.id), [product.id, detailStore]);
   const catalogue = product as ProductDetailsProduct & { lb?: unknown; st?: unknown; dl?: unknown; fd?: unknown; fa?: unknown };
   // The API repeats its description in `general_information`, so equal texts are
   // collapsed after normalising line endings and whitespace.
@@ -642,7 +656,7 @@ export default function ProductDetails({
     ? baked.sections
     : live.sections;
   const galleryPaths = baked?.gallery?.length ? baked.gallery : live.images;
-  const gallery = galleryPaths.map((path) => (path.startsWith('http') ? path : productImageUrl(path)));
+  const gallery = galleryPaths.map((path) => (path.startsWith('http') ? path : imageUrl(path)));
   // The slider shows every picture the site publishes for this product — the same
   // list the thumbnail strip has always used. The photo the listing passed in stays
   // the only slide for a product the harvest has no gallery for, so nothing
@@ -1056,7 +1070,7 @@ export default function ProductDetails({
                   {displayColors.map((color) => (
                     <View key={color.name} style={styles.colorPill}>
                       {color.image ? (
-                        <Image source={{ uri: productImageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
+                        <Image source={{ uri: imageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
                       ) : color.hex ? (
                         <View style={[styles.swatch, { backgroundColor: color.hex }]} />
                       ) : null}
