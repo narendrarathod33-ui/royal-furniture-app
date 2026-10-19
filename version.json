@@ -1,5 +1,5 @@
 {
-  "version": "3.8.5",
-  "commit": "d541c13",
-  "note": "Deals page now sorts by the displayed from-price (was sorting by feed prices before size-family repricing - e.g. AED 895 could appear before AED 570 in low-to-high). Also: legacy test suite repaired 47/57 -> 57/57, .env.example restored. Gates: tsc OK, jest 79/79, legacy 57/57, playwright 27 pass/1 skip."
+  "version": "3.9.0",
+  "commit": "bd59b56",
+  "note": "Real order requests: full customer/item capture, WhatsApp confirmation, Google Sheet order inbox support and in-app seller status/delivery-date updates. Sheet submission activates after the seller deploys Apps Script and sends its URL/token for the final config deploy; until then orders save on-device and confirm via WhatsApp. Gates: tsc OK, Jest 85/85, legacy 57/57, Playwright 27 pass/1 skip."
 }
