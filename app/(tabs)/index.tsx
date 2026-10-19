@@ -10,6 +10,8 @@ import { AdaptiveRegion, useAdaptiveLayout } from '../../hooks/useAdaptiveLayout
 import { SandboxCheckout, SandboxPaymentReturn } from '../../components/SandboxCheckout';
 import { BottomNav } from '../../components/catalog/BottomNav';
 import { HomeContent } from '../../components/catalog/HomeContent';
+import { HomeContentV2 } from '../../components/catalog/HomeContentV2';
+import { APP_SKIN } from '../skin';
 import { ShopContent } from '../../components/catalog/ShopContent';
 import { CartContent } from '../../components/catalog/CartContent';
 import { AccountContent } from '../../components/catalog/AccountContent';
@@ -113,7 +115,9 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
         <Animated.View style={[styles.pageTransition, { marginLeft: rail ? 96 : 0, opacity: pageMotion, transform: [{ translateY: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [0.985, 1] }) }] }]}>
         <AdaptiveRegion inset={rail ? 96 : 0}>
         {tab === 'customization' && <CustomizationPage products={catalogData as unknown as readonly Product[]} categories={royalFurnitureData.cats} filters={customizationFilters} onFiltersChange={setCustomizationFilters} onBack={openHome} header={<Header count={cartCount} onCart={openCart} onAccount={openAccount} />} renderCard={renderCatalogCard} />}
-        {tab === 'home' && <HomeContent onCustomize={openCustomize} onCategory={openCategories} onProduct={openProduct} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'home' && (APP_SKIN === 'v2'
+          ? <HomeContentV2 onCategory={openCategories} onProduct={openProduct} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />
+          : <HomeContent onCustomize={openCustomize} onCategory={openCategories} onProduct={openProduct} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />)}
         {tab === 'shop' && <ShopContent products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'categories' && <ShopContent catalogSort={catalogSort} onCatalogSortChange={setCatalogSort} products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} catalogOnly cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'search' && <SearchContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}

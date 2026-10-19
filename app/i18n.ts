@@ -96,6 +96,8 @@ const STRINGS: Record<string, { en: string; ar: string }> = {
   // Header
   'header.cartBadge': { en: 'Cart, {count} items', ar: 'السلة، {count} منتج' },
   'header.searchPlaceholder': { en: 'Search sofas, beds, décor…', ar: 'ابحث عن أثاث وديكور…' },
+  'home.shopByCategory': { en: 'Shop by category', ar: 'تسوق حسب الفئة' },
+  'home.allDeals': { en: 'All deals', ar: 'كل العروض' },
   'header.account': { en: 'Account', ar: 'الحساب' },
 
   // Home
