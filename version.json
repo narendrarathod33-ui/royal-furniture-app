@@ -1,16 +1,6 @@
 {
   "app": "royal-furniture-app",
-  "round": "3.8.1",
-  "features": [
-    "instant language switch",
-    "arabic product names + tiles",
-    "scheme 8 background",
-    "honest size pricing",
-    "prototype glass header",
-    "shopping support per royalfurniture.ae",
-    "New in tab",
-    "search hint: single line, short label on small screens"
-  ],
-  "branch_commit": "6283278",
-  "note": "3.8.1 deploy fix: previous builds' entry files restored and deploys are now additive — a cached page can never hit a deleted file and hang on the splash again. Hard-refresh once to jump to the current build."
+  "round": "3.8.2",
+  "branch_commit": "revised-1e927e7",
+  "note": "3.8.2 boot fix, part 2: on slow connections the loading screen now stays with a status message and a Retry button instead of going blank. If the app seems stuck on the logo on mobile data, it is still downloading (~1.1 MB) — wait on it, use Wi-Fi, or tap Retry after it appears."
 }
