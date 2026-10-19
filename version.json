@@ -1,6 +1,5 @@
 {
-  "app": "royal-furniture-app",
-  "round": "3.8.2",
-  "branch_commit": "revised-1e927e7",
-  "note": "3.8.2 boot fix, part 2: on slow connections the loading screen now stays with a status message and a Retry button instead of going blank. If the app seems stuck on the logo on mobile data, it is still downloading (~1.1 MB) — wait on it, use Wi-Fi, or tap Retry after it appears."
+  "version": "3.9",
+  "commit": "14e87aa",
+  "note": "PDP records moved out of the boot bundle: entry gzip -26% (1.10MB -> 0.81MB); product details load on demand from data/product-detail-records.json"
 }
