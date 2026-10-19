@@ -1,4 +1,5 @@
 import { getSizeVariants, collapseSizeFamilies } from '../app/data/sizeVariants';
+import { officialSizeFloor } from '../app/data/officialSizes';
 import { catalogData } from '../app/data/catalogData';
 import { youMayAlsoLike, recentProducts } from '../app/data/discovery';
 import { suggestForCart } from '../app/data/recommend';
@@ -15,8 +16,10 @@ import type { ListedProduct, Product } from '../components/catalog/kit';
 const catalog = catalogData as unknown as Product[];
 
 function cheapestVariantPrice(id: string): number | undefined {
-  const variants = getSizeVariants(id);
-  return variants.length ? Math.min(...variants.map((v) => v.price)) : undefined;
+  const variants = getSizeVariants(id).map((v) => v.price);
+  const floor = officialSizeFloor(id);
+  const prices = [...variants, ...(floor ? [floor.price] : [])];
+  return prices.length ? Math.min(...prices) : undefined;
 }
 
 test('every family card price equals its cheapest real size', () => {
@@ -67,3 +70,37 @@ test('upgrade chips: cheapest step up first, delta from the displayed price', ()
   expect(picks[0].delta).toBe(1386 - 1309);
   expect(picks[1].delta).toBe(1595 - 1309);
 });
+
+test('no card sits above the official size floor (feed base-row arithmetic)', () => {
+  // Feed rows like "The Wire Bed @ AED 1,505" carry flat-discount arithmetic,
+  // not a real size price — the site charges AED 1,092 for the cheapest size.
+  // Every collapsed card must show the official floor when it is lower.
+  const reps = collapseSizeFamilies([...catalog]) as unknown as ListedProduct[];
+  let floored = 0;
+  for (const rep of reps) {
+    const floor = officialSizeFloor(rep.id);
+    if (!floor || floor.price >= rep.o) continue;
+    // (unreachable when the fix holds — the collapse itself floors the card)
+    expect(rep.o).toBe(floor.price);
+  }
+  for (const entry of catalog) {
+    const floor = officialSizeFloor(entry.id);
+    if (floor && floor.price < entry.o) floored += 1;
+  }
+  expect(floored).toBeGreaterThan(50); // the dataset still has this class of rows
+});
+
+test('regression: the wire-bed rail chip shows the real from-price (AED 1,092)', () => {
+  const suggestions = suggestForCart(
+    [{ id: 'tulip-7-zone-pocket-spring-mattress::size=Queen%20-%20200x160', c: 'bedroom', sc: 'mattress', o: 1435 }],
+    catalog,
+  );
+  expect(suggestions.length).toBeGreaterThan(0);
+  for (const suggestion of suggestions) {
+    const floor = officialSizeFloor(suggestion.product.id);
+    if (floor) expect(suggestion.product.o).toBeLessThanOrEqual(floor.price);
+  }
+  const wire = suggestions.find((s) => /wire-bed/.test(s.product.id));
+  if (wire) expect(wire.product.o).toBe(1092);
+});
+

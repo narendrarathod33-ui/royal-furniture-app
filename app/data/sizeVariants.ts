@@ -1,4 +1,5 @@
 import { catalogData } from './catalogData';
+import { officialSizeFloor } from './officialSizes';
 import { dealsCatalog } from './dealsCatalog';
 import { royalFurnitureData } from './royalFurnitureData';
 
@@ -182,17 +183,25 @@ export function collapseSizeFamilies<T extends { id: string; n: string; c: strin
 
   // Which families are genuine multi-size families inside this list?
   const labelsByFamily = new Map<string, Set<string>>();
+  const baseByFamily = new Map<string, string>();
   for (const { product, size } of parsed) {
     if (!size) continue;
     const key = familyKey(size, product);
     const labels = labelsByFamily.get(key) || new Set<string>();
     labels.add(size.label);
     labelsByFamily.set(key, labels);
+    if (!baseByFamily.has(key)) baseByFamily.set(key, size.base);
   }
   const familyKeys = new Set<string>();
   for (const [key, labels] of labelsByFamily) {
     if (labels.size > 1) familyKeys.add(key);
   }
+  // Size-less feed duplicates: the importer often also emits the family's
+  // "base product" row without a size ("The Wire Bed" beside its six sized
+  // siblings). Its price is feed arithmetic, not a real selling price, so it
+  // must never surface as its own card — the family rep already carries the
+  // true from-price and the size menu.
+  const familyBaseKeys = new Set([...familyKeys].map((key) => `${nameKey(baseByFamily.get(key)!)}|${key.split('|')[1]}`));
 
   // Cheapest size of each family becomes the single listing card.
   const representative = new Map<string, T>();
@@ -205,6 +214,20 @@ export function collapseSizeFamilies<T extends { id: string; n: string; c: strin
 
   const emittedFamilies = new Set<string>();
   const emittedDuplicates = new Set<string>();
+  /** Feeds the card price back to the cheapest real size when the feed row sits above it. */
+  const reconciled = (card: T, sizeCount?: number): WithSizeCount<T> => {
+    const source = card as T & { l?: number; pc?: number };
+    const floor = officialSizeFloor(source.id);
+    if (!floor || floor.price >= source.o) return sizeCount ? { ...card, sizeCount } : card;
+    const listPrice = floor.listPrice && floor.listPrice > floor.price ? floor.listPrice : source.l && source.l > floor.price ? source.l : floor.price;
+    return {
+      ...card,
+      o: floor.price,
+      l: listPrice,
+      pc: listPrice > floor.price ? Math.round((1 - floor.price / listPrice) * 100) : source.pc,
+      ...(sizeCount ? { sizeCount } : {}),
+    };
+  };
   const collapsed: WithSizeCount<T>[] = [];
   for (const { product, size } of parsed) {
     const duplicateKey = `${nameKey(product.n)}|${product.o}`;
@@ -212,23 +235,23 @@ export function collapseSizeFamilies<T extends { id: string; n: string; c: strin
     emittedDuplicates.add(duplicateKey);
 
     if (!size) {
-      collapsed.push(product);
+      // Fold the size-less base duplicate into its size family, if one exists.
+      if (familyBaseKeys.has(`${nameKey(product.n)}|${product.c}`)) continue;
+      const floor = officialSizeFloor(product.id);
+      collapsed.push(reconciled(product, floor && floor.priced > 1 ? floor.priced : undefined));
       continue;
     }
     const key = familyKey(size, product);
     if (!familyKeys.has(key)) {
-      collapsed.push(product);
+      const floor = officialSizeFloor(product.id);
+      collapsed.push(reconciled(product, floor && floor.priced > 1 ? floor.priced : undefined));
       continue;
     }
     const rep = representative.get(key);
     if (!rep || rep.id !== product.id) continue; // drop the sibling sizes
     if (emittedFamilies.has(key)) continue;
     emittedFamilies.add(key);
-    collapsed.push({
-      ...product,
-      sizeCount: labelsByFamily.get(key)?.size || 1,
-      baseName: size.base,
-    });
+    collapsed.push(reconciled({ ...product, sizeCount: labelsByFamily.get(key)?.size || 1, baseName: size.base }));
   }
   return collapsed;
 }

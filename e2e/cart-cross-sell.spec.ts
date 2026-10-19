@@ -49,6 +49,33 @@ test.describe('Royal Furniture cart cross-sell', () => {
     await expect(page.getByText('About this piece').first()).toBeVisible({ timeout: 15_000 });
   });
 
+  test('a completion chip never quotes a price the product page disagrees with', async ({ page }) => {
+    await page.goto('/', load);
+    await page.getByRole('tab', { name: 'Search' }).click();
+    const field = page.getByTestId('product-search-field');
+    await expect(field).toBeVisible();
+    await field.locator('input').fill('Nimbus Bed');
+    await expect(async () => {
+      await page.getByText('Nimbus Bed', { exact: false }).first().click({ timeout: 5_000 });
+      await page.getByRole('button', { name: /Tap to change size|Add to bag/ }).first().waitFor({ state: 'visible', timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
+    await page.getByRole('button', { name: /Add to bag/ }).first().click();
+    await page.getByRole('button', { name: 'Cart, 1 items' }).click();
+    await expect(page.getByText('Complete your order')).toBeVisible();
+
+    // Read the FIRST chip's exact name+price label, open it, and require the
+    // product page to charge the same amount (the "random prices" contract).
+    const chip = page.getByRole('button', { name: /, AED/ }).first();
+    const chipLabel = (await chip.getAttribute('aria-label')) || '';
+    const chipPrice = chipLabel.match(/AED [\d,]+/)?.pop();
+    expect(chipPrice, `chip label "${chipLabel}" must carry a price`).toBeTruthy();
+    await chip.click();
+    await expect(page.getByText('About this piece').first()).toBeVisible({ timeout: 15_000 });
+    const pdpPrice = await page.getByRole('button', { name: new RegExp(`Add to bag.*${chipPrice!.replace(/[(),]/g, '\\$&')}`) }).count();
+    const headerPrice = await page.getByText(chipPrice!, { exact: true }).count();
+    expect(pdpPrice + headerPrice, `product page must show the chip price ${chipPrice}`).toBeGreaterThan(0);
+  });
+
   test('an empty bag shows no completion rail', async ({ page }) => {
     await page.goto('/', load);
     await page.getByRole('button', { name: /Cart, 0 items/ }).click();

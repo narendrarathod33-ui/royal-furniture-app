@@ -225,3 +225,39 @@ export function hasOfficialSizes(productId: string): boolean {
   const raw = rawSizesFor(productId);
   return !!raw && raw.length > 1;
 }
+
+export type OfficialSizeFloor = {
+  /** Cheapest priced official size — what the site actually charges "from". */
+  price: number;
+  /** That size's list price, when served. */
+  listPrice?: number;
+  /** How many official sizes carry a price (the honest size-count). */
+  priced: number;
+};
+
+const floorCache = new Map<string, OfficialSizeFloor | undefined>();
+
+/**
+ * Cheapest priced official size for a catalog product — `undefined` when the
+ * official list has no priced sizes. Listing cards must never sit ABOVE this
+ * price: the product page charges exactly it for the cheapest size, and a feed
+ * row that carries flat-discount "base product" arithmetic instead of a real
+ * size price would otherwise show shoppers a price no size actually costs.
+ */
+export function officialSizeFloor(productId: string): OfficialSizeFloor | undefined {
+  const id = productId.split('::size=')[0];
+  if (floorCache.has(id)) return floorCache.get(id);
+  const priced = (rawSizesFor(id) || []).filter((size) => Number.isFinite(size[1]) && (size[1] as number) > 0);
+  let floor: OfficialSizeFloor | undefined;
+  if (priced.length) {
+    const cheapest = priced.reduce((a, b) => ((b[1] as number) < (a[1] as number) ? b : a));
+    const listPrice = cheapest[2];
+    floor = {
+      price: cheapest[1] as number,
+      listPrice: Number.isFinite(listPrice) ? (listPrice as number) : undefined,
+      priced: priced.length,
+    };
+  }
+  floorCache.set(id, floor);
+  return floor;
+}

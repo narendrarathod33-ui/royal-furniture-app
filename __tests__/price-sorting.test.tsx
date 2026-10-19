@@ -24,6 +24,7 @@ jest.mock('../components/AdaptiveProductList', () => {
 import { ShopContent } from '../components/catalog/ShopContent';
 import { flattenText } from './test-utils';
 import { catalogData } from '../app/data/catalogData';
+import { officialSizeFloor } from '../app/data/officialSizes';
 import { catalogLeaves } from '../app/data/catalogLeaves';
 import { leafProducts } from '../app/data/leafProducts';
 import { getSizeVariants } from '../app/data/sizeVariants';
@@ -144,8 +145,11 @@ test('sorting never mutates the original catalog and family cards use the cheape
   const familyCards = h.last().data.filter((p: any) => p.sizeCount > 1);
   expect(familyCards.length).toBeGreaterThan(0);
   for (const card of familyCards) {
-    const variants = getSizeVariants(card.id);
-    expect(card.o).toBe(Math.min(...variants.map((v: any) => v.price)));
+    const prices = [
+      ...getSizeVariants(card.id).map((v: any) => v.price),
+      ...(officialSizeFloor(card.id) ? [officialSizeFloor(card.id)!.price] : []),
+    ];
+    expect(card.o).toBe(Math.min(...prices));
   }
 });
 
