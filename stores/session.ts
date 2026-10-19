@@ -12,6 +12,8 @@ type SessionState = {
   openProduct: (product: Product) => void;
   closeProduct: () => void;
   addOrder: (order: OrderRecord) => void;
+  /** Merges seller-side updates (status/delivery date from the Orders sheet) into a saved order. */
+  updateOrderRemote: (id: string, patch: { status?: string; deliveryDate?: string }) => void;
   /** Clears everything user-owned (privacy delete); tab/overlay reset too. */
   resetUserData: () => void;
 };
@@ -34,6 +36,18 @@ export const useSessionStore = create<SessionState>()((set) => ({
       },
       closeProduct: () => set({ selected: null }),
       addOrder: (order) => set((state) => ({ orders: [order, ...state.orders] })),
+      updateOrderRemote: (id, patch) => set((state) => {
+        let changed = false;
+        const orders = state.orders.map((order) => {
+          if (order.id !== id) return order;
+          const status = patch.status?.trim() ? patch.status : order.status;
+          const deliveryDate = patch.deliveryDate?.trim() ? patch.deliveryDate : order.deliveryDate;
+          if (status === order.status && deliveryDate === order.deliveryDate) return order;
+          changed = true;
+          return { ...order, status, deliveryDate };
+        });
+        return changed ? { orders } : state;
+      }),
       resetUserData: () => {
         forgetRecentlyViewed();
         set(initial);

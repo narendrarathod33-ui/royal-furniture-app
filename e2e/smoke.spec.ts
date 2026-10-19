@@ -108,21 +108,21 @@ test.describe('Royal Furniture smoke', () => {
     await page.getByRole('button', { name: /Add to bag/ }).click();
     await expect(page.getByRole('button', { name: 'Cart, 1 items' })).toBeVisible();
     await page.getByRole('button', { name: 'Cart, 1 items' }).click();
-    await expect(page.getByText('Local demo checkout', { exact: true })).toBeVisible();
+    await expect(page.getByText('Checkout', { exact: true })).toBeVisible();
     await expect(page.getByText(/Nimbus Bed/).first()).toBeVisible();
   });
 
-  test('demo checkout completes and saves the order locally', async ({ page }) => {
+  test('checkout completes and saves the order locally', async ({ page }) => {
     await openProduct(page, 'Nimbus Bed');
     await page.getByRole('button', { name: /Add to bag/ }).click();
     await page.getByRole('button', { name: 'Cart, 1 items' }).click();
-    await page.getByText('Local demo checkout', { exact: true }).click();
+    await page.getByText('Checkout', { exact: true }).click();
     await page.getByPlaceholder('Full name').fill('Smoke Tester');
     await page.getByPlaceholder('05X XXX XXXX').fill('0501234567');
     const address = page.getByPlaceholder('Building, street, area, emirate');
     if (await address.isVisible().catch(() => false)) await address.fill('Test Tower, Abu Dhabi');
     await page.getByText(/Place order request/).click();
-    await expect(page.getByText('Demo order saved locally')).toBeVisible();
+    await expect(page.getByText('Order placed')).toBeVisible();
     // The order id itself surfaces in the account's order history.
     await page.getByText('Continue shopping').click();
     await page.getByRole('button', { name: 'Account' }).click();
@@ -137,7 +137,7 @@ test.describe('Royal Furniture smoke', () => {
     // Zustand persist rehydrates cart/saved/orders from localStorage.
     await expect(page.getByRole('button', { name: 'Cart, 1 items' })).toBeVisible();
     await page.getByRole('button', { name: 'Cart, 1 items' }).click();
-    await expect(page.getByText('Local demo checkout', { exact: true })).toBeVisible();
+    await expect(page.getByText('Checkout', { exact: true })).toBeVisible();
     await expect(page.getByText(/Nimbus Bed/).first()).toBeVisible();
   });
 

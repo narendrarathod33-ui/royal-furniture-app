@@ -114,12 +114,12 @@ test('search.yaml drives the real search field and asserts a result count', () =
   assert.ok(typed.includes('sofa'), 'search.yaml should type a query');
 });
 
-test('cart.yaml covers bag → demo checkout → order in Account', () => {
+test('cart.yaml covers bag → checkout → order in Account', () => {
   const { texts, typed } = analyze(flows.get('cart.yaml').steps);
   for (const expected of [
     'Nimbus Bed.*AED', 'Tap to change size', '^Add to bag', '^Cart, 1 items$',
-    'Local demo checkout', '^Your name$', '^Mobile number$', '^Delivery address$',
-    'Place order request', 'Demo order saved locally', '^Account$', 'RF-\\d{8}',
+    'Checkout', '^Your name$', '^Mobile number$', '^Delivery address$',
+    'Place order request', 'Order placed', '^Account$', 'RF-\\d{8}',
   ]) {
     assert.ok(texts.includes(expected), `cart.yaml should assert ${expected}`);
   }

@@ -1,4 +1,4 @@
-# Cart money path — search → PDP → size → bag → demo checkout → order in
+# Cart money path — search → PDP → size → bag → checkout → order in
 # Account. The native twin of the e2e/smoke.spec.ts add/checkout tests.
 #
 #   export APP_ID=<your.app.id>
@@ -37,9 +37,9 @@ appId: ${APP_ID}
 - assertVisible: '^Cart, 1 items$'
 - tapOn:
     text: '^Cart, 1 items$'
-- assertVisible: 'Local demo checkout'
+- assertVisible: 'Checkout'
 - assertVisible: 'Nimbus Bed'
-- tapOn: 'Local demo checkout'
+- tapOn: 'Checkout'
 # The sheet shows a heading Text and the input's accessibility label with the
 # same copy; index 1 is the input (heading renders first).
 - tapOn:
@@ -56,9 +56,9 @@ appId: ${APP_ID}
 - inputText: 'Test Tower, Abu Dhabi'
 - hideKeyboard
 - tapOn: 'Place order request'
-- assertVisible: 'Demo order saved locally'
+- assertVisible: 'Order placed'
 - tapOn: 'Continue shopping'
 - tapOn:
     text: '^Account$'
-# The demo order id surfaces in the account's order history.
+# The order id surfaces in the account's order history.
 - assertVisible: 'RF-\d{8}'

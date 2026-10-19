@@ -16,7 +16,14 @@ export type Product = WidenProduct<(typeof royalFurnitureData.products)[number]>
 /** A listing product: one card per product, with the number of selectable sizes. */
 export type ListedProduct = Product & { sizeCount?: number; baseName?: string };
 export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'more' | 'cart' | 'account';
-export type OrderRecord = { id: string; purchasedAt: string; deliveryDate: string; status: string; total: number; items: { name: string; category: string }[] };
+export type OrderItemRecord = { name: string; category: string; qty?: number; price?: number; size?: string };
+export type OrderRecord = {
+  id: string; purchasedAt: string; deliveryDate: string; status: string; total: number;
+  items: OrderItemRecord[];
+  /** Present on orders placed since the real checkout; older demo orders omit it. */
+  customer?: { name: string; phone: string; address?: string; store?: string };
+  fulfilment?: 'home' | 'collect';
+};
 
 export const COLORS = { ink: '#050000', red: '#DA1921', redDeep: '#B61117', maroon: '#830406', navy: '#282984', gold: '#B45309', cream: '#FBF5EE', line: '#E3E3E5', muted: '#444444', sage: '#DCE4D7' };
 export const categoryColors: Record<string, string> = { furniture: '#D7C2AD', sofas: '#C7D4C9', bedroom: '#D8C7D2', household: '#E5D6B8', 'cooltech-mattress': '#C8DCE2', 'kids-and-teens': '#E5C8B4' };

@@ -21,7 +21,9 @@ export function SandboxCheckout({ items }: { items: Item[] }) {
     })();
     return () => { active = false; };
   }, []);
-  if (!enabled) return <View style={styles.panel}><Text style={styles.title}>Stripe sandbox not enabled</Text><Text style={styles.body}>You can still use local demo checkout below. Hosted payments need the configured sandbox server.</Text></View>;
+  // Silent while the sandbox server isn't configured: real shoppers should
+  // only ever see the order-request checkout below, never sandbox plumbing.
+  if (!enabled) return null;
   const checkout = async () => {
     if (busy) return;
     setBusy(true); setError('');

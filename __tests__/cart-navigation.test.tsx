@@ -101,7 +101,7 @@ test('add stays on product details; existing Back returns to home with the item 
   // Stays on details: the PDP is still up (no checkout), the badge incremented.
   // (The toast itself auto-clears after 2.2s and is covered by the badge.)
   expect(badge(h)).toBe(1);
-  expect(h.has('Local demo checkout')).toBe(false);
+  expect(h.has('Checkout')).toBe(false);
   await h.press('Go back');
   expect(h.selectedTab()).toBe('Home');
   await h.press(/Cart, 1 items/);
