@@ -68,15 +68,15 @@ be served on the **same HTTPS origin**. Serve the whole repository runtime, not
 just `dist`: the backend reads the committed catalog and harvested size-price JSON.
 Keep those source files private; only `dist` is exposed by the static server.
 
-The Expo/Metro development preview is not this backend. It will show sandbox as
-not enabled. Do not point browser code to localhost or insert secret keys to try
+The Expo/Metro development preview is not this backend. It will hide the sandbox
+payment panel. Do not point browser code to localhost or insert secret keys to try
 to enable it. Open the standalone HTTPS deployment in a browser tab; production
 anti-framing headers intentionally prevent embedding in the Arena preview.
 
 ## 3. Make a test payment
 
 1. Open your HTTPS sandbox deployment, add an item to the bag.
-2. Choose **Pay with Stripe · test mode** (not Local demo checkout).
+2. Choose **Pay with Stripe · test mode** (not the order-request **Checkout** button).
 3. On Stripe's hosted page use fictitious contact information and Stripe's standard
    success test card `4242 4242 4242 4242`, any future expiry and any valid CVC.
    Never enter real card or personal information in this sandbox.
