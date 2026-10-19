@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, use, useEffect, useRef, useState } from 'react';
 import { FlatList, Platform, View, type FlatListProps, type ViewToken } from 'react-native';
 import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
 import { gridMetrics } from '../utils/adaptiveLayout';
@@ -6,7 +6,7 @@ import { gridMetrics } from '../utils/adaptiveLayout';
 const CardWidth = createContext<number | null>(null);
 export function useGridCardWidth() {
   const layout = useAdaptiveLayout();
-  return useContext(CardWidth) ?? gridMetrics(layout.width - 32, layout.fontScale).cardWidth;
+  return use(CardWidth) ?? gridMetrics(layout.width - 32, layout.fontScale).cardWidth;
 }
 
 /** Preserve the first visible product when a column-count change remounts FlatList. */

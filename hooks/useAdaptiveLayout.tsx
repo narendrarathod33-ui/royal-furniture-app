@@ -1,12 +1,12 @@
 import { readDisplaySegments } from '../utils/webDisplaySegments';
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import { Platform, View, useWindowDimensions } from 'react-native';
 import { layoutMode, MAX_WORKSPACE, usableSegment, type DisplaySegment } from '../utils/adaptiveLayout';
 
 const WindowContext = createContext<{ width: number; height: number; fontScale: number } | null>(null);
 export function useAdaptiveLayout() {
   const window = useWindowDimensions();
-  const frame = useContext(WindowContext) || window;
+  const frame = use(WindowContext) || window;
   const width = Math.min(frame.width, MAX_WORKSPACE);
   return { ...frame, width, mode: layoutMode(width), compactHeight: frame.height < 480,
     sidebar: width >= 1040 && frame.height >= 480,
