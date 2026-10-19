@@ -1,5 +1,5 @@
 {
-  "version": "3.9",
-  "commit": "14e87aa",
-  "note": "PDP records moved out of the boot bundle: entry gzip -26% (1.10MB -> 0.81MB); product details load on demand from data/product-detail-records.json"
+  "version": "3.9.1",
+  "commit": "4b3086d",
+  "note": "Post-support-round code audit: swatch images resolve correctly while details load; no user-facing changes otherwise"
 }
