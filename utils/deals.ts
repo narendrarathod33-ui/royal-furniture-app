@@ -8,16 +8,18 @@ export const DEAL_PRICES = [['all', 'Any price'], ['under500', 'Under AED 500'],
 export const DEAL_SORTS = [['priceLow', 'Price: low to high'], ['priceHigh', 'Price: high to low'], ['discount', 'Biggest discount'], ['name', 'Name: A to Z']] as const;
 const discountOf = (p: DealProduct) => p.pc || (p.l > p.o ? Math.round((1 - p.o / p.l) * 100) : 0);
 
-/** Keep the existing deal eligibility, price boundaries and size-family behavior. */
+/** Keep the existing deal eligibility and price boundaries. Sorting runs on
+ * the collapsed cards: collapse reconciles each card to its official
+ * from-price, so ordering must follow the displayed prices, not feed rows. */
 export function selectDeals<T extends DealProduct>(products: readonly T[], filters: DealFilters, query = '') {
   return collapseSizeFamilies(products.filter(p => discountOf(p) >= filters.discount
     && (filters.category === 'all' || p.c === filters.category)
     && p.n.toLowerCase().includes(query.toLowerCase())
     && (filters.price === 'all' || (filters.price === 'under500' && p.o < 500)
       || (filters.price === '500to1500' && p.o >= 500 && p.o <= 1500)
-      || (filters.price === 'over1500' && p.o > 1500)))
+      || (filters.price === 'over1500' && p.o > 1500))))
     .sort((a, b) => filters.sort === 'priceLow' ? a.o - b.o : filters.sort === 'priceHigh' ? b.o - a.o
-      : filters.sort === 'name' ? a.n.localeCompare(b.n) : discountOf(b) - discountOf(a)));
+      : filters.sort === 'name' ? a.n.localeCompare(b.n) : discountOf(b) - discountOf(a));
 }
 export function activeDealFilterCount(filters: DealFilters) {
   return Number(filters.category !== 'all') + Number(filters.discount !== 41) + Number(filters.price !== 'all');

@@ -6,7 +6,7 @@ import ts from 'typescript';
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 const compile = code => ts.transpileModule(code, {compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 const modules = {};
-for(const name of ['catalogData','dealsCatalog','royalFurnitureData','sizeVariants']) {
+for(const name of ['officialSizes','catalogData','dealsCatalog','royalFurnitureData','sizeVariants']) {
  const context={exports:{},require:path=>modules[path.replace('./','')]};vm.runInNewContext(compile(read(`app/data/${name}.ts`)),context);modules[name]=context.exports;
 }
 const utility={exports:{},require:()=>modules.sizeVariants};vm.runInNewContext(compile(read('utils/deals.ts')),utility);
@@ -18,7 +18,7 @@ test('deal criteria and price boundaries match the previous pipeline for every e
  const legacy=(f,q)=>modules.sizeVariants.collapseSizeFamilies(products.filter(p=>{
   const d=p.pc||(p.l>p.o?Math.round((1-p.o/p.l)*100):0);
   return d>=f.discount&&(f.category==='all'||p.c===f.category)&&p.n.toLowerCase().includes(q.toLowerCase())&&(f.price==='all'||f.price==='under500'&&p.o<500||f.price==='500to1500'&&p.o>=500&&p.o<=1500||f.price==='over1500'&&p.o>1500);
- }).sort((a,b)=>f.sort==='priceLow'?a.o-b.o:f.sort==='priceHigh'?b.o-a.o:f.sort==='name'?a.n.localeCompare(b.n):(b.pc||(b.l>b.o?Math.round((1-b.o/b.l)*100):0))-(a.pc||(a.l>a.o?Math.round((1-a.o/a.l)*100):0))));
+ })).sort((a,b)=>f.sort==='priceLow'?a.o-b.o:f.sort==='priceHigh'?b.o-a.o:f.sort==='name'?a.n.localeCompare(b.n):(b.pc||(b.l>b.o?Math.round((1-b.o/b.l)*100):0))-(a.pc||(a.l>a.o?Math.round((1-a.o/a.l)*100):0)));
  for(const category of ['all','sofas','household'])for(const discount of [41,50,60,70])for(const price of ['all','under500','500to1500','over1500'])for(const sort of ['priceLow','priceHigh','name','discount']) {
   const f={category,discount,price,sort};assert.deepEqual(ids(selectDeals(products,f,'a')),ids(legacy(f,'a')));
  }
@@ -38,7 +38,7 @@ function harness() {
  const jsx=(type,props,key)=>({type,props:props||{},key});
  const hooks={useState:initial=>{const i=cursor++;if(!(i in slots))slots[i]=initial;return[slots[i],value=>slots[i]=typeof value==='function'?value(slots[i]):value];},useRef:value=>{const i=cursor++;return slots[i]??={current:value};},useMemo:fn=>fn()};
  const native=new Proxy({Platform:{OS:'web'},StyleSheet:{create:s=>s,absoluteFill:{} }},{get:(o,k)=>o[k]||k});
- const context={exports:{},require:name=>name==='react'?hooks:name==='react-native'?native:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react-native'?new Proxy({},{get:(_,k)=>k}):name.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>({width:390}),AdaptiveFrame:'AdaptiveFrame'}:name.includes('AdaptiveProductList')?{AdaptiveProductList:'AdaptiveProductList'}:name.includes('/glass')?{GLASS:{}}:name.includes('/deals')?utility.exports:1};
+ const context={exports:{},require:name=>name==='react'?hooks:name==='react-native'?native:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react-native'?new Proxy({},{get:(_,k)=>k}):name.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>({width:390}),AdaptiveFrame:'AdaptiveFrame'}:name.includes('AdaptiveProductList')?{AdaptiveProductList:'AdaptiveProductList'}:name.includes('/glass')?{GLASS:{}}:name.includes('kit')?{catName:c=>c.n}:name.includes('/deals')?utility.exports:1};
  vm.runInNewContext(compile(read('components/DealsPage.tsx')),context);
  const render=()=>{cursor=0;return context.exports.DealsPage({products,categories:modules.royalFurnitureData.royalFurnitureData.cats,header:'Header',photo:()=>1,renderCard:()=>null});};
  const find=predicate=>{const n=nodes(render()).find(predicate);assert(n);return n;};
