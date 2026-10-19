@@ -1,5 +1,5 @@
 {
-  "version": "3.5.1",
-  "commit": "1a5f003",
-  "note": "Reverted to the app as it was before the customer-support round (r3.5): Stores tab back, pre-support account page, original bundle and loading screen"
+  "version": "3.5.2",
+  "commit": "e520845",
+  "note": "Fixed the live-site outage: a deploy had removed the hosting marker file (.nojekyll), so the app bundle 404ed since round 3.7. Restored - the site now loads as before. The app itself is the pre-support version you asked for."
 }
