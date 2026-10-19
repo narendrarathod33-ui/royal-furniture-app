@@ -1,3 +1,5 @@
+import { useLangStore } from '../../app/i18n';
+import { NAMES_AR, SCN_AR } from '../../app/data/catalogNamesAr';
 import { StyleSheet } from 'react-native';
 import { royalFurnitureData } from '../../app/data/royalFurnitureData';
 import { catalogData } from '../../app/data/catalogData';
@@ -49,7 +51,15 @@ export const photoByProductId: Record<string, number> = {
 export const money = (value: number) => `AED ${value.toLocaleString('en-US')}`;
 export const categoryThumbnail = (category: string) => { const product = catalogData.find((item) => item.c === category); return product?.remoteImage ? { uri: product.remoteImage } : homeCategoryImages[category]; };
 
-export const shortName = (name: string) => name.replace(/\s*-\s*\d+x\d+.*$/i, '');
+export const shortName = (name: string) => name.replace(/\s*[-–]\s*\d+x\d+.*$/i, '');
+/** Product name in the active language: Arabic when the generated dictionary
+ * covers this id, English otherwise (and always in English mode). */
+export const pname = (product: { id: string; n: string }) => {
+  if (useLangStore.getState().lang !== 'ar') return product.n;
+  return NAMES_AR[product.id] || product.n;
+};
+/** Subcategory display name in the active language. */
+export const pscn = (scn: string) => (useLangStore.getState().lang === 'ar' ? SCN_AR[scn] || scn : scn);
 export const photoFor = (product: Product) => { const sourceId = product.id.split('::size=')[0]; return liveCatalogImages[sourceId] || catalogImages[sourceId] || photoByProductId[sourceId] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined); };
 
 /** Photo for a catalogue entry id — used by the official size dropdown. */

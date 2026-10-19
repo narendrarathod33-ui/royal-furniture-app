@@ -39,6 +39,7 @@ import { useRecentlyViewedStore } from '../stores/recentlyViewed';
 import type { Product } from '../components/catalog/kit';
 import { GLASS, glassTilt } from './ui/glass';
 import { t } from './i18n';
+import { pname } from '../components/catalog/kit';
 
 /** A selectable size of the same product, sourced from the official catalogue. */
 export type SizeVariantOption = {
@@ -867,7 +868,7 @@ export default function ProductDetails({
               {labels.slice(0, 4).map((label) => <Text key={label} style={styles.labelPill}>{label}</Text>)}
             </View>
           )}
-          <Text style={styles.name}>{productName}</Text>
+          <Text style={styles.name}>{pname({ id: catalogId, n: productName })}</Text>
           {/* Price and payment share one row: the price on the left, the payment
               figure opposite it, so the two always sit side by side. */}
           <View style={[styles.priceRow, { flexWrap: 'wrap', gap: 12 }]}>

@@ -1,7 +1,7 @@
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal, Platform, SafeAreaView } from 'react-native';
 import { Bell, Check, Eye, Truck, X } from 'lucide-react-native';
-import { COLORS, money, photoFor, styles, type ListedProduct } from './kit';
+import { COLORS, money, photoFor, styles, type ListedProduct, pname } from './kit';
 import { t } from '../../app/i18n';
 import { GLASS } from '../../app/ui/glass';
 import { useQuickViewStore } from '../../stores/quickView';
@@ -50,10 +50,10 @@ export function QuickViewBody({ product, onAdd, onOpenProduct, onClose }: { prod
             </View>
             <View style={s.body}>
               <View style={s.photo}>{source
-                ? <Image source={source} accessibilityLabel={product.n} resizeMode="contain" style={styles.productPhoto} />
+                ? <Image source={source} accessibilityLabel={pname(product)} resizeMode="contain" style={styles.productPhoto} />
                 : <Text style={s.photoNote}>{t('card.photoUnavailable')}</Text>}</View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={s.name}>{product.n}</Text>
+                <Text style={s.name}>{pname(product)}</Text>
                 <Text style={s.priceRow}>
                   <Text style={s.price}>{money(product.o)}</Text>
                   {product.l > product.o && <Text style={s.was}>{money(product.l)}</Text>}
@@ -71,17 +71,17 @@ export function QuickViewBody({ product, onAdd, onOpenProduct, onClose }: { prod
             </View>
             {!!product.d && <Text style={s.desc}>{product.d}</Text>}
             {!inStock ? (
-              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.notifyA11y', { n: product.n })} onPress={() => { close(); }} style={[s.cta, s.ctaGhost]}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.notifyA11y', { n: pname(product) })} onPress={() => { close(); }} style={[s.cta, s.ctaGhost]}>
                 <Bell size={15} color={COLORS.red} />
                 <Text style={[s.ctaText, { color: COLORS.red }]}>{t('qv.notify')}</Text>
               </Pressable>
             ) : multiOption ? (
-              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.viewDetailsA11y', { n: product.n })} onPress={() => { close(); onOpenProduct(product); }} style={s.cta}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.viewDetailsA11y', { n: pname(product) })} onPress={() => { close(); onOpenProduct(product); }} style={s.cta}>
                 <Eye size={15} color="#fff" />
                 <Text style={s.ctaText}>{t('qv.viewFullDetails')}</Text>
               </Pressable>
             ) : (
-              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.addToCartA11y', { n: product.n, p: money(product.o) })} onPress={() => { onAdd(product); close(); }} style={s.cta}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('qv.addToCartA11y', { n: pname(product), p: money(product.o) })} onPress={() => { onAdd(product); close(); }} style={s.cta}>
                 <Text style={s.ctaText}>{t('qv.addToCart', { p: money(product.o) })}</Text>
               </Pressable>
             )}
