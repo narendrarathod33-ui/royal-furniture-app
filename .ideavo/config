@@ -1,0 +1,47 @@
+{
+  "systemSetup": [],
+  "templateName": "custom",
+  "projectDependencies": [
+    {
+      "name": "Install Dependencies",
+      "command": "bun install"
+    }
+  ],
+  "codeChecks": [
+    {
+      "name": "Type Check",
+      "command": "bun run typecheck"
+    },
+    {
+      "name": "Run Tests",
+      "command": "bun run test"
+    }
+  ],
+  "buildSteps": [
+    {
+      "name": "Build Web App",
+      "command": "bun run build:web"
+    }
+  ],
+  "runStep": [
+    {
+      "name": "Run Dev Server",
+      "command": "EXPO_NO_TELEMETRY=1 bunx expo start --tunnel --port 4000",
+      "port": "4000"
+    }
+  ],
+  "deploySteps": [],
+  "cleanupFiles": [
+    ".expo",
+    "dist",
+    "test-results",
+    "playwright-report"
+  ],
+  "packageManager": "bun",
+  "envPaths": [
+    {
+      "name": "default",
+      "path": ".env"
+    }
+  ]
+}
