@@ -110,13 +110,7 @@ test('detail gallery and cart photos contain products; editorial and swatches st
   const details = await render(
     <RealProductDetails product={realProduct} onBack={() => {}} onAdd={() => {}} isSaved={false} />
   );
-  // The gallery sources come from the lazy-loaded detail records, so give the
-  // async import a moment before asserting.
-  let photos = byType(details.root, 'Image');
-  for (let waited = 0; photos.length === 0 && waited < 2000; waited += 50) {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    photos = byType(details.root, 'Image');
-  }
+  const photos = byType(details.root, 'Image');
   expect(photos.length).toBeGreaterThan(0);
   expect(photos.every((node) => node.props.resizeMode === 'contain')).toBe(true);
 

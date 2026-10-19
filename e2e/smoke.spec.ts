@@ -49,7 +49,7 @@ test.describe('Royal Furniture smoke', () => {
   test('home renders rooms, deals tiles and the floating tab nav', async ({ page }) => {
     await page.goto('/', load);
     await expect(page.getByText('Shop by room').first()).toBeVisible();
-    for (const name of ['Home', 'Browse', 'Search', 'Deals', 'New in', 'More']) {
+    for (const name of ['Home', 'Browse', 'Search', 'Deals', 'Stores', 'More']) {
       await expect(page.getByRole('tab', { name })).toBeVisible();
     }
     await expect(page.getByRole('button', { name: /Cart, \d+ items/ })).toBeVisible();

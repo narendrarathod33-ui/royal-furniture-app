@@ -1,5 +1,5 @@
 import { memo, useRef, useState } from 'react';
-import { FlatList, Image, Pressable, Text, View, ScrollView, useWindowDimensions } from 'react-native';
+import { FlatList, Image, Pressable, Text, View, ScrollView } from 'react-native';
 import { Eye, Heart, ShoppingBag, UserRound, Search } from 'lucide-react-native';
 import { COLORS, money, photoFor, shortName, styles, pname, pscn } from './kit';
 import { useGridCardWidth } from '../AdaptiveProductList';
@@ -14,14 +14,10 @@ export function Header({ onCart, onAccount, count = 0, chips, onChip }: { onCart
   // The prototype's floating glass bar: logo · search pill · account · bag.
   // Search routes through the session store, so it works from every screen.
   const openSearch = () => { const session = useSessionStore.getState(); session.closeProduct(); session.setTab('search'); };
-  // The pill is the narrowest element in the bar: keep the hint to one line,
-  // and drop to a short label when the viewport (or a zoomed font) squeezes it.
-  const { width } = useWindowDimensions();
-  const searchHint = width >= 640 ? t('header.searchPlaceholder') : t('header.searchShort');
   return <View style={styles.headerShell}>
     <View style={styles.header}>
       <Image source={require('../../assets/images/royal-logo.png')} style={styles.logo} resizeMode="contain" />
-      <Pressable accessibilityRole="search" accessibilityLabel={searchHint} onPress={openSearch} style={styles.headerSearch}><Search color={COLORS.muted} size={17} /><Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerSearchText}>{searchHint}</Text></Pressable>
+      <Pressable accessibilityRole="search" accessibilityLabel={t('header.searchPlaceholder')} onPress={openSearch} style={styles.headerSearch}><Search color={COLORS.muted} size={17} /><Text style={styles.headerSearchText}>{t('header.searchPlaceholder')}</Text></Pressable>
       <View style={styles.headerActions}><Pressable testID="liquid-control" accessibilityRole="button" accessibilityLabel={t('header.account')} onPress={onAccount} style={styles.headerAccount}><UserRound color={COLORS.ink} size={19} /></Pressable><Pressable testID="liquid-control" accessibilityRole="button" accessibilityLabel={`${t('header.cartBadge', { count })}`} onPress={onCart} style={styles.headerBag}><ShoppingBag color={COLORS.ink} size={21} />{count > 0 && <View style={styles.headerBadge}><Text style={styles.headerBadgeText}>{count}</Text></View>}</Pressable></View>
     </View>
     {!!chips?.length && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.headerChips}>{chips.map((chip, index) => <Pressable key={chip.s} accessibilityRole="button" accessibilityLabel={chip.n} onPress={() => onChip?.(chip.s)} style={[styles.headerChip, index === 0 && styles.headerChipActive]}><Text style={[styles.headerChipText, index === 0 && styles.headerChipTextActive]}>{chip.n}</Text></Pressable>)}</ScrollView>}

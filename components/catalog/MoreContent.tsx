@@ -1,22 +1,24 @@
 import type { ReactElement } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { Bookmark, ChevronRight, Package, UserRound } from 'lucide-react-native';
+import { Bell, Bookmark, ChevronRight, MapPin, Package, UserRound } from 'lucide-react-native';
 import { Header } from './ProductCard';
 import { COLORS, styles } from './kit';
 import { t, switchLang, useLangStore } from '../../app/i18n';
 
 /**
- * The More hub: the destinations that don't need a tab of their own —
- * saved items, order history, profile/support — plus the language switch,
- * mirroring the prototype's hub. Every row routes through the same
+ * The More hub: the destinations that don't need a tab of their own — new
+ * arrivals, saved items, order history, profile/support — plus the language
+ * switch, mirroring the prototype's hub. Every row routes through the same
  * navigation callbacks the rest of the app uses; nothing duplicates screens.
  */
-export function MoreContent({ onCart, onAccount, cartCount }: { onCart: () => void; onAccount: () => void; cartCount: number }) {
+export function MoreContent({ onArrivals, onStores, onCart, onAccount, cartCount }: { onArrivals: () => void; onStores: () => void; onCart: () => void; onAccount: () => void; cartCount: number }) {
   const lang = useLangStore.getState().lang;
   const rows: { key: string; label: string; icon: ReactElement; onPress: () => void }[] = [
+    { key: 'arrivals', label: t('more.newIn'), icon: <Bell color={COLORS.ink} size={18} />, onPress: onArrivals },
     { key: 'saved', label: t('more.saved'), icon: <Bookmark color={COLORS.ink} size={18} />, onPress: onCart },
     { key: 'orders', label: t('more.orders'), icon: <Package color={COLORS.ink} size={18} />, onPress: onAccount },
     { key: 'account', label: t('more.account'), icon: <UserRound color={COLORS.ink} size={18} />, onPress: onAccount },
+    { key: 'stores', label: t('nav.stores'), icon: <MapPin color={COLORS.ink} size={18} />, onPress: onStores },
   ];
   return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
     <Header count={cartCount} onCart={onCart} onAccount={onAccount} />

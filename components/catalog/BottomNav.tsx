@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { BadgePercent, ChevronRight, Search, ShoppingBag, Sparkles, Star } from 'lucide-react-native';
+import { BadgePercent, ChevronRight, MapPin, Search, ShoppingBag, Star } from 'lucide-react-native';
 import { useAdaptiveLayout } from '../../hooks/useAdaptiveLayout';
 import { COLORS, styles } from './kit';
 import { t } from '../../app/i18n';
@@ -46,7 +46,7 @@ export const floatingNavStyles = StyleSheet.create({
 export function BottomNav({ tab, setTab, count }: { tab: Tab; setTab: (tab: Tab) => void; count: number }) {
   const adaptive = useAdaptiveLayout();
   const rail = adaptive.twoPane && !adaptive.compactHeight;
-  const items: [Tab, string][] = [['home', t('nav.home')], ['categories', t('nav.browse')], ['search', t('nav.search')], ['shop', t('nav.deals')], ['arrivals', t('nav.arrivals')], ['more', t('nav.more')]];
+  const items: [Tab, string][] = [['home', t('nav.home')], ['categories', t('nav.browse')], ['search', t('nav.search')], ['shop', t('nav.deals')], ['stores', t('nav.stores')], ['more', t('nav.more')]];
   return (
     <View testID={rail ? 'navigation-rail' : 'bottom-navigation'} style={[floatingNavStyles.shadow, rail && { top: 16, left: 8, right: undefined, bottom: undefined, width: 80, height: 400 }]}>
       <View style={[floatingNavStyles.surface, rail && { flexDirection: 'column', paddingVertical: 10 }]}>
@@ -69,7 +69,7 @@ export function BottomNav({ tab, setTab, count }: { tab: Tab; setTab: (tab: Tab)
                   : key === 'shop' ? <BadgePercent color={iconColor} size={20} />
                     : key === 'categories' ? <Text style={[floatingNavStyles.glyph, selected && floatingNavStyles.labelActive]}>▦</Text>
                       : key === 'search' ? <Search color={iconColor} size={20} />
-                        : key === 'arrivals' ? <Sparkles color={iconColor} size={20} />
+                        : key === 'stores' ? <MapPin color={iconColor} size={20} />
                           : key === 'more' ? <ChevronRight color={iconColor} size={20} />
                             : <Star color={iconColor} size={20} fill={selected ? iconColor : 'transparent'} />}
                 {key === 'cart' && count > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{count}</Text></View>}

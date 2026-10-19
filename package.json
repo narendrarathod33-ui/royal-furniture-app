@@ -32,7 +32,7 @@
     "ota:publish": "npx eas-cli update --channel production --auto",
     "baseline:bundle": "node scripts/bundle-baseline.mjs",
     "test": "npm run test:jest && npm run test:legacy",
-    "test:jest": "node scripts/run-jest.cjs",
+    "test:jest": "jest",
     "test:legacy": "node --test scripts/*.test.mjs",
     "android": "expo run:android",
     "ios": "expo run:ios"
