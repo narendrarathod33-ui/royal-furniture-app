@@ -40,6 +40,7 @@ import type { Product } from '../components/catalog/kit';
 import { GLASS, glassTilt } from './ui/glass';
 import { t } from './i18n';
 import { pname } from '../components/catalog/kit';
+import { SchemeBackdrop } from '../components/catalog/SchemeBackdrop';
 
 /** A selectable size of the same product, sourced from the official catalogue. */
 export type SizeVariantOption = {
@@ -774,6 +775,7 @@ export default function ProductDetails({
 
   return (
     <SafeAreaView style={styles.safe}>
+      <SchemeBackdrop />
       {header}
       <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={productName} onClose={() => setPhotoZoomOpen(false)} />
       <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>

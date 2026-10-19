@@ -19,6 +19,7 @@ import { MoreContent } from '../../components/catalog/MoreContent';
 import { Header, ProductCard } from '../../components/catalog/ProductCard';
 import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
 import { ToastHost, showToast } from '../../components/catalog/Toast';
+import { SchemeBackdrop } from '../../components/catalog/SchemeBackdrop';
 import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
 import { QuickViewSheet } from '../../components/catalog/QuickView';
 import { useSessionStore } from '../../stores/session';
@@ -107,6 +108,7 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.page}>
+        <SchemeBackdrop />
         <SandboxPaymentReturn />
         <Animated.View style={[styles.pageTransition, { marginLeft: rail ? 96 : 0, opacity: pageMotion, transform: [{ translateY: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [0.985, 1] }) }] }]}>
         <AdaptiveRegion inset={rail ? 96 : 0}>
