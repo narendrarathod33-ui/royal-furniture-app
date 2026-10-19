@@ -18,7 +18,7 @@ DIST="$(cd "$(dirname "$0")/.." && pwd)/dist"
 TARGET="${1:?usage: deploy-pages.sh /path/to/gh-pages-checkout}"
 
 test -f "$DIST/index.html"
-test -d "$TARGET/.git"
+test -e "$TARGET/.git"                            # checkout or worktree
 
 cp -r "$DIST/." "$TARGET/"                      # additive for _expo/ and assets/
 rm -rf "$TARGET/v2"                             # retired build, never publish
