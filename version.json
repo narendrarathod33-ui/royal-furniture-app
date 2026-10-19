@@ -1,5 +1,5 @@
 {
-  "version": "3.5.2",
-  "commit": "e520845",
-  "note": "Fixed the live-site outage: a deploy had removed the hosting marker file (.nojekyll), so the app bundle 404ed since round 3.7. Restored - the site now loads as before. The app itself is the pre-support version you asked for."
+  "version": "3.8.3",
+  "commit": "1cd4671",
+  "note": "Restored after the hosting fix: shopping support, New in tab, search pill fix, resilient loading screen. Original single app file (no bundle split). Hosting marker .nojekyll now enforced on every deploy."
 }
