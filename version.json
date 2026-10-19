@@ -1,7 +1,7 @@
 {
   "app": "royal-furniture-app",
-  "round": "3.3",
-  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing on every card and rail"],
-  "branch_commit": "5665767",
-  "note": "3.3 fixes Complete-your-order chip prices: cards now show the real cheapest official size price (137 feed rows corrected, e.g. The Wire Bed 1,505 -> 1,092)"
+  "round": "3.4",
+  "features": ["instant language switch", "arabic product names + tiles", "scheme 8 background", "honest size pricing", "prototype glass header: search pill + category chips"],
+  "branch_commit": "419c255",
+  "note": "3.4 brings the app to the approved app-prototype.html look; top-3 hero slides and scheme 8 kept"
 }
