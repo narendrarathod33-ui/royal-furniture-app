@@ -13,8 +13,8 @@
  * The token is a spam filter, not a secret: it ships inside the public
  * bundle by design. The sheet itself stays private to the seller.
  */
-export const ORDERS_WEBHOOK_URL = '';
-export const ORDERS_TOKEN = '';
+export const ORDERS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyNxD6jScFdFelWDI9-nvNuSvV8IZ1VfiCbV109kIrEC3IBUa4iiBZK_TM9jcm5izF-/exec';
+export const ORDERS_TOKEN = 'rf-orders-6f3k9q2m';
 
 /** Store WhatsApp in international format (no +, no spaces). */
 export const WHATSAPP_NUMBER_INTL = '971588800318';
