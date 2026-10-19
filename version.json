@@ -1,8 +1,7 @@
 {
   "app": "royal-furniture-app",
-  "round": 3,
-  "features": ["instant language switch", "arabic product names"],
-  "branch_commit": "5642926",
-  "deploy_commit": "9f1d4ac",
-  "deployed_utc": "2026-10-19T00:06:27Z"
+  "round": "3.1",
+  "features": ["instant language switch", "arabic product names", "arabic home tiles + browse chrome"],
+  "branch_commit": "2a42666",
+  "note": "3.1 fixes English home tiles / room chips / search + browse labels in Arabic mode"
 }
