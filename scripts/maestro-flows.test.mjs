@@ -69,9 +69,9 @@ function analyze(steps) {
 
 /** Regex selectors here whose app-side source is a template, not a literal. */
 const PATTERN_SOURCES = new Map([
-  ['^Cart, \\d+ items$', 'Cart, ${count} items'],
-  ['^Cart, 1 items$', 'Cart, ${count} items'],
-  ['\\d+ results', '${results.length} results'],
+  ['^Cart, \\d+ items$', 'Cart, {count} items'],
+  ['^Cart, 1 items$', 'Cart, {count} items'],
+  ['\\d+ results', '{n} results'],
   ['RF-\\d{8}', 'RF-${Date.now'],
   ['Nimbus Bed.*AED', ', ${money(product.o)}'],
 ]);;

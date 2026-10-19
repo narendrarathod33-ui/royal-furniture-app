@@ -35,7 +35,7 @@ test('collection controls expose qualifying categories, update results and recov
  let filters={...DEFAULT_CUSTOMIZATION_FILTERS};
  const jsx=(type,props,key)=>({type,props:props||{},key});
  const native=new Proxy({StyleSheet:{create:s=>s}},{get:(o,k)=>o[k]||k});
- const runtime={exports:{},require:n=>n==='react'?{useMemo:fn=>fn(),useRef:()=>({current:null})}:n==='react-native'?native:n==='react/jsx-runtime'?{jsx,jsxs:jsx}:n.includes('lucide')?new Proxy({},{get:(_,k)=>k}):n.includes('madeToOrder')?utility.exports:n.includes('glass')?{GLASS:{}}:n.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>({width:390})}:n.includes('AdaptiveProductList')?{AdaptiveProductList:'AdaptiveProductList'}:1};
+ const runtime={exports:{},require:n=>n==='react'?{useMemo:fn=>fn(),useRef:()=>({current:null})}:n==='react-native'?native:n==='react/jsx-runtime'?{jsx,jsxs:jsx}:n.includes('lucide')?new Proxy({},{get:(_,k)=>k}):n.includes('madeToOrder')?utility.exports:n.includes('kit')?{catName:c=>c.n}:n.includes('glass')?{GLASS:{}}:n.includes('useAdaptiveLayout')?{useAdaptiveLayout:()=>({width:390})}:n.includes('AdaptiveProductList')?{AdaptiveProductList:'AdaptiveProductList'}:1};
  vm.runInNewContext(compile(read('components/CustomizationPage.tsx')),runtime);
  const render=()=>runtime.exports.CustomizationPage({products:catalog,categories:[{s:'all-unmarked',n:'Unmarked'},{s:'sofas',n:'Sofas'},{s:'bedroom',n:'Bedroom'}],filters,onFiltersChange:f=>filters=f,renderCard:()=>null});
  const find=predicate=>{const node=nodes(render()).find(predicate);assert(node);return node;};
@@ -48,6 +48,11 @@ test('collection controls expose qualifying categories, update results and recov
 });
 test('the kids promotion remains exactly unchanged and the Everyday promotion is replaced',()=>{
  const source=read('components/HomePromotions.tsx');
- assert(source.includes("{ key: 'kids', eyebrow: 'LITTLE SPACES, BIG IDEAS', title: 'Room for little\\ndreamers.', action: 'Explore kids’ rooms', category: 'kids-and-teens', image: require('../assets/images/catalog-live/bunny-kids-bed-200x140-single-size.webp') }"));
- assert(!source.includes('EVERYDAY FAVOURITES'));assert(source.includes("action: 'Customize your space'"));
+ const i18n=read('app/i18n.ts');
+ // Copy moved into i18n in the Arabic round: pin the component wiring plus the exact English strings.
+ assert(source.includes("{ key: 'kids', eyebrow: t('home.littleSpaces'), title: t('home.littleDreamers'), action: t('home.exploreKids'), category: 'kids-and-teens', image: require('../assets/images/catalog-live/the-shannon-kids-bed.webp') }"));
+ assert(i18n.includes("'home.littleSpaces': { en: 'LITTLE SPACES, BIG IDEAS'"));
+ assert(i18n.includes("'home.littleDreamers': { en: 'Room for little")&&i18n.includes("dreamers.', ar:"));
+ assert(i18n.includes("'home.exploreKids': { en: 'Explore kids\u2019 rooms'"));
+ assert(!source.includes('EVERYDAY FAVOURITES')&&!i18n.includes('EVERYDAY FAVOURITES'));assert(source.includes("action: t('home.customize')"));assert(i18n.includes("'home.customize': { en: 'Customize your space'"));
 });

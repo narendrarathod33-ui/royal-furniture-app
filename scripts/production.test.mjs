@@ -1,5 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createProductionServer, configuration } from './serve-production.mjs';
 
 test('production configuration fails closed', () => {
@@ -8,7 +11,14 @@ test('production configuration fails closed', () => {
 });
 
 test('built production responses are hardened including failures', async () => {
-  const server = await createProductionServer({ origin: 'https://example.com' });
+  // Hermetic fixture that mimics an `expo export` build. Serving whatever
+  // dist/ happened to be on disk made this depend on how that build was
+  // produced: a GitHub Pages build prefixes asset paths with the repo name,
+  // which this root-serving server correctly 404s.
+  const directory = mkdtempSync(join(tmpdir(), 'rf-production-'));
+  writeFileSync(join(directory, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><title>Royal Furniture</title></head><body><div id="root"></div><script src="/entry-fixture.js" defer></script></body></html>');
+  writeFileSync(join(directory, 'entry-fixture.js'), 'var __DEV__=false;\n');
+  const server = await createProductionServer({ origin: 'https://example.com' }, directory);
   await new Promise((done) => server.listen(0, '127.0.0.1', done));
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
@@ -38,5 +48,5 @@ test('built production responses are hardened including failures', async () => {
         assert(!/\b__DEV__=true\b/.test(await bundle.text()));
       }
     }
-  } finally { await new Promise((done) => server.close(done)); }
+  } finally { await new Promise((done) => server.close(done)); rmSync(directory, { recursive: true, force: true }); }
 });
