@@ -1,4 +1,4 @@
-// Static preview server: serves the built app (and /v2) under the same path
+// Static preview server: serves the built app under the same path
 // prefix the GitHub Pages deploy uses, so local shots match production URLs.
 const http = require('http');
 const fs = require('fs');
