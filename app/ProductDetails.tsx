@@ -32,7 +32,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, 
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE } from './data/productDetails';
 import { loadDetailStore } from '../data/loadDetailStore';
-import type { DetailStore } from '../data/productDetailDecode';
+import { PRODUCT_IMAGE_BASE, type DetailStore } from '../data/productDetailDecode';
 import { youMayAlsoLike, recentProducts } from './data/discovery';
 import { upgradePicks } from './data/recommend';
 import { catalogData } from './data/catalogData';
@@ -511,7 +511,9 @@ export default function ProductDetails({
       .catch(() => { /* catalogue / live-API fallbacks already cover this */ });
     return () => { live = false; };
   }, []);
-  const imageUrl = (path: string) => (detailStore ? detailStore.productImageUrl(path) : path);
+  // While the records load, catalogue-override swatch paths (PRODUCT_IMAGE_BASE-
+  // relative) still resolve to their absolute URL, exactly as before the split.
+  const imageUrl = (path: string) => (detailStore ? detailStore.productImageUrl(path) : PRODUCT_IMAGE_BASE + path);
   const selectedSizeOption = localSizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
   const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
   const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? product.l : product.l;
