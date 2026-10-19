@@ -1,5 +1,5 @@
 {
-  "version": "3.8.3",
-  "commit": "1cd4671",
-  "note": "Restored after the hosting fix: shopping support, New in tab, search pill fix, resilient loading screen. Original single app file (no bundle split). Hosting marker .nojekyll now enforced on every deploy."
+  "version": "3.8.4",
+  "commit": "4139851",
+  "note": "Your Ideavo changes: React use() hook migration in layout code, checkout idempotency key, standardized server error responses (problem+json), payments API docs. Gates: tsc OK, jest 79/79, playwright 27 pass/1 skip."
 }
