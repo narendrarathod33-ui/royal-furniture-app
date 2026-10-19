@@ -1,5 +1,5 @@
 {
-  "version": "3.9.1",
-  "commit": "4b3086d",
-  "note": "Post-support-round code audit: swatch images resolve correctly while details load; no user-facing changes otherwise"
+  "version": "3.5.1",
+  "commit": "1a5f003",
+  "note": "Reverted to the app as it was before the customer-support round (r3.5): Stores tab back, pre-support account page, original bundle and loading screen"
 }
