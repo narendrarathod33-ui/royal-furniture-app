@@ -48,3 +48,7 @@ playwright-report/
 
 # Google Drive connector download staging
 google_drive/
+
+# Polite local fabric-harvest cache and downloadable run artifacts
+.cache/
+fabric-output/
