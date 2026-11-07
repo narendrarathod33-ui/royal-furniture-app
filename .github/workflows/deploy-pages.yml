@@ -89,6 +89,15 @@ jobs:
           python scripts/fabrics/install.py fabric-output
       - name: Render approved masks and generate all contact sheets
         run: python scripts/fabrics/render.py --input fabric-output --delay 0.15
+      - name: Upload rendered QA checkpoint
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabric-qa-checkpoint-${{ github.run_id }}
+          path: fabric-output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 1
       - name: Audit manifest and shipped/flagged assets
         run: python scripts/fabrics/validate.py --input fabric-output
       - name: Install reviewed QA output

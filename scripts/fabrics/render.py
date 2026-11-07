@@ -16,6 +16,7 @@ import math
 import sys
 import time
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -163,6 +164,12 @@ def contain(image: Image.Image, size: tuple[int, int]) -> Image.Image:
     return copy
 
 
+@lru_cache(maxsize=1024)
+def contain_file(path: str, size: tuple[int, int]) -> Image.Image:
+    """Decode/resize a shared official asset once across all contact sheets."""
+    return contain(load(Path(path)), size)
+
+
 def repair_current_closeups(products: list[dict[str, Any]], output: Path, delay: float) -> tuple[list[dict[str, str]], int]:
     """Give each official Current Fabric close-up a collision-free local path.
 
@@ -274,16 +281,16 @@ def contact_sheet(product: dict[str, Any], original: Image.Image | None, output:
     draw = ImageDraw.Draw(sheet)
     draw.text((14, 12), product["name"], fill="#291F24", font=font(20, True))
     draw.text((14, 42), f"{product['id']} · original + {len(entries)} official options", fill="#74676D", font=font(11))
+    original_thumb = contain(original, (184, 135)) if original else None
     for index, (fabric, colour) in enumerate(entries):
         x, y = (index % columns) * card_w, header + (index // columns) * card_h
         draw.rectangle((x + 4, y + 4, x + card_w - 5, y + card_h - 5), fill="#FFFFFF", outline="#E0D7DA")
-        image = original
+        thumb = original_thumb
         if colour.get("variantPath"):
             candidate = output / colour["variantPath"]
             if candidate.exists():
-                image = load(candidate)
-        if image:
-            thumb = contain(image, (184, 135))
+                thumb = contain_file(str(candidate), (184, 135))
+        if thumb:
             sheet.paste(thumb, (x + (card_w - thumb.width) // 2, y + 10 + (135 - thumb.height) // 2))
         else:
             draw.text((x + 20, y + 65), "ORIGINAL UNAVAILABLE", fill="#A3272E", font=font(11, True))
@@ -293,7 +300,7 @@ def contact_sheet(product: dict[str, Any], original: Image.Image | None, output:
             draw.text((x + 15, y + 119), "PREVIEW UNAVAILABLE", fill="#FFFFFF", font=font(10, True))
             closeup_path = output / (colour.get("closeupPath") or "")
             if closeup_path.is_file():
-                swatch = contain(load(closeup_path), (38, 38))
+                swatch = contain_file(str(closeup_path), (38, 38))
                 sheet.paste(swatch, (x + card_w - 48, y + 98))
         draw.text((x + 10, y + 150), f"{fabric['name']} · {label}"[:31], fill="#291F24", font=font(10, True))
         draw.text((x + 10, y + 169), str(colour.get("code") or "Code not listed")[:30], fill="#74676D", font=font(9))
@@ -367,7 +374,9 @@ def main() -> int:
         original = load(original_path) if original_path and original_path.is_file() else None
         contact_sheet(product, original, output)
     # Report every material/hex mismatch without treating hex as the render truth.
+    # Products share official close-ups, so decode each unique image only once.
     mismatches = []
+    median_cache: dict[str, np.ndarray] = {}
     for product in products:
         for fabric in product["fabricTypes"]:
             for colour in fabric["colours"]:
@@ -375,7 +384,10 @@ def main() -> int:
                 if not colour.get("hex") or not closeup_path.is_file():
                     continue
                 official = np.array([int(colour["hex"][i:i+2], 16) for i in (1, 3, 5)], dtype=np.float32)
-                measured = median_colour(load(closeup_path))
+                key = str(closeup_path)
+                if key not in median_cache:
+                    median_cache[key] = median_colour(load(closeup_path))
+                measured = median_cache[key]
                 difference = delta_e(official, measured)
                 if difference > 20:
                     mismatches.append({"productId": product["id"], "fabricId": fabric["id"], "colourId": colour["id"], "name": colour["name"], "officialHex": colour["hex"], "swatchMedianRgb": measured.round(2).tolist(), "deltaE76": difference})
