@@ -2,7 +2,7 @@ import { GLASS } from '../app/ui/glass';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-type Item = { productId: string; quantity: number };
+type Item = { productId: string; quantity: number; fabricId?: string };
 export function SandboxCheckout({ items }: { items: Item[] }) {
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);

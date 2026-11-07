@@ -16,8 +16,13 @@ export async function loadCatalog() {
   // These generated TypeScript files contain JSON literals, not executable configuration.
   for (const name of ['royalFurnitureData', 'dealsCatalog', 'catalogData']) {
     const source = await readFile(new URL(`../app/data/${name}.ts`, import.meta.url), 'utf8');
-    const data = JSON.parse(source.slice(source.indexOf('=') + 1).replace(/\s+as const;?\s*$/, ''));
-    for (const item of Array.isArray(data) ? data : data.products) products.set(item.id, { name: item.n, price: item.o });
+    // Catalog entries remain JSON literals; full-line comments document the
+    // structured demo fabrics without becoming executable server config.
+    const literal = source.slice(source.indexOf('=') + 1)
+      .replace(/\s+as const;?\s*$/, '')
+      .replace(/^\s*\/\/[^\n]*$/gm, '');
+    const data = JSON.parse(literal);
+    for (const item of Array.isArray(data) ? data : data.products) products.set(item.id, { name: item.n, price: item.o, fabrics: item.fabrics });
   }
   const sizes = JSON.parse(await readFile(new URL('../harvest/sizes-priced.json', import.meta.url), 'utf8')).sizes;
   return { products, sizes };
@@ -27,7 +32,7 @@ export function priceCart(items, catalog) {
   if (!Array.isArray(items) || !items.length || items.length > 30) throw new Error('INVALID_CART');
   const merged = new Map();
   for (const item of items) {
-    if (!item || Object.keys(item).some((key) => !['productId', 'quantity'].includes(key)) || typeof item.productId !== 'string' || item.productId.length > 400 || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 10) throw new Error('INVALID_CART');
+    if (!item || Object.keys(item).some((key) => !['productId', 'quantity', 'fabricId'].includes(key)) || typeof item.productId !== 'string' || item.productId.length > 400 || (item.fabricId !== undefined && (typeof item.fabricId !== 'string' || !item.fabricId || item.fabricId.length > 100)) || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 10) throw new Error('INVALID_CART');
     const [base, encoded, ...extra] = item.productId.split('::size=');
     const product = catalog.products.get(base);
     if (!product || extra.length) throw new Error('INVALID_CART');
@@ -42,12 +47,20 @@ export function priceCart(items, catalog) {
       if (!option || !Number.isFinite(option[1])) throw new Error('INVALID_CART');
       price = option[1]; name += ` — ${size}`;
     }
+    if (item.fabricId !== undefined) {
+      const fabric = product.fabrics?.find((option) => option.id === item.fabricId);
+      // Fabric prices and availability are server catalog data, never client prices.
+      if (!fabric?.inStock) throw new Error('INVALID_CART');
+      price += Number.isFinite(fabric.priceDelta) ? fabric.priceDelta : 0;
+      name += ` — Fabric: ${fabric.name}`;
+    }
     const amount = Math.round(price * 100);
     if (!Number.isSafeInteger(amount) || amount < 50) throw new Error('INVALID_CART');
-    const prior = merged.get(item.productId);
+    const mergeKey = item.fabricId ? `${item.productId}::fabric=${encodeURIComponent(item.fabricId)}` : item.productId;
+    const prior = merged.get(mergeKey);
     const quantity = (prior?.quantity || 0) + item.quantity;
     if (quantity > 10) throw new Error('INVALID_CART');
-    merged.set(item.productId, { productId: item.productId, name, amount, quantity });
+    merged.set(mergeKey, { productId: mergeKey, name, amount, quantity });
   }
   const lines = [...merged.values()].sort((a, b) => a.productId.localeCompare(b.productId));
   const total = lines.reduce((sum, item) => sum + item.amount * item.quantity, 0);

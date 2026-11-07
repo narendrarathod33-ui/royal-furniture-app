@@ -26,6 +26,16 @@ test('catalog loads and server pricing rejects forged values/sizes/quantities', 
   for (const items of [[], [{ productId: 'missing', quantity: 1 }], [{ productId: 'chair', quantity: 1, price: 1 }], [{ productId: 'chair', quantity: -1 }], [{ productId: 'chair', quantity: 1.5 }], [{ productId: 'chair::size=unknown', quantity: 1 }], [{ productId: 'chair', quantity: 6 }, { productId: 'chair', quantity: 6 }]]) assert.throws(() => priceCart(items, catalog));
   const sizes = { products: catalog.products, sizes: { chair: [['Large', 200]] } };
   assert.equal(priceCart([{ productId: 'chair::size=Large', quantity: 1 }], sizes).total, 20000);
+  const fabricProduct = real.products.get('7072-serafina-corner-sofa');
+  const navy = fabricProduct.fabrics.find((fabric) => fabric.id === 'navy');
+  const pricedFabric = priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'navy' }], real);
+  assert.equal(pricedFabric.total, Math.round((fabricProduct.price + navy.priceDelta) * 100));
+  assert.match(pricedFabric.lines[0].name, /Fabric: Navy/);
+  assert.equal(priceCart([
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'navy' },
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'charcoal' },
+  ], real).lines.length, 2, 'Different fabrics remain separate server-priced lines');
+  for (const fabricId of ['rust', 'missing', 42]) assert.throws(() => priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId }], real));
 });
 
 async function fixture() {

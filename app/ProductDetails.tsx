@@ -1,6 +1,8 @@
 import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
 import { attachGalleryPointerNavigation } from '../utils/galleryPointer';
 import { ProductPhotoViewer } from '../components/ProductPhotoViewer';
+import { FabricPreview } from '../components/FabricPreview';
+import { fabricPriceDelta, initialFabric, toFabricSelection, type Fabric, type FabricSelection } from './data/fabrics';
 import { sortSizesByPrice, selectSizeOption } from '../utils/sizePricing';
 import { wrapSlideIndex, loopSlidePosition, settledSlidePosition } from '../utils/gallery';
 import { filterProductResponse } from './privacy/productResponse';
@@ -28,7 +30,7 @@ import {
 // literal is typed through a cast and shared by the two gallery surfaces.
 const WEB_TOUCH_ACTION = { touchAction: 'pan-y pinch-zoom' } as unknown as ViewStyle;
 import { BlurView } from 'expo-blur';
-import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, X, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 import { youMayAlsoLike, recentProducts } from './data/discovery';
@@ -65,6 +67,9 @@ type ProductDetailsProduct = {
   l?: number;
   z?: unknown;
   sp?: unknown;
+  fabrics?: readonly Fabric[];
+  maskImage?: string;
+  selectedFabric?: FabricSelection;
 };
 
 type DetailRow = { label?: string; value?: string };
@@ -260,7 +265,8 @@ function getLocalOptions(product: ProductDetailsProduct): ProductOptionData {
   }
 
   const allSizeOptions = sizeGroups.flatMap((group) => group.options);
-  const defaultOption = allSizeOptions.find((option) => option.price === product.o) || allSizeOptions[0];
+  const basePrice = product.o - fabricPriceDelta(product.selectedFabric);
+  const defaultOption = allSizeOptions.find((option) => option.price === basePrice) || allSizeOptions[0];
   const sizePrices = sizeGroups.map((group) => group.options.find((option) => option.optionKey === defaultOption?.optionKey) || group.options[0]);
   return { sizes: unique(sizes), fabrics: unique(fabrics), colors: [...colors.values()], sizePrices, rows, sections: [], images: [] };
 }
@@ -473,8 +479,8 @@ export default function ProductDetails({
   photoSource?: ImageSourcePropType;
   sizeVariants?: SizeVariantOption[];
   onBack: () => void;
-  onSave: () => void;
-  onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
+  onSave: (fabric?: FabricSelection) => void;
+  onAdd: (variant: { size?: string; price: number; listPrice?: number; fabric?: FabricSelection }) => void;
   isSaved: boolean;
   /** Opens a sibling product from the discovery rails (omitted = rails hidden). */
   onOpenProduct?: (product: Product) => void;
@@ -494,13 +500,22 @@ export default function ProductDetails({
   const live = useMemo(() => extractApiOptions(detail), [detail]);
   const localSizePrices = useMemo(() => sortSizesByPrice(local.sizePrices), [local]);
   const cartSize = sizeFromProductId(product.id);
+  // Cart/saved products already include their saved fabric delta. Remove it once
+  // before calculating size prices, then apply the active selection below.
+  const restoredFabricDelta = fabricPriceDelta(product.selectedFabric);
+  const baseProductPrice = Math.max(0, product.o - restoredFabricDelta);
+  const baseProductListPrice = typeof product.l === 'number' ? Math.max(0, product.l - restoredFabricDelta) : undefined;
   const defaultSizeOption = localSizePrices.find((option) => option.name === cartSize)
     || localSizePrices[0];
   const hasDifferentSizePrices = new Set(localSizePrices.map((option) => option.price)).size > 1;
   const [selectedSize, setSelectedSize] = useState(defaultSizeOption?.name || '');
   const selectedSizeOption = localSizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
-  const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? product.o : product.o;
-  const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? product.l : product.l;
+  const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? baseProductPrice : baseProductPrice;
+  const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? baseProductListPrice : baseProductListPrice;
+  const fabricOptions = product.fabrics;
+  const [selectedFabricId, setSelectedFabricId] = useState(() => initialFabric(product)?.id || '');
+  const selectedFabric = fabricOptions?.find((fabric) => fabric.inStock && fabric.id === selectedFabricId)
+    || initialFabric(product);
   const productName = product.n.replace(/\s+—\s+Size:\s+.*$/, '');
 
   // Official size dropdown, in priority order:
@@ -542,12 +557,16 @@ export default function ProductDetails({
   const hasSizeMenu = sizeOptions.length > 1;
   const hasPricedSizes = sizeOptions.some((option) => option.price !== undefined);
   // Display the cheapest known size immediately, unless a customer/cart size is selected.
-  const displayPrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
+  const displayBasePrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
+  const displayPrice = Math.max(0, displayBasePrice + fabricPriceDelta(selectedFabric));
   // A chosen size keeps its own original price; while the chosen size is unpriced
-  // the catalogue's original price stands.
-  const displayListPrice = activeSize?.price !== undefined
+  // the catalogue's original price stands. Fabric deltas apply to both prices.
+  const displayBaseListPrice = activeSize?.price !== undefined
     ? (activeSize.listPrice && activeSize.listPrice > activeSize.price ? activeSize.listPrice : undefined)
     : selectedListPrice;
+  const displayListPrice = displayBaseListPrice !== undefined
+    ? Math.max(0, displayBaseListPrice + fabricPriceDelta(selectedFabric))
+    : undefined;
   const displayPhoto = (usingSizeVariants && activeVariant?.photo) || photoSource;
   const selectedSizeText = activeSize?.label || (usingOfficialSizes || usingApiSizes ? 'Select size' : '');
   const savedAmount = displayListPrice && displayListPrice > displayPrice ? displayListPrice - displayPrice : 0;
@@ -633,8 +652,8 @@ export default function ProductDetails({
   // never the harvest fallback, so "+AED … more" always matches what the
   // shopper sees and no in-between size is skipped.
   const upgrades = useMemo(
-    () => (onOpenProduct && usingSizeVariants ? upgradePicks(displayPrice, (sizeVariants || []).map((variant) => ({ name: [variant.label, variant.sizeType].filter(Boolean).join(' · '), label: variant.label, price: variant.price, listPrice: variant.listPrice })), 2) : []),
-    [onOpenProduct, usingSizeVariants, displayPrice, sizeVariants],
+    () => (onOpenProduct && usingSizeVariants ? upgradePicks(displayBasePrice, (sizeVariants || []).map((variant) => ({ name: [variant.label, variant.sizeType].filter(Boolean).join(' · '), label: variant.label, price: variant.price, listPrice: variant.listPrice })), 2) : []),
+    [onOpenProduct, usingSizeVariants, displayBasePrice, sizeVariants],
   );
 
   // General Information, grouped the way the product page groups it.
@@ -649,12 +668,15 @@ export default function ProductDetails({
   // regresses offline.
   const galleryKey = gallery.join('|');
   const slides = useMemo(() => {
-    const list: { key: string; source: ImageSourcePropType }[] = galleryKey
-      ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri } }))
+    const list: { key: string; source: ImageSourcePropType; primary?: boolean }[] = galleryKey
+      ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri }, primary: index === 0 }))
       : [];
-    if (!list.length && displayPhoto) list.push({ key: 'listing', source: displayPhoto });
+    if (!list.length && displayPhoto) list.push({ key: 'listing', source: displayPhoto, primary: true });
+    // A local aligned photo/mask pair takes the primary slot; all other gallery
+    // angles remain exactly as they were. Remote variantImages need no such swap.
+    if (list.length && product.maskImage && displayPhoto) list[0] = { ...list[0], source: displayPhoto };
     return list;
-  }, [galleryKey, displayPhoto]);
+  }, [galleryKey, displayPhoto, product.maskImage]);
   const [galleryIndex, setGalleryIndex] = useState(0);
   // Measured on the image frame so a slide is exactly one page wide, at whatever
   // size the layout gives it (the frame keeps its own square sizing).
@@ -696,6 +718,11 @@ export default function ProductDetails({
     } else {
       galleryRef.current?.scrollTo({ x: position * slideBox.width, animated: true });
     }
+  };
+  const chooseFabric = (fabric: Fabric) => {
+    if (!fabric.inStock) return;
+    setSelectedFabricId(fabric.id);
+    if (activeSlide !== 0) goToSlide(0);
   };
   const handleGalleryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!slideBox.width || slides.length < 2) return;
@@ -800,7 +827,11 @@ export default function ProductDetails({
               style={[styles.slider, { overflow: 'hidden' }, WEB_TOUCH_ACTION]}
             >
               <Animated.View pointerEvents="none" style={{ flexDirection: 'row', width: loopingSlides.length * slideBox.width, height: '100%', transform: [{ translateX: webGalleryOffset }] }}>
-                {loopingSlides.map((slide) => <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />)}
+                {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
+                  <FabricPreview key={slide.key} product={product} fabric={selectedFabric} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} />
+                ) : (
+                  <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />
+                ))}
               </Animated.View>
             </View>
           ) : (
@@ -818,7 +849,15 @@ export default function ProductDetails({
               onMomentumScrollEnd={(event) => settleGallery(event.nativeEvent.contentOffset.x)}
               style={styles.slider}
             >
-              {loopingSlides.map((slide) => (
+              {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
+                <FabricPreview
+                  key={slide.key}
+                  product={product}
+                  fabric={selectedFabric}
+                  source={slide.source}
+                  style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
+                />
+              ) : (
                 <Image
                   key={slide.key}
                   source={slide.source}
@@ -861,6 +900,48 @@ export default function ProductDetails({
         )}
 
         {slides.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
+
+        {!!fabricOptions?.length && (
+          <View style={styles.fabricSection} testID="fabric-selector">
+            <View style={styles.fabricHeading}>
+              <Text style={styles.fabricLabel}>{t('pdp.fabric')}</Text>
+              {!!selectedFabric && <Text style={styles.fabricSelectedName} accessibilityLiveRegion="polite">{selectedFabric.name}</Text>}
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.fabricScroll} contentContainerStyle={styles.fabricRow} keyboardShouldPersistTaps="handled">
+              {fabricOptions.map((fabric) => {
+                const selected = selectedFabric?.id === fabric.id;
+                const delta = fabricPriceDelta(fabric);
+                const availability = fabric.inStock ? '' : `, ${t('pdp.notAvailable')}`;
+                const price = delta ? `, ${delta > 0 ? '+' : '−'}${money(Math.abs(delta))}` : '';
+                return (
+                  <View key={fabric.id} style={styles.fabricOption}>
+                    <Pressable
+                      testID={`fabric-swatch-${fabric.id}`}
+                      accessibilityRole="radio"
+                      accessibilityLabel={`${fabric.name}${availability}${price}`}
+                      accessibilityState={{ selected, checked: selected, disabled: !fabric.inStock }}
+                      aria-checked={selected}
+                      aria-disabled={!fabric.inStock}
+                      disabled={!fabric.inStock}
+                      onPress={() => chooseFabric(fabric)}
+                      style={[styles.fabricSwatch, selected && styles.fabricSwatchSelected, !fabric.inStock && styles.fabricSwatchDisabled]}
+                    >
+                      <View style={[styles.fabricSwatchColour, { backgroundColor: fabric.hex }]}>
+                        {selected && <View style={styles.fabricCheck}><Check size={13} color={COLORS.ink} strokeWidth={3} /></View>}
+                        {!fabric.inStock && <X size={19} color={COLORS.ink} strokeWidth={2.5} />}
+                      </View>
+                    </Pressable>
+                    {!fabric.inStock ? (
+                      <Text style={styles.fabricUnavailable}>{t('pdp.notAvailable')}</Text>
+                    ) : delta !== 0 ? (
+                      <Text style={styles.fabricDelta}>{delta > 0 ? '+' : '−'}{money(Math.abs(delta))}</Text>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
 
         </View><View style={{ width: '100%', flex: adaptive.twoPane ? 1 : undefined, minWidth: 0, maxWidth: adaptive.twoPane ? 680 : undefined }}>
         <View style={styles.productIntro}>
@@ -1124,10 +1205,10 @@ export default function ProductDetails({
       </ScrollView>
 
       <View style={[styles.actionBar, adaptive.twoPane && { width: '100%', maxWidth: 560, alignSelf: 'flex-end' }, adaptive.compactHeight && { paddingVertical: 6 }]}>
-        <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? t('pdp.removeSaved') : t('pdp.save')} onPress={onSave} style={styles.saveButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? t('pdp.removeSaved') : t('pdp.save')} onPress={() => onSave(selectedFabric ? toFabricSelection(selectedFabric) : undefined)} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.addToBagA11y', { size: activeSize ? selectedSizeText : 'one size', p: money(displayPrice) })} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice })} style={styles.addButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.addToBagA11y', { size: activeSize ? selectedSizeText : 'one size', p: money(displayPrice) })} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice, fabric: selectedFabric ? toFabricSelection(selectedFabric) : undefined })} style={styles.addButton}>
           <ShoppingBag color={COLORS.white} size={18} />
           <Text style={styles.addButtonText}>{t('pdp.addToBag', { p: money(displayPrice) })}</Text>
         </Pressable>
@@ -1283,6 +1364,20 @@ const styles = StyleSheet.create({
   galleryThumbActive: { borderColor: COLORS.red, borderTopColor: COLORS.red },
   galleryThumbImage: { width: '100%', height: '100%' },
   imageNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, marginTop: 8 },
+  fabricSection: { marginTop: 12, padding: 14, borderRadius: 16, backgroundColor: COLORS.white, ...GLASS.panelStrong },
+  fabricHeading: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginBottom: 10 },
+  fabricLabel: { color: COLORS.ink, fontSize: 14, fontWeight: '800' },
+  fabricSelectedName: { color: COLORS.muted, fontSize: 12, fontWeight: '600', flexShrink: 1 },
+  fabricScroll: { flexGrow: 0, marginHorizontal: -4 },
+  fabricRow: { gap: 8, paddingHorizontal: 4, paddingBottom: 2, alignItems: 'flex-start' },
+  fabricOption: { width: 58, minHeight: 66, alignItems: 'center' },
+  fabricSwatch: { width: 48, height: 48, borderRadius: 24, padding: 4, borderWidth: 2, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
+  fabricSwatchSelected: { borderColor: COLORS.red },
+  fabricSwatchDisabled: { opacity: 0.42 },
+  fabricSwatchColour: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: '#00000024', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  fabricCheck: { width: 19, height: 19, borderRadius: 10, backgroundColor: '#FFFFFFE8', alignItems: 'center', justifyContent: 'center' },
+  fabricUnavailable: { color: COLORS.muted, fontSize: 8, lineHeight: 11, textAlign: 'center', marginTop: 3 },
+  fabricDelta: { color: COLORS.muted, fontSize: 9, lineHeight: 12, fontWeight: '600', textAlign: 'center', marginTop: 3 },
   labelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
   labelPill: { color: COLORS.red, fontSize: 9, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', backgroundColor: '#FDE8E9', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, overflow: 'hidden' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 8 },

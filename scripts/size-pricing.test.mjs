@@ -48,8 +48,11 @@ function productSelection({ siblings = [], official = [], api = [], local = [], 
     sizeFromProductId: () => cartSize,
     getLocalOptions: () => ({ sizePrices: local }), extractApiOptions: () => ({}),
     getOfficialSizes: () => official, extractApiSizeOptions: () => api,
+    fabricPriceDelta: (fabric) => typeof fabric?.priceDelta === 'number' ? fabric.priceDelta : 0,
+    initialFabric: () => undefined,
     useMemo: (callback) => callback(),
-    useState: (initial) => [hook++ === 1 ? selectedKey : initial, () => {}],
+    // selectedSize, selectedFabricId, then selectedVariantId.
+    useState: (initial) => [hook++ === 2 ? selectedKey : initial, () => {}],
   };
   vm.runInNewContext(ts.transpileModule(selectionCode + '\nexports.selection = { sizeOptions, activeSize, displayPrice, displayListPrice, displayPhoto, selectedPrice, localSizePrices };', {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },

@@ -13,12 +13,13 @@ export function orderItemsText(order: OrderRecord): string {
   return order.items.map((item) => {
     const qty = item.qty && item.qty > 1 ? `${item.qty}× ` : '';
     const size = item.size ? ` (${item.size})` : '';
+    const fabric = item.fabric ? ` · Fabric: ${item.fabric.name}` : '';
     const price = typeof item.price === 'number'
       ? item.qty && item.qty > 1
         ? ` — ${aed(item.price)} each (${aed(item.price * item.qty)})`
         : ` — ${aed(item.price)}`
       : '';
-    return `${qty}${item.name}${size}${price}`;
+    return `${qty}${item.name}${size}${fabric}${price}`;
   }).join('\n');
 }
 

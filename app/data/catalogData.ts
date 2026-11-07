@@ -18,7 +18,15 @@ export const catalogData = [
     "fa": 1,
     "z": [],
     "sp": {},
-    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/SERAFINA-2-20261015-165048.jpg"
+    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/SERAFINA-2-20261015-165048.jpg",
+    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
+    "fabrics": [
+      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
+      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
+      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
+      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
+      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
+    ]
   },
   {
     "id": "7070-the-sibby-6-seater-sofa",
@@ -1459,7 +1467,16 @@ export const catalogData = [
     "fa": 1,
     "z": [],
     "sp": {},
-    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/THE-RAINBOW-2_5bc35073_dN3f1IM.webp"
+    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/THE-RAINBOW-2_5bc35073_dN3f1IM.webp",
+    "maskImage": "the-rainbow-bed.png",
+    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
+    "fabrics": [
+      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
+      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
+      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
+      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
+      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
+    ]
   },
   {
     "id": "6865-the-stokes-bed",
@@ -5647,7 +5664,16 @@ export const catalogData = [
     "fa": 1,
     "z": [],
     "sp": {},
-    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/1-SEATER-1_ba8a27d4.webp"
+    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/1-SEATER-1_ba8a27d4.webp",
+    "maskImage": "trento-single-seater-sofa.png",
+    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
+    "fabrics": [
+      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
+      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
+      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
+      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
+      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
+    ]
   },
   {
     "id": "6218-trento-rocking-chair",

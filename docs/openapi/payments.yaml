@@ -115,6 +115,10 @@ components:
             properties:
               productId: { type: string, maxLength: 400 }
               quantity: { type: integer, minimum: 1, maximum: 10 }
+              fabricId:
+                type: string
+                maxLength: 100
+                description: Optional catalog fabric id; availability and price delta are validated server-side.
     CheckoutSession:
       type: object
       required: [url]
