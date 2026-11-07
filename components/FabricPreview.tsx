@@ -39,7 +39,15 @@ function cacheKey(productId: string, source: string, mask: string, fabric: Fabri
 
 /** Synchronous cache read used on every swatch press — no canvas work in the tap path. */
 export function cachedFabricRecolour(productId: string, source: string, mask: string, fabric: Fabric) {
-  return recolourCache.get(cacheKey(productId, source, mask, fabric));
+  const key = cacheKey(productId, source, mask, fabric);
+  const cached = recolourCache.get(key);
+  // Map preserves insertion order: touching a hit makes the bounded cache LRU,
+  // rather than evicting a frequently used selected colour behind a large type.
+  if (cached) {
+    recolourCache.delete(key);
+    recolourCache.set(key, cached);
+  }
+  return cached;
 }
 
 function loadWebImage(uri: string): Promise<HTMLImageElement> {
@@ -235,6 +243,10 @@ export function FabricPreview({
   const fade = useRef(new Animated.Value(1)).current;
   const sourceUri = uriFor(resolveFabricImage(angle?.baseImage || product.baseImage) || source);
   const maskUri = uriFor(resolveFabricImage(angle?.maskImage || product.maskImage));
+  const cachedUri = fabric && sourceUri && maskUri && !fabric.variantImage && !fabric.previewUnavailable && !fabric.isCurrent
+    ? cachedFabricRecolour(product.id, sourceUri, maskUri, fabric)
+    : undefined;
+  const cachedSource = cachedUri ? { uri: cachedUri } : undefined;
 
   useEffect(() => {
     if (!__DEV__ || !fabric || fabric.variantImage || fabric.previewUnavailable || fabric.isCurrent || product.maskImage || angle?.maskImage) return;
@@ -268,19 +280,32 @@ export function FabricPreview({
       }
     }
     if (Platform.OS !== 'web' || !sourceUri || !maskUri) return () => { active = false; };
-    const jobs = options.filter((option) => !option.variantImage && !option.previewUnavailable && !option.isCurrent).map((option) =>
-      precomputeWebRecolour(product.id, sourceUri, maskUri!, option),
-    );
-    void Promise.all(jobs).then(() => { if (active) setCacheVersion((value) => value + 1); });
+    const queue = options.filter((option) => !option.variantImage && !option.previewUnavailable && !option.isCurrent);
+    // Warm one background render at a time. The selected colour has its own
+    // deduplicated on-demand job below, so a large catalogue cannot monopolize
+    // the main thread or allocate every full-resolution canvas simultaneously.
+    void (async () => {
+      for (const option of queue) {
+        if (!active) return;
+        await precomputeWebRecolour(product.id, sourceUri, maskUri!, option);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+      if (active) setCacheVersion((value) => value + 1);
+    })();
     return () => { active = false; };
   }, [product.id, product.fabrics, sourceUri, maskUri, prewarm]);
 
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !fabric || cachedUri || fabric.variantImage || fabric.previewUnavailable || fabric.isCurrent || !sourceUri || !maskUri) return;
+    let active = true;
+    void precomputeWebRecolour(product.id, sourceUri, maskUri, fabric).then((result) => {
+      if (active && result) setCacheVersion((value) => value + 1);
+    });
+    return () => { active = false; };
+  }, [product.id, fabric?.id, cachedUri, sourceUri, maskUri]);
+
   // cacheVersion is intentionally read: completed pre-renders replace fallback layers.
   void cacheVersion;
-  const cachedUri = fabric && sourceUri && maskUri && !fabric.variantImage && !fabric.previewUnavailable && !fabric.isCurrent
-    ? cachedFabricRecolour(product.id, sourceUri, maskUri, fabric)
-    : undefined;
-  const cachedSource = cachedUri ? { uri: cachedUri } : undefined;
 
   return (
     <View style={[styles.root, style]} testID={`fabric-preview-${fabric?.id || 'base'}${angle ? `-${angle.angleId}` : ''}`}>
