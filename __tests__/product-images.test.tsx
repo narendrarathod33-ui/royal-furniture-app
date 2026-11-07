@@ -110,9 +110,15 @@ test('detail gallery and cart photos contain products; editorial and swatches st
   const details = await render(
     <RealProductDetails product={realProduct} onBack={() => {}} onAdd={() => {}} isSaved={false} />
   );
-  const photos = byType(details.root, 'Image');
+  const images = byType(details.root, 'Image');
+  const officialSwatches = images.filter((node) => String(node.props.accessibilityLabel || '').endsWith(' swatch'));
+  const photos = images.filter((node) => !officialSwatches.includes(node));
   expect(photos.length).toBeGreaterThan(0);
   expect(photos.every((node) => node.props.resizeMode === 'contain')).toBe(true);
+  // The real manifest enables an official close-up beside the fabric selector;
+  // it is a material thumbnail, not a product-gallery photograph.
+  expect(officialSwatches.length).toBeGreaterThan(0);
+  expect(officialSwatches.every((node) => node.props.resizeMode === 'cover')).toBe(true);
 
   // Editorial banners and color swatches stay cover; static source contract.
   const fs = require('node:fs');

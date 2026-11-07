@@ -45,7 +45,7 @@ python3 scripts/fabrics/validate.py --input /tmp/rf-fabric-harvest
 python3 scripts/fabrics/install.py /tmp/rf-fabric-harvest
 ```
 
-Review the mapping, extraction report and source omissions before committing. The installer minifies the app manifest, generates static asset requires, normalizes one unchanged Current Fabric entry, and prunes unreferenced images.
+Review the mapping, extraction report and source omissions before committing. The installer minifies the app manifest, generates static asset requires, normalizes one unchanged Current Fabric entry, prunes unreferenced images, and shares byte-identical assets through canonical paths without dropping official IDs.
 
 ### 2. Render approved masks and generate every contact sheet
 
@@ -56,17 +56,17 @@ git commit --allow-empty -m "[fabric-qa] Render and audit official fabrics"
 git push origin arena/7580beb8-royal-furniture-app
 ```
 
-`[fabric-qa]` skips Pages deployment for that staging commit. It repairs collision-free Current Fabric close-up paths from their existing image URLs, downloads/cache originals for contact sheets, renders only reviewed aligned masks, checks every unmasked pixel and protected region, and audits the resulting manifest.
+`[fabric-qa]` skips Pages deployment for that staging commit. It repairs collision-free Current Fabric close-up paths from their existing image URLs, downloads/caches originals for contact sheets, renders only reviewed aligned masks, checks every unmasked pixel and protected region, audits the manifest, runs focused integration/payment tests, and commits validated generated files back to this session branch. Pull that generated commit and review it locally. A compact `fabric-qa-reports-<run-id>` artifact is also retained.
 
-Download and install `fabric-qa-<run-id>`:
+When bootstrapping an older artifact whose primary URL was omitted, the renderer uses the product's existing official catalogue `remoteImage` instead of repeating product API calls. These fallbacks are listed as `catalogueOriginalFallbacks` in the quality report. New harvests read the API's direct `primary_images.web.url` shape as well as wrapped gallery image shapes.
+
+Run the final compressed-file check after installing the generated commit:
 
 ```sh
-gh run download <run-id> -n fabric-qa-<run-id> --dir /tmp/rf-fabric-qa
-python3 scripts/fabrics/validate.py --input /tmp/rf-fabric-qa
-python3 scripts/fabrics/install.py /tmp/rf-fabric-qa
+python3 scripts/fabrics/verify_encoded.py
 ```
 
-Review contact sheets and rejected images, then make a normal commit (without either bracketed gate) to deploy the final app and QA links.
+This writes `docs/fabric-qa/encoded-quality-report.json` and fails on colour/background/protected-region/highlight regressions or a missing reviewed masked product. Review contact sheets and rejected images, then make a normal commit (without either bracketed gate) to deploy the final app and QA links.
 
 ### Local equivalent (network permitting)
 

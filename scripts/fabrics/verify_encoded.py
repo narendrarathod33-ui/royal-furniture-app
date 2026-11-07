@@ -72,11 +72,14 @@ def main() -> int:
                     "unmaskedMean": unmasked_mean, "maskLeakRatio": leak_ratio, "highlightIncrease": highlight_increase,
                     "protected": protected, "flags": flags,
                 })
-    report = {"valid": all(not row["flags"] for row in rows), "checkedEncodedVariants": len(rows), "thresholds": {"deltaE76Max": 25, "unmaskedMeanMax": 4, "maskLeakRatioMax": 0.02, "highlightIncreaseMax": 0.04}, "variants": rows}
+    missing_masked_products = [product_id for product_id in MASKS if product_id not in manifest["products"]]
+    products_with_encoded_variants = {row["productId"] for row in rows}
+    missing_masked_products += [product_id for product_id in MASKS if product_id in manifest["products"] and product_id not in products_with_encoded_variants]
+    report = {"valid": bool(rows) and not missing_masked_products and all(not row["flags"] for row in rows), "checkedEncodedVariants": len(rows), "missingMaskedProducts": missing_masked_products, "thresholds": {"deltaE76Max": 25, "unmaskedMeanMax": 4, "maskLeakRatioMax": 0.02, "highlightIncreaseMax": 0.04}, "variants": rows}
     destination = ROOT / "docs/fabric-qa/encoded-quality-report.json"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
-    print(json.dumps({"valid": report["valid"], "checkedEncodedVariants": len(rows), "flagged": [row["variantPath"] for row in rows if row["flags"]]}, indent=2))
+    print(json.dumps({"valid": report["valid"], "checkedEncodedVariants": len(rows), "missingMaskedProducts": missing_masked_products, "flagged": [row["variantPath"] for row in rows if row["flags"]]}, indent=2))
     return 0 if report["valid"] else 1
 
 

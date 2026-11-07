@@ -62,9 +62,8 @@ jobs:
       # One-time bootstrap for the successful harvest whose blob download is
       # restricted in the sandbox. Future QA runs use the installed manifest.
       HARVEST_RUN_ID: '42385992930'
-      # Resume the already-rendered/audited checkpoint after integration fixes.
-      # Clear this after the generated catalogue has been committed.
-      QA_CHECKPOINT_RUN_ID: '42395077324'
+      # Optional one-time resume checkpoint; empty for normal installed-data QA.
+      QA_CHECKPOINT_RUN_ID: ''
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4

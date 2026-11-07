@@ -1,0 +1,2085 @@
+{
+  "valid": true,
+  "checkedEncodedVariants": 44,
+  "missingMaskedProducts": [],
+  "thresholds": {
+    "deltaE76Max": 25,
+    "unmaskedMeanMax": 4,
+    "maskLeakRatioMax": 0.02,
+    "highlightIncreaseMax": 0.04
+  },
+  "variants": [
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-297",
+      "name": "CREAM WHITE /1882-1",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/velvet-fc-297.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7944332957267761,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.004038793243727016,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.41370338201522827,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.9756263494491577,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.7089506387710571,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0604807138442993,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.8249353766441345,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.6804964542388916,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.1943286657333374,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.8059964179992676,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.080246925354004,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2496694326400757,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.0867269039154053,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-321",
+      "name": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/velvet-fc-321.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5525867905370312,
+      "unmaskedMean": 0.7962664365768433,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": -0.00022130373938230222,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.4211180806159973,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.9675342440605164,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.7108024954795837,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0655043125152588,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.8441537022590637,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.6555555462837219,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.205786943435669,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.8179013133049011,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.0725308656692505,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2331348657608032,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.086751103401184,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-322",
+      "name": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/velvet-fc-322.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.39560964888401906,
+      "unmaskedMean": 0.7916504144668579,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": -0.00022130373938230222,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.4118937849998474,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.9657251834869385,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.7058641910552979,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0663907527923584,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.8472222685813904,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.6670212745666504,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.210763931274414,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.7960758805274963,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.0756173133850098,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2291666269302368,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.083266258239746,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-323",
+      "name": "LIGHT WARM GREY BEIGE /1882-4",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/velvet-fc-323.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7960708141326904,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": -0.00022130373938230222,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.41675299406051636,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.9842502474784851,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.709156334400177,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0623522996902466,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.804425060749054,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.7020094990730286,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.197569489479065,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.7965167164802551,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.0617284774780273,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2119708061218262,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.0853773355484009,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "suede",
+      "colourId": "fc-329",
+      "name": "FROST IVORY /2962-4",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/suede-fc-329.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.37941808320575,
+      "unmaskedMean": 0.7972242832183838,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 3.254466755622091e-06,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.42053937911987305,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.970821738243103,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.7146090865135193,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0568360090255737,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.8199288845062256,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.6593380570411682,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.1811343431472778,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.8121693134307861,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.0694444179534912,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2331348657608032,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.087083339691162,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "7072-serafina-corner-sofa",
+      "fabricId": "suede",
+      "colourId": "fc-330",
+      "name": "CHAMPAGNE BEIGE /2962-5",
+      "variantPath": "assets/variants/7072-serafina-corner-sofa/suede-fc-330.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5447904019146559,
+      "unmaskedMean": 0.796416699886322,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": -0.00022130373938230222,
+      "protected": {
+        "wall": {
+          "maskMax": 0,
+          "mean": 0.4211180806159973,
+          "over12": 0.0
+        },
+        "artwork": {
+          "maskMax": 0,
+          "mean": 0.9675342440605164,
+          "over12": 0.0
+        },
+        "plantTop": {
+          "maskMax": 0,
+          "mean": 0.7108024954795837,
+          "over12": 0.0
+        },
+        "plantMiddle": {
+          "maskMax": 0,
+          "mean": 1.0655043125152588,
+          "over12": 0.0
+        },
+        "leftBrownPillow": {
+          "maskMax": 0,
+          "mean": 0.8330103754997253,
+          "over12": 0.0
+        },
+        "leftWhitePillow": {
+          "maskMax": 0,
+          "mean": 0.6573286056518555,
+          "over12": 0.0
+        },
+        "rightLightPillow": {
+          "maskMax": 0,
+          "mean": 1.1814814805984497,
+          "over12": 0.0
+        },
+        "rightDarkPillow": {
+          "maskMax": 0,
+          "mean": 0.8123897314071655,
+          "over12": 0.0
+        },
+        "leftFoot": {
+          "maskMax": 0,
+          "mean": 1.1180555820465088,
+          "over12": 0.0
+        },
+        "chaiseFoot": {
+          "maskMax": 0,
+          "mean": 1.2103174924850464,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.0873298645019531,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-390",
+      "name": "LIGHT WARM GREY BEIGE /1882-4",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-390.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7068041563034058,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6425398588180542,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5365924835205078,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0411913394927979,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4839612245559692,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-391",
+      "name": "WARM CREAM YELLOW /1882-5",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-391.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7075218558311462,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6425721645355225,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5378788709640503,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.044450044631958,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4854803085327148,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-392",
+      "name": "WARM BEIGE /1882-8",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-392.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7080433964729309,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6413159966468811,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.53515625,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0408331155776978,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4858853816986084,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-393",
+      "name": "COCOA BEIGE /1882-11",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-393.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.706246554851532,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6405398845672607,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5779898762702942,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5362899899482727,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0377671718597412,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4876823425292969,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-394",
+      "name": "MOCHA BEIGE /1882-12",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-394.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7084461450576782,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6433942914009094,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5784949660301208,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5403645634651184,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.043127179145813,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4859635829925537,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-395",
+      "name": "MOCHA BEIGE /1882-12",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-394.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7084461450576782,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6433942914009094,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5784949660301208,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5403645634651184,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.043127179145813,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4859635829925537,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-396",
+      "name": "WARM BROWN BEIGE /1882-13",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-396.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7066811323165894,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6418743133544922,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5779898762702942,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5377419590950012,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0413738489151,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4846527576446533,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-397",
+      "name": "LIGHT GREY /1882-15",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-397.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5798668286206812,
+      "unmaskedMean": 0.707218587398529,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.642878532409668,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5784240365028381,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5386284589767456,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0437748432159424,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4843199253082275,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-398",
+      "name": "CHOCOLATE BROWN /1882-23",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-398.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.705234706401825,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6398471593856812,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5747432112693787,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.536111056804657,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0339609384536743,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4859778881072998,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "velvet",
+      "colourId": "fc-399",
+      "name": "SILVER GREY /1882-24",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/velvet-fc-399.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.7265555098267303,
+      "unmaskedMean": 0.7066840529441833,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6414896249771118,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5352798104286194,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0433580875396729,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.484108805656433,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-400",
+      "name": "CREAM WHITE /1941-1",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-400.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7063368558883667,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6417280435562134,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5358112454414368,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0449804067611694,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4808131456375122,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-401",
+      "name": "CREAM BEIGE /1941-2",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-401.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5438242440435616,
+      "unmaskedMean": 0.7064219117164612,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6433874368667603,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5381971001625061,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0430651903152466,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4795689582824707,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-402",
+      "name": "BEIGE GREY /1941-3",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-402.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.3981486499206154,
+      "unmaskedMean": 0.7073383927345276,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6439303755760193,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5383943915367126,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0408192873001099,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.485755205154419,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-404",
+      "name": "TAUPE BEIGE /1941-5",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-404.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7072355151176453,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6434792876243591,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788415670394897,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5394228100776672,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0426690578460693,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4824535846710205,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-405",
+      "name": "LIGHT GREY /1941-6",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-405.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7071844935417175,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6444137692451477,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5816651582717896,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5390756130218506,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0431995391845703,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4843344688415527,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-406",
+      "name": "LIGHT ASH GREY /1941-7",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-406.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7078986167907715,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6418538689613342,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5366792678833008,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0443603992462158,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4861226081848145,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-407",
+      "name": "DARK GREY 1941-8",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-407.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7076203227043152,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6412990093231201,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788415670394897,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5359901785850525,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0416595935821533,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4897222518920898,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "feather",
+      "colourId": "fc-408",
+      "name": "BLACK /1941-9",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/feather-fc-408.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7197667360305786,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.653519868850708,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5964263677597046,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5516703724861145,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0905499458312988,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.486354112625122,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-409",
+      "name": "WARM OFF WHITE /1949-1",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-409.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.6931675610447064,
+      "unmaskedMean": 0.7055311799049377,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6440086364746094,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5401672720909119,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0403058528900146,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.480289340019226,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-410",
+      "name": "NATURAL IVORY /1949-2",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-410.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7058396935462952,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6448971629142761,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5421375036239624,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0405884981155396,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4804975986480713,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-411",
+      "name": "LIGHT ASH GREY /1949-3",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-411.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.6680579123640052,
+      "unmaskedMean": 0.7065249085426331,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6444188356399536,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5406670570373535,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.040795087814331,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4833217859268188,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-412",
+      "name": "LIGHT TAUPE GREY /1949-4",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-412.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5386599616531879,
+      "unmaskedMean": 0.7059965133666992,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6438299417495728,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.540561854839325,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0409294366836548,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4812673330307007,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-413",
+      "name": "SOFT MUSHROOM PINK /1949-5",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-413.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.38393439424451575,
+      "unmaskedMean": 0.7059624791145325,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.643882691860199,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788583755493164,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5396517515182495,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0428342819213867,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4803414344787598,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-414",
+      "name": "STONE BEIGE /1949-6",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-414.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7070328593254089,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6436275243759155,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5399884581565857,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0427827835083008,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4823784828186035,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-415",
+      "name": "SNOW WHITE /1949-8",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-415.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7064343690872192,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6432138085365295,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5394938588142395,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0417768955230713,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4834057092666626,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-416",
+      "name": "FROST GREY /1949-9",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-416.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.3806292533066447,
+      "unmaskedMean": 0.7048887610435486,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6432768106460571,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5754104256629944,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5397332906723022,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0390453338623047,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.480176568031311,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-417",
+      "name": "MIST BLUE /1949-10",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-417.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.6597525894839263,
+      "unmaskedMean": 0.7062442898750305,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6442793011665344,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5410669445991516,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.039265751838684,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.481993556022644,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-418",
+      "name": "MIST GREEN /1949-11",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-418.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.7114032606371883,
+      "unmaskedMean": 0.7063414454460144,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6427780985832214,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788583755493164,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.537344753742218,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0415771007537842,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.482508659362793,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-419",
+      "name": "CHAMPAGNE IVORY /1949-12",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-419.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5427225329537537,
+      "unmaskedMean": 0.7066245675086975,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6426793932914734,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788583755493164,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5369133949279785,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0427862405776978,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.483865737915039,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-420",
+      "name": "PEARL TAUPE /1949-13",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-420.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.636603610671193,
+      "unmaskedMean": 0.7065024971961975,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.643692135810852,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5405461192131042,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0410845279693604,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.483741283416748,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-421",
+      "name": "LINEN IVORY /1949-14",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-421.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.546832080909097,
+      "unmaskedMean": 0.7067573666572571,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.64311683177948,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788583755493164,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.537834107875824,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0420180559158325,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4817274808883667,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-422",
+      "name": "MUSHROOM TAUPE /1949-15",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-422.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7081236839294434,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6439304947853088,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5788583755493164,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5391545295715332,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.04133939743042,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4848812818527222,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "boucle",
+      "colourId": "fc-424",
+      "name": "OLIVE GREY /1949-16",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/boucle-fc-424.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.0,
+      "unmaskedMean": 0.7062007784843445,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6430453062057495,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5782246589660645,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5388520359992981,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0355523824691772,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4831770658493042,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "chenille",
+      "colourId": "fc-425",
+      "name": "PALE MINT /1906 B-1",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/chenille-fc-425.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.4560611869671623,
+      "unmaskedMean": 0.7058410048484802,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6437073945999146,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5398516654968262,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0366030931472778,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4824190139770508,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "chenille",
+      "colourId": "fc-426",
+      "name": "IVORY WHITE /1906 B-2",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/chenille-fc-426.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.6555615083539557,
+      "unmaskedMean": 0.7056285738945007,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.643884539604187,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5786701440811157,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5402488708496094,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.0372161865234375,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.481701374053955,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "chenille",
+      "colourId": "fc-427",
+      "name": "OYSTER GREY /1906 B-4",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/chenille-fc-427.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5440147568991566,
+      "unmaskedMean": 0.7057507634162903,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6434164047241211,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.539901614189148,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.039747953414917,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4782841205596924,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "chenille",
+      "colourId": "fc-428",
+      "name": "OYSTER GREY /1906 B-4",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/chenille-fc-427.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.5440147568991566,
+      "unmaskedMean": 0.7057507634162903,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6434164047241211,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.539901614189148,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.039747953414917,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4782841205596924,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    },
+    {
+      "productId": "6219-trento-single-seater-sofa",
+      "fabricId": "chenille",
+      "colourId": "fc-429",
+      "name": "SILVER SAGE /1906 B-5",
+      "variantPath": "assets/variants/6219-trento-single-seater-sofa/chenille-fc-429.webp",
+      "size": [
+        1200,
+        1200
+      ],
+      "deltaE76": 0.9541326998457583,
+      "unmaskedMean": 0.7069873809814453,
+      "maskLeakRatio": 0.0,
+      "highlightIncrease": 0.0,
+      "protected": {
+        "lamp": {
+          "maskMax": 0,
+          "mean": 0.6432495713233948,
+          "over12": 0.0
+        },
+        "wallArt": {
+          "maskMax": 0,
+          "mean": 0.5796934366226196,
+          "over12": 0.0
+        },
+        "leftWall": {
+          "maskMax": 0,
+          "mean": 0.5395833849906921,
+          "over12": 0.0
+        },
+        "sideTable": {
+          "maskMax": 0,
+          "mean": 1.042169451713562,
+          "over12": 0.0
+        },
+        "rug": {
+          "maskMax": 0,
+          "mean": 1.4814177751541138,
+          "over12": 0.0
+        }
+      },
+      "flags": []
+    }
+  ]
+}
