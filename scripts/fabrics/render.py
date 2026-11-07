@@ -241,13 +241,13 @@ def download_originals(products: list[dict[str, Any]], output: Path, delay: floa
             originals[product_id] = ROOT / MASKS[product_id]["base"]
             continue
         destination = output / "originals" / f"{product_id}.webp"
-        if destination.exists():
-            originals[product_id] = destination
-            continue
         url = product.get("baseImageSourceUrl")
         if not url and catalogue_originals.get(product_id):
             url = catalogue_originals[product_id]
             catalogue_fallbacks.append(product_id)
+        if destination.exists():
+            originals[product_id] = destination
+            continue
         if not url:
             errors.append({"productId": product_id, "error": "No primary original URL"})
             continue
@@ -304,7 +304,14 @@ def contact_sheet(product: dict[str, Any], original: Image.Image | None, output:
                 sheet.paste(swatch, (x + card_w - 48, y + 98))
         draw.text((x + 10, y + 150), f"{fabric['name']} · {label}"[:31], fill="#291F24", font=font(10, True))
         draw.text((x + 10, y + 169), str(colour.get("code") or "Code not listed")[:30], fill="#74676D", font=font(9))
-        status = "OUT OF STOCK" if colour.get("available") is False else colour.get("variantKind", "unavailable").upper()
+        if colour.get("current"):
+            status = "ORIGINAL PHOTO"
+        elif colour.get("available") is False:
+            status = "OUT OF STOCK"
+        elif colour.get("previewUnavailable"):
+            status = "CLOSE-UP ONLY"
+        else:
+            status = "OFFICIAL PHOTO" if colour.get("variantKind") == "official" else "RENDERED"
         draw.text((x + 10, y + 190), status, fill="#A3272E" if colour.get("available") is False else "#74676D", font=font(9))
     path = output / "contact-sheets" / f"{product['id']}.webp"
     path.parent.mkdir(parents=True, exist_ok=True)

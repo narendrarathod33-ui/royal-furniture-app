@@ -2,11 +2,48 @@
 """Install a reviewed harvest artifact and emit Metro's static asset registry."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def deduplicate_assets(data: dict, folders: list[Path]) -> dict[str, int]:
+    """Share byte-identical official files while retaining every official ID."""
+    redirects: dict[str, str] = {}
+    removed = 0
+    bytes_saved = 0
+    for folder in folders:
+        if not folder.exists():
+            continue
+        groups: dict[str, list[Path]] = {}
+        for image in folder.rglob('*.webp'):
+            groups.setdefault(hashlib.sha256(image.read_bytes()).hexdigest(), []).append(image)
+        for duplicates in groups.values():
+            if len(duplicates) < 2:
+                continue
+            canonical = min(duplicates, key=lambda path: path.as_posix())
+            canonical_path = canonical.relative_to(ROOT).as_posix()
+            for duplicate in duplicates:
+                if duplicate == canonical:
+                    continue
+                relative = duplicate.relative_to(ROOT).as_posix()
+                redirects[relative] = canonical_path
+                bytes_saved += duplicate.stat().st_size
+                duplicate.unlink()
+                removed += 1
+    for product in data['products'].values():
+        for fabric in product.get('fabricTypes', []):
+            for key in ('swatchPath', 'swatchThumbPath'):
+                if fabric.get(key) in redirects:
+                    fabric[key] = redirects[fabric[key]]
+            for colour in fabric.get('colours', []):
+                for key in ('swatchPath', 'closeupPath', 'variantPath'):
+                    if colour.get(key) in redirects:
+                        colour[key] = redirects[colour[key]]
+    return {'duplicateAssetsRemoved': removed, 'duplicateAssetBytesSaved': bytes_saved}
 
 
 def main() -> None:
@@ -81,6 +118,10 @@ def main() -> None:
         for image in folder.rglob('*.webp'):
             if image.relative_to(ROOT).as_posix() not in referenced:
                 image.unlink()
+    deduplication = deduplicate_assets(data, [target_assets, target_variants])
+    # Persist the canonical paths in both the staged and minified app manifests.
+    manifest.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+    (ROOT / 'app/data/fabricManifest.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
     paths = sorted({str(image) for folder in (target_assets, target_variants) if folder.exists() for image in folder.rglob('*.webp')})
     lines = [
         "import type { ImageSourcePropType } from 'react-native';",
@@ -94,8 +135,8 @@ def main() -> None:
         lines.append(f"  {json.dumps(key)}: require({json.dumps(require_path)}),")
     lines += ['};', '']
     (ROOT / 'app/data/fabricAssets.ts').write_text('\n'.join(lines))
-    (reports / 'install-report.json').write_text(json.dumps({'matchedProducts': len(data['products']), 'staticImageAssets': len(paths), 'currentEntriesAddedBecauseApiOmittedOriginalRow': added_current, 'duplicateCurrentEntriesRemoved': duplicate_current}, indent=2) + '\n')
-    print(f'Installed {len(data["products"])} matched products and {len(paths)} static image assets; current additions {added_current}, duplicate originals removed {duplicate_current}')
+    (reports / 'install-report.json').write_text(json.dumps({'matchedProducts': len(data['products']), 'staticImageAssets': len(paths), 'currentEntriesAddedBecauseApiOmittedOriginalRow': added_current, 'duplicateCurrentEntriesRemoved': duplicate_current, 'currentEntriesPresent': sum(colour.get('current') is True for product in data['products'].values() for fabric in product.get('fabricTypes', []) for colour in fabric.get('colours', [])), **deduplication}, indent=2) + '\n')
+    print(f'Installed {len(data["products"])} matched products and {len(paths)} static image assets; current additions {added_current}, duplicate originals removed {duplicate_current}, duplicate assets removed {deduplication["duplicateAssetsRemoved"]}')
 
 
 if __name__ == '__main__':
