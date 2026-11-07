@@ -86,6 +86,16 @@ class ExtractTests(unittest.TestCase):
         product, _ = extract_product(ROW, data)
         self.assertEqual(product["baseImageSourceUrl"], "https://img.invalid/direct-original.webp")
 
+    def test_gallery_urls_include_primary_and_ordered_additional_angles(self):
+        data = payload([{"name": "VELVET", "colorsList": [colour(2, "REAL BLUE", 1000)]}])
+        data["data"]["additional_images"] = [
+            {"display_order": 2, "responsive_images": {"web": {"url": "https://img.invalid/back.jpg"}}},
+            {"display_order": 1, "responsive_images": {"web": {"url": "https://img.invalid/front.jpg"}}},
+        ]
+        product, assets = extract_product(ROW, data)
+        self.assertEqual(assets["galleryUrls"], ["https://img.invalid/original.webp", "https://img.invalid/front.jpg", "https://img.invalid/back.jpg"])
+        self.assertEqual(product["previewBaseStatus"], "pending")
+
     def test_catalogue_id_prefix_is_not_part_of_live_slug(self):
         self.assertEqual(slug_for("7072-serafina-corner-sofa"), "serafina-corner-sofa")
 

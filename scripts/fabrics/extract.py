@@ -29,6 +29,10 @@ import requests
 from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.fabrics.white_base import analyse_candidate, average_hash
+
 API = "https://rylqus.ae/api/products/product-detail/{slug}/?format=json"
 PAGE = "https://www.royalfurniture.ae/ae/en/{category}/{subcategory}/{slug}/"
 CACHE = ROOT / ".cache" / "fabric-harvest"
@@ -75,6 +79,23 @@ def image_url(node: Any) -> str | None:
         if isinstance(node.get(key), str) and node[key].startswith("http"):
             return node[key]
     return None
+
+
+def gallery_image_urls(data: dict[str, Any]) -> list[str]:
+    """Return primary + additional website-gallery images in display order."""
+    nodes: list[Any] = [data.get("primary_images") or {}]
+    for key in ("additional_images", "gallery_images", "product_images", "gallery", "images"):
+        value = data.get(key)
+        if isinstance(value, list):
+            nodes.extend(sorted(value, key=lambda node: node.get("display_order", 0) if isinstance(node, dict) else 0))
+        elif isinstance(value, dict) and key != "images":
+            nodes.append(value)
+    urls = []
+    for node in nodes:
+        url = node if isinstance(node, str) and node.startswith("http") else image_url(node)
+        if url and url not in urls:
+            urls.append(url)
+    return urls
 
 
 def number(node: Any, keys: tuple[str, ...]) -> float | int | None:
@@ -170,6 +191,8 @@ class Harvester:
         self.downloads = 0
         self.reused = 0
         self.errors: list[dict[str, Any]] = []
+        self.baseErrors: list[dict[str, Any]] = []
+        self.baseReports: list[dict[str, Any]] = []
         self.assets: dict[str, dict[str, str]] = {}
 
     def wait(self) -> None:
@@ -258,6 +281,82 @@ class Harvester:
         except Exception as error:
             self.errors.append({"kind": "image", "url": url, "error": str(error)})
             return None
+
+    def fetch_gallery_image(self, url: str) -> tuple[bytes, Image.Image, str]:
+        """Decode a gallery image without converting its original source bytes."""
+        response = self.get(url)
+        response.raise_for_status()
+        content = response.content
+        with Image.open(io.BytesIO(content)) as source:
+            source_format = (source.format or "unknown").upper()
+            image = ImageOps.exif_transpose(source).convert("RGB")
+        self.downloads += 1
+        return content, image, source_format
+
+    def select_white_bases(self, product: dict[str, Any], urls: list[str]) -> None:
+        """Inspect every gallery angle; retain only accepted white product views."""
+        selected: list[dict[str, Any]] = []
+        candidates: list[dict[str, Any]] = []
+        seen_hashes: list[int] = []
+        for index, url in enumerate(urls):
+            row: dict[str, Any] = {"url": url, "galleryIndex": index}
+            try:
+                content, image, source_format = self.fetch_gallery_image(url)
+                row.update({"width": image.width, "height": image.height, "sourceFormat": source_format, "sourceSha256": hashlib.sha256(content).hexdigest()})
+                digest = average_hash(image)
+                duplicate = next((old for old in seen_hashes if (digest ^ old).bit_count() <= 2), None)
+                if duplicate is not None:
+                    row.update({"status": "duplicate-angle", "averageHash": f"{digest:016x}"})
+                    candidates.append(row)
+                    continue
+                seen_hashes.append(digest)
+                analysis = analyse_candidate(image)
+                row.update(analysis)
+                row["averageHash"] = f"{digest:016x}"
+                if not analysis["whiteBackground"]:
+                    row["status"] = "flagged"
+                    candidates.append(row)
+                    continue
+                angle = len(selected) + 1
+                filename = f"{product['id']}.jpg" if angle == 1 else f"{product['id']}-angle-{angle}.jpg"
+                destination = self.output / "assets/base" / filename
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                if source_format == "JPEG":
+                    # Byte-for-byte source preservation: recolouring never writes here.
+                    destination.write_bytes(content)
+                    conversion = None
+                else:
+                    # The required hand-off path is JPEG. Keep the pixels/content
+                    # unchanged apart from explicit, reported lossless-orientation
+                    # handling and high-quality JPEG container conversion.
+                    image.save(destination, "JPEG", quality=100, subsampling=0, optimize=True)
+                    conversion = f"{source_format}->JPEG"
+                relative = destination.relative_to(self.output).as_posix()
+                item = {
+                    "angleId": "front" if angle == 1 else f"angle-{angle}",
+                    "originalPath": relative,
+                    "sourceUrl": url,
+                    "sourceFormat": source_format,
+                    "jpegConversion": conversion,
+                    "sourceSha256": row["sourceSha256"],
+                    "storedSha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
+                    "width": image.width,
+                    "height": image.height,
+                    "borderWhiteRatio": analysis["borderWhiteRatio"],
+                    "singleObjectConfidence": analysis["singleObjectConfidence"],
+                }
+                selected.append(item)
+                row.update({"status": "white-background", "originalPath": relative, "angleId": item["angleId"], "jpegConversion": conversion})
+            except PermissionError:
+                raise
+            except Exception as error:
+                row.update({"status": "download-error", "error": str(error)})
+                self.baseErrors.append({"productId": product["id"], "url": url, "error": str(error)})
+            candidates.append(row)
+        product["whiteBaseImages"] = selected
+        product["previewBaseStatus"] = "white-background" if selected else "flagged"
+        product["previewBaseAttention"] = [] if selected else ["Supply a product-only gallery image on a plain white background; live recolour is disabled."]
+        self.baseReports.append({"productId": product["id"], "name": product["name"], "status": product["previewBaseStatus"], "selected": selected, "candidates": candidates})
 
 
 def colour_asset_id(colour: dict[str, Any]) -> str:
@@ -389,9 +488,12 @@ def extract_product(row: dict[str, Any], payload: dict[str, Any]) -> tuple[dict[
         "productPageUrl": row["productPageUrl"],
         "baseImageSourceUrl": primary_url,
         "hasOptions": bool(output_types),
+        "previewBaseStatus": "pending" if output_types else "not-applicable",
+        "previewBaseAttention": [],
+        "whiteBaseImages": [],
         "fabricTypes": output_types,
     }
-    assets = {"currentVariantUrl": current_variant_url}
+    assets = {"currentVariantUrl": current_variant_url, "galleryUrls": gallery_image_urls(data) if output_types else []}
     return product, assets
 
 
@@ -414,13 +516,15 @@ def main() -> int:
         parser.error(f"Unknown product ids: {sorted(selected - {row['id'] for row in rows})}")
     harvester = Harvester(output, args.delay, args.refresh)
     products = []
+    gallery_by_product: dict[str, list[str]] = {}
     live_unmatched = []
     try:
         for index, row in enumerate(rows, 1):
             try:
                 payload = harvester.api(row["slug"])
-                product, _ = extract_product(row, payload)
+                product, assets = extract_product(row, payload)
                 products.append(product)
+                gallery_by_product[product["id"]] = assets["galleryUrls"]
                 row["match"] = "live-api"
                 print(f"[{index}/{len(rows)}] {row['slug']}: {sum(len(t['colours']) for t in product['fabricTypes'])} options", flush=True)
             except FileNotFoundError:
@@ -453,6 +557,12 @@ def main() -> int:
                         colour["variantPath"] = None
                         colour["variantKind"] = "unavailable"
                         colour["previewUnavailable"] = not colour["current"]
+        # Gallery inspection is catalogue-wide for every option product, not a
+        # one-product special case. Rejected lifestyle images are never retained
+        # as preview bases; their measurements remain in the extraction report.
+        for index, product in enumerate((item for item in products if item.get("hasOptions")), 1):
+            harvester.select_white_bases(product, gallery_by_product.get(product["id"], []))
+            print(f"White base [{index}] {product['id']}: {product['previewBaseStatus']} ({len(product['whiteBaseImages'])} angle(s))", flush=True)
     except PermissionError as error:
         print(str(error), file=sys.stderr)
         return 2
@@ -481,16 +591,22 @@ def main() -> int:
             "imagesDownloaded": harvester.downloads,
             "cachedItemsReused": harvester.reused,
             "officialVariantImages": sum(bool(colour.get("variantPath")) for _, _, colour in colours),
+            "whiteBackgroundProducts": sum(product.get("previewBaseStatus") == "white-background" for product in products),
+            "whiteBackgroundAngles": sum(len(product.get("whiteBaseImages", [])) for product in products),
+            "flaggedWhiteBackgroundProducts": sum(product.get("hasOptions") and product.get("previewBaseStatus") != "white-background" for product in products),
+            "galleryCandidatesInspected": sum(len(row["candidates"]) for row in harvester.baseReports),
         },
         "unmatched": live_unmatched,
         "errors": harvester.errors,
+        "whiteBaseImageErrors": harvester.baseErrors,
         "missingCloseups": [
             {"productId": product["id"], "fabricId": fabric["id"], "colourId": colour["id"], "name": colour["name"]}
             for product, fabric, colour in colours if not colour.get("closeupPath")
         ],
         "notes": [
             "Null values mean the website did not expose a usable value; nothing was invented.",
-            "Current Fabric uses the original product image and is never recoloured.",
+            "Current Fabric and all live variants require an automatically accepted white-background product image.",
+            "Products without one are flagged and show only official close-ups/swatches; lifestyle photos are never recoloured.",
             "Repeated generic gallery images are not treated as official colour-variant photography.",
             "Products with only generic Selectable/Fabric entries have no selector.",
         ],
@@ -504,6 +620,12 @@ def main() -> int:
     }
     (output / "fabric-manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     (output / "extraction-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+    (output / "white-base-extraction-report.json").write_text(json.dumps({
+        "generatedAt": report["harvestedAt"],
+        "thresholds": {"borderNearWhiteRatioExclusive": 0.90, "singleObjectConfidenceMinimum": 0.80},
+        "products": harvester.baseReports,
+        "errors": harvester.baseErrors,
+    }, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps(report["counts"], indent=2), flush=True)
     print(f"Output: {output}", flush=True)
     return 0 if not harvester.errors else 1
