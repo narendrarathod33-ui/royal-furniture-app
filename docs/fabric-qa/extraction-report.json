@@ -1,0 +1,977 @@
+{
+  "harvestedAt": "2026-11-07T15:52:17.044515+00:00",
+  "complete": true,
+  "counts": {
+    "appProducts": 1360,
+    "requested": 1360,
+    "matched": 1202,
+    "unmatched": 158,
+    "productsWithOptions": 598,
+    "fabricTypes": 19,
+    "productFabricTypes": 1742,
+    "coloursIncludingCurrent": 9870,
+    "namedColours": 9464,
+    "uniqueCloseups": 181,
+    "imagesDownloaded": 253,
+    "cachedItemsReused": 37,
+    "officialVariantImages": 60
+  },
+  "unmatched": [
+    {
+      "id": "7062-the-ninea-3-seater-sofa-9d8b5e",
+      "name": "The Ninea 3-Seater Sofa",
+      "slug": "the-ninea-3-seater-sofa-9d8b5e",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "7044-spinnet-kids-night-stand",
+      "name": "Spinnet Kids Night Stand",
+      "slug": "spinnet-kids-night-stand",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "7014-diaz-ottoman",
+      "name": "Diaz Ottoman",
+      "slug": "diaz-ottoman",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6941-tom-baby-cot",
+      "name": "Tom Baby Cot",
+      "slug": "tom-baby-cot",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6726-the-gina-bed",
+      "name": "The Gina Bed",
+      "slug": "the-gina-bed",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6682-bunny-kids-bed-190x120-single-size",
+      "name": "Bunny Kids Bed - 190x120 - Single Size",
+      "slug": "bunny-kids-bed-190x120-single-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6681-bunny-kids-bed-200x160-queen-size",
+      "name": "Bunny Kids Bed - 200x160 - Queen Size",
+      "slug": "bunny-kids-bed-200x160-queen-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6680-bunny-kids-bed-200x140-single-size",
+      "name": "Bunny Kids Bed - 200x140 - Single Size",
+      "slug": "bunny-kids-bed-200x140-single-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6679-bunny-kids-bed-190-x-90-single-size",
+      "name": "Bunny Kids Bed - 190 x 90 - Single Size",
+      "slug": "bunny-kids-bed-190-x-90-single-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6670-the-hudson-bed",
+      "name": "The Hudson Bed",
+      "slug": "the-hudson-bed",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6612-kelly-bed-200x120-single-size",
+      "name": "Kelly Bed - 200x120 - Single Size",
+      "slug": "kelly-bed-200x120-single-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6611-kelly-bed-200x150-queen-size",
+      "name": "Kelly Bed - 200x150 - Queen Size",
+      "slug": "kelly-bed-200x150-queen-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6610-kelly-bed-200x160-queen-size",
+      "name": "Kelly Bed - 200x160 - Queen Size",
+      "slug": "kelly-bed-200x160-queen-size",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6298-kyra-lounge-chair-walnut-and-beige",
+      "name": "Kyra Lounge Chair -Walnut and Beige",
+      "slug": "kyra-lounge-chair-walnut-and-beige",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6300-velora-single-seater-sofa",
+      "name": "Velora Single Seater Sofa",
+      "slug": "velora-single-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6280-zaina-single-seater-sofa-079eba",
+      "name": "Zaina Single Seater Sofa",
+      "slug": "zaina-single-seater-sofa-079eba",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6255-mister-backer-tub-chair",
+      "name": "Mister Backer Tub Chair",
+      "slug": "mister-backer-tub-chair",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6218-trento-rocking-chair",
+      "name": "Trento Rocking Chair",
+      "slug": "trento-rocking-chair",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6216-the-laze-rocking-chair",
+      "name": "The Laze Rocking Chair",
+      "slug": "the-laze-rocking-chair",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6205-nomad-single-seater-sofa",
+      "name": "Nomad Single Seater Sofa",
+      "slug": "nomad-single-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6164-lueur-tranquil-reed-diffuser-200ml",
+      "name": "Lueur Tranquil Reed Diffuser -200ml",
+      "slug": "lueur-tranquil-reed-diffuser-200ml",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6138-velora-2-seater-sofa",
+      "name": "Velora 2-Seater Sofa",
+      "slug": "velora-2-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6081-nomad-2-seater-sofa",
+      "name": "Nomad 2-Seater Sofa",
+      "slug": "nomad-2-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6063-velora-3-seater-sofa",
+      "name": "Velora 3-Seater Sofa",
+      "slug": "velora-3-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6057-the-crest-2-seater-sofa",
+      "name": "The Crest 2-Seater Sofa",
+      "slug": "the-crest-2-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6055-the-sibby-2-seater-sofa",
+      "name": "The Sibby 2-Seater Sofa",
+      "slug": "the-sibby-2-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6037-the-jesse-3-seater-sofa",
+      "name": "The Jesse 3-Seater Sofa",
+      "slug": "the-jesse-3-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6015-the-connery-sofa-3-seater",
+      "name": "The Connery Sofa 3-Seater",
+      "slug": "the-connery-sofa-3-seater",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "6003-ayilin-lux-3-seater-sofa",
+      "name": "Ayilin Lux 3- Seater Sofa",
+      "slug": "ayilin-lux-3-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "5994-nomad-3-seater-sofa",
+      "name": "Nomad 3-Seater Sofa",
+      "slug": "nomad-3-seater-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "5973-castora-metal-wall-decor-goldblack-47x90cm",
+      "name": "Castora Metal Wall Decor Gold/Black -47x90cm",
+      "slug": "castora-metal-wall-decor-goldblack-47x90cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "5741-castora-metal-wall-decor-blackgrey-118x57cm",
+      "name": "Castora Metal Wall Decor Black/Grey -118x57cm",
+      "slug": "castora-metal-wall-decor-blackgrey-118x57cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "5030-castora-metal-wall-decor-gold-117x53cm",
+      "name": "Castora Metal Wall Decor Gold -117x53cm",
+      "slug": "castora-metal-wall-decor-gold-117x53cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4647-atrisa-coffee-table-rivera-oakgrey",
+      "name": "Atrisa Coffee Table -Rivera Oak/Grey",
+      "slug": "atrisa-coffee-table-rivera-oakgrey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4646-atrisa-coffee-table-walnutgrey",
+      "name": "Atrisa Coffee Table -Walnut/Grey",
+      "slug": "atrisa-coffee-table-walnutgrey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4638-tristan-coffee-table-set-of-2-travertineblack",
+      "name": "Tristan Coffee Table Set of 2 -Travertine/Black",
+      "slug": "tristan-coffee-table-set-of-2-travertineblack",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4636-canik-coffee-table-white",
+      "name": "Canik Coffee Table -White",
+      "slug": "canik-coffee-table-white",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4630-minvera-coffee-table",
+      "name": "Minvera Coffee Table",
+      "slug": "minvera-coffee-table",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4629-obito-coffee-table",
+      "name": "Obito Coffee Table",
+      "slug": "obito-coffee-table",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4625-nitara-coffee-table-set-of-2",
+      "name": "Nitara Coffee Table Set of 2",
+      "slug": "nitara-coffee-table-set-of-2",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4618-aversa-2-piece-coffee-table-set-oak-038-black",
+      "name": "Aversa 2 piece Coffee Table Set – Oak & Black",
+      "slug": "aversa-2-piece-coffee-table-set-oak-038-black",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4612-runto-coffee-table-c5d165",
+      "name": "Runto Coffee Table",
+      "slug": "runto-coffee-table-c5d165",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4607-star-16-dining-set-col-off-whiteblack",
+      "name": "Star 1+6 Dining Set Col Off White/Black",
+      "slug": "star-16-dining-set-col-off-whiteblack",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4604-ken-8-seater-dining-set",
+      "name": "Ken 8-Seater Dining Set",
+      "slug": "ken-8-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4596-quinn-6-seater-dining-set",
+      "name": "Quinn 6-Seater Dining Set",
+      "slug": "quinn-6-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4590-moon-6-seater-dining-set",
+      "name": "Moon 6-Seater Dining Set",
+      "slug": "moon-6-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4588-florence-6-seater-dining-set-whiteblack-0ca173",
+      "name": "Florence 6-Seater Dining Set -White/Black",
+      "slug": "florence-6-seater-dining-set-whiteblack-0ca173",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4582-navona-8-seater-dining-set",
+      "name": "Navona 8-Seater Dining Set",
+      "slug": "navona-8-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4553-pearl-8-seater-dining-set",
+      "name": "Pearl 8-Seater Dining Set",
+      "slug": "pearl-8-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4547-malcolm-6-seater-dining-set",
+      "name": "Malcolm 6-Seater Dining Set",
+      "slug": "malcolm-6-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4360-chronos-wall-clock-blackwhite-30cm",
+      "name": "Chronos Wall Clock Black/White -30cm",
+      "slug": "chronos-wall-clock-blackwhite-30cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4255-dayana-corner-sofa-f8ea56",
+      "name": "Dayana Corner Sofa",
+      "slug": "dayana-corner-sofa-f8ea56",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4241-cherish-sofa-cum-bed-8c422b",
+      "name": "Cherish Sofa Cum Bed",
+      "slug": "cherish-sofa-cum-bed-8c422b",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4229-eren-corner-sofa",
+      "name": "Eren Corner Sofa",
+      "slug": "eren-corner-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4174-mass-ramadan-corner-sofa",
+      "name": "Mass Ramadan Corner Sofa",
+      "slug": "mass-ramadan-corner-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4105-nomad-6-seater-sofa-set",
+      "name": "Nomad 6-Seater Sofa Set",
+      "slug": "nomad-6-seater-sofa-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4099-bima-7-seater-sofa-set",
+      "name": "Bima 7-Seater Sofa Set",
+      "slug": "bima-7-seater-sofa-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4072-the-connery-7-seater-sofa-set",
+      "name": "The Connery 7-Seater Sofa Set",
+      "slug": "the-connery-7-seater-sofa-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4050-summer-6-seater-sofa-set-with-ottoman",
+      "name": "Summer 6-Seater Sofa Set With Ottoman",
+      "slug": "summer-6-seater-sofa-set-with-ottoman",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "4042-pianist-6-seater-sofa-set",
+      "name": "Pianist 6-Seater Sofa Set",
+      "slug": "pianist-6-seater-sofa-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3773-heston-cotton-striped-throw-130x170cm",
+      "name": "Heston Cotton Striped Throw 130x170cm",
+      "slug": "heston-cotton-striped-throw-130x170cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3770-ella-calm-care-cooling-comforter-200x230-green",
+      "name": "Ella -Calm Care Cooling Comforter – 200X230- Green",
+      "slug": "ella-calm-care-cooling-comforter-200x230-green",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3769-ella-calm-care-cooling-comforter-200x230-yellow",
+      "name": "Ella- Calm Care Cooling Comforter – 200X230- Yellow",
+      "slug": "ella-calm-care-cooling-comforter-200x230-yellow",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3767-celestine-solid-blanket-beige-200x230cm",
+      "name": "Celestine Solid Blanket -Beige -200x230cm",
+      "slug": "celestine-solid-blanket-beige-200x230cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3766-celestine-solid-blanket-gold-200x230cm",
+      "name": "Celestine Solid Blanket -Gold -200x230cm",
+      "slug": "celestine-solid-blanket-gold-200x230cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3765-celestine-solid-blanket-navy-blue-200x230cm",
+      "name": "Celestine Solid Blanket -Navy Blue -200x230cm",
+      "slug": "celestine-solid-blanket-navy-blue-200x230cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3763-celestine-solid-blanket-grey-200x230cm",
+      "name": "Celestine Solid Blanket -Grey -200x230cm",
+      "slug": "celestine-solid-blanket-grey-200x230cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3760-celestine-knitted-blanket-light-blue-127152-cm",
+      "name": "Celestine Knitted Blanket Light Blue 127×152 Cm",
+      "slug": "celestine-knitted-blanket-light-blue-127152-cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3759-celestine-knitted-blanket-dark-grey-127152-cm",
+      "name": "Celestine Knitted Blanket Dark Grey 127×152 Cm",
+      "slug": "celestine-knitted-blanket-dark-grey-127152-cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3758-celestine-knitted-blanket-ivory-127152cm",
+      "name": "Celestine Knitted Blanket Ivory -127×152cm",
+      "slug": "celestine-knitted-blanket-ivory-127152cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3719-trilo-30l-dustbin-615cm",
+      "name": "Trilo 30L Dustbin -61.5cm",
+      "slug": "trilo-30l-dustbin-615cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3698-trilo-spray-mop",
+      "name": "Trilo Spray Mop",
+      "slug": "trilo-spray-mop",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3652-martini-rocking-sun-lounger",
+      "name": "Martini Rocking Sun Lounger",
+      "slug": "martini-rocking-sun-lounger",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3636-numbat-swinging-chair",
+      "name": "Numbat Swinging Chair",
+      "slug": "numbat-swinging-chair",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3631-riva-swinging-chair-grey",
+      "name": "Riva Swinging Chair -Grey",
+      "slug": "riva-swinging-chair-grey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3613-vida-bar-chair-black-walnut",
+      "name": "Vida Bar Chair -Black & Walnut",
+      "slug": "vida-bar-chair-black-walnut",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3597-stella-bar-stool-col-beige-black",
+      "name": "Stella Bar Stool Col Beige & Black",
+      "slug": "stella-bar-stool-col-beige-black",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3595-holsted-bar-stool-beige-black",
+      "name": "Holsted Bar Stool -Beige & Black",
+      "slug": "holsted-bar-stool-beige-black",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3579-montana-6-seater-dining-set",
+      "name": "Galaxy 6-Seater Round Dining Set",
+      "slug": "montana-6-seater-dining-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3544-jane-bar-stool",
+      "name": "Jane Bar Stool",
+      "slug": "jane-bar-stool",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3520-cassie-kids-study-desk-chair-set-grey",
+      "name": "Cassie Kids Study Desk & Chair Set – Grey",
+      "slug": "cassie-kids-study-desk-chair-set-grey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3488-milan-high-back-office-chair-black",
+      "name": "Milan High Back Office Chair -Black",
+      "slug": "milan-high-back-office-chair-black",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3455-gellert-shoe-cabinet",
+      "name": "Gellert Shoe Cabinet",
+      "slug": "gellert-shoe-cabinet",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3437-majestic-tv-unit-with-2-display-cabinets",
+      "name": "Majestic TV Unit with 2 Display Cabinets",
+      "slug": "majestic-tv-unit-with-2-display-cabinets",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3409-tyrell-tv-unit-oak",
+      "name": "Tyrell Tv Unit -Oak",
+      "slug": "tyrell-tv-unit-oak",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3363-eazi-accent-table-with-glass-top",
+      "name": "Eazi Accent Table With Glass Top",
+      "slug": "eazi-accent-table-with-glass-top",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3361-wertz-side-table-marble-top",
+      "name": "Wertz Side Table Marble Top",
+      "slug": "wertz-side-table-marble-top",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3357-luis-accent-table-with-marble-top",
+      "name": "Luis Accent Table With Marble Top",
+      "slug": "luis-accent-table-with-marble-top",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3343-moon-end-table-oak",
+      "name": "Moon End Table -Oak",
+      "slug": "moon-end-table-oak",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3330-kew-end-table",
+      "name": "Kew End Table",
+      "slug": "kew-end-table",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3319-dancing-lady-accent-table-glass-top",
+      "name": "Dancing Lady Accent Table Glass Top",
+      "slug": "dancing-lady-accent-table-glass-top",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3316-andres-end-table-dark-brown",
+      "name": "Andres End Table -Dark Brown",
+      "slug": "andres-end-table-dark-brown",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3297-canon-end-table",
+      "name": "Canon End Table",
+      "slug": "canon-end-table",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3234-lyna-coffee-table-walnut",
+      "name": "Lyna Coffee Table - Walnut",
+      "slug": "lyna-coffee-table-walnut",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3232-lucas-coffee-table-grey",
+      "name": "Lukas Coffee Table",
+      "slug": "lucas-coffee-table-grey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3223-custom-cushion-45x45cm",
+      "name": "Custom Cushion 45x45cm",
+      "slug": "custom-cushion-45x45cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3190-nexa-metal-round-mirror-gold-80cm",
+      "name": "Nexa Metal Round Mirror Gold -80cm",
+      "slug": "nexa-metal-round-mirror-gold-80cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3189-nexa-wood-standing-mirror-gold-40x150cm",
+      "name": "Nexa Wood Standing Mirror Gold -40x150cm",
+      "slug": "nexa-wood-standing-mirror-gold-40x150cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3187-novo-metal-wall-mirror-black-4021515x68cm",
+      "name": "Novo Metal Wall Mirror Black -40×1.5x68cm",
+      "slug": "novo-metal-wall-mirror-black-4021515x68cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3186-novo-metal-wall-mirror-black-6021528x60cm",
+      "name": "Novo Metal Wall Mirror Black -60×2.8x60cm",
+      "slug": "novo-metal-wall-mirror-black-6021528x60cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3184-novo-metal-wall-mirror-gold-89x2x80cm",
+      "name": "Novo Metal Wall Mirror Gold -89x2x80cm",
+      "slug": "novo-metal-wall-mirror-gold-89x2x80cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3182-novo-metal-wall-mirror-gold-8021528x80cm",
+      "name": "Novo Metal Wall Mirror Gold -80×2.8x80cm",
+      "slug": "novo-metal-wall-mirror-gold-8021528x80cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3180-novo-metal-wall-mirror-gold-48521545x73cm",
+      "name": "Novo Metal Wall Mirror Gold -48.5×4.5x73cm",
+      "slug": "novo-metal-wall-mirror-gold-48521545x73cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3178-sierra-decorative-mirror-gold-705cm",
+      "name": "Sierra Decorative Mirror Gold -70.5cm",
+      "slug": "sierra-decorative-mirror-gold-705cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3168-sierra-metal-floor-standing-mirror-black-168x25x46cm",
+      "name": "Sierra Metal Floor Standing Mirror Black 168X2.5X46Cm",
+      "slug": "sierra-metal-floor-standing-mirror-black-168x25x46cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3164-sierra-decorative-mirror-70521522215705cm",
+      "name": "Sierra Decorative Mirror -70.5×2.2×70.5cm",
+      "slug": "sierra-decorative-mirror-70521522215705cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3163-sierra-decorative-mirror-605x25x605cm",
+      "name": "Sierra Decorative Mirror 60.5X2.5X60.5CM",
+      "slug": "sierra-decorative-mirror-605x25x605cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3142-serene-stone-flow-outdoor-fountain-grey",
+      "name": "Serene Stone Flow Outdoor Fountain -Grey",
+      "slug": "serene-stone-flow-outdoor-fountain-grey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3131-rivulet-indoor-fountain-with-crystal-ball",
+      "name": "Rivulet Indoor Fountain With Crystal Ball",
+      "slug": "rivulet-indoor-fountain-with-crystal-ball",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3130-rivulet-indoor-fountain-grey",
+      "name": "Rivulet Indoor Fountain Grey",
+      "slug": "rivulet-indoor-fountain-grey",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3127-rivulet-geometric-indoor-fountain",
+      "name": "Rivulet Geometric Indoor Fountain",
+      "slug": "rivulet-geometric-indoor-fountain",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3123-mesa-metal-lantern-15x15x25cm",
+      "name": "Mesa metal lantern -15x15x25cm",
+      "slug": "mesa-metal-lantern-15x15x25cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3120-mesa-metal-lantern-15x15x40cm",
+      "name": "Mesa metal lantern -15x15x40cm",
+      "slug": "mesa-metal-lantern-15x15x40cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3118-mesa-metal-antique-finish-lantern-15x13x33cm",
+      "name": "Mesa metal antique finish lantern -15x13x33cm",
+      "slug": "mesa-metal-antique-finish-lantern-15x13x33cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3091-siv-metal-gold-candle-holder-215cm",
+      "name": "Siv Metal Gold Candle Holder -21.5cm",
+      "slug": "siv-metal-gold-candle-holder-215cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3087-delyn-ceramic-silver-set-of-three-gift-set",
+      "name": "Delyn Ceramic Silver Set of Three Gift Set",
+      "slug": "delyn-ceramic-silver-set-of-three-gift-set",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3072-keeth-wooden-metal-candle-holder-with-glass-votive-small",
+      "name": "Keeth Wooden Metal Candle Holder With Glass Votive-Small",
+      "slug": "keeth-wooden-metal-candle-holder-with-glass-votive-small",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3071-keeth-wooden-metal-candle-holder-cm-with-glass-votive-medium",
+      "name": "Keeth Wooden Metal Candle Holder Cm With Glass Votive-Medium",
+      "slug": "keeth-wooden-metal-candle-holder-cm-with-glass-votive-medium",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3064-sansy-single-bed-frame-black",
+      "name": "Sansy Single Bed Frame -Black",
+      "slug": "sansy-single-bed-frame-black",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3061-sbd-lac-single-bed-blue",
+      "name": "SBD-LAC Single Bed – Blue",
+      "slug": "sbd-lac-single-bed-blue",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3052-valor-twin-galloping-horse-black-gold-339x11x252cm",
+      "name": "Valor Twin Galloping Horse Black & Gold -33.9x11x25.2cm",
+      "slug": "valor-twin-galloping-horse-black-gold-339x11x252cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3047-oder-decorative-horse-figurine-10x5x195cm",
+      "name": "Oder Decorative Horse Figurine 10x5x19.5cm",
+      "slug": "oder-decorative-horse-figurine-10x5x195cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3045-oder-decorative-figurine-23x8x24cm",
+      "name": "Oder Decorative Figurine 23x8x24cm",
+      "slug": "oder-decorative-figurine-23x8x24cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3040-oder-decorative-figurine-155215155215425cm",
+      "name": "Oder Decorative Figurine -15.5×15.5×42.5cm",
+      "slug": "oder-decorative-figurine-155215155215425cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3038-blake-resin-figurine-125x15x212cm",
+      "name": "Blake Resin Figurine -12.5x15x21.2cm",
+      "slug": "blake-resin-figurine-125x15x212cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3033-blake-resin-sitting-leopard-165215138215225cm",
+      "name": "Blake Resin Sitting Leopard -16.5×13.8×22.5cm",
+      "slug": "blake-resin-sitting-leopard-165215138215225cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3027-lemont-glass-green-chilli-accent-195x5x5cm",
+      "name": "Lemont Glass Green Chilli Accent 19.5X5X5Cm",
+      "slug": "lemont-glass-green-chilli-accent-195x5x5cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3026-lemont-glass-de-canter-jar-multicolor-215215215x43cm",
+      "name": "Lemont Glass de canter Jar multicolor -21.5×21.5x43cm",
+      "slug": "lemont-glass-de-canter-jar-multicolor-215215215x43cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3024-lemont-glass-de-canter-jar-multicolor-155x15x47",
+      "name": "Lemont Glass De Canter Jar Multicolor 15.5X15.X47",
+      "slug": "lemont-glass-de-canter-jar-multicolor-155x15x47",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3023-lemont-glass-de-canter-jar-multicolor-12x12x255cm",
+      "name": "Lemont Glass De Canter Jar Multicolor 12X12X25.5Cm",
+      "slug": "lemont-glass-de-canter-jar-multicolor-12x12x255cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3022-lemont-glass-acorn-accent-amber-9x9x14cm",
+      "name": "Lemont Glass Acorn Accent Amber 9X9X14Cm",
+      "slug": "lemont-glass-acorn-accent-amber-9x9x14cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "3006-auric-polyresin-family-accent-225cm",
+      "name": "Auric Polyresin Family Accent -22.5cm",
+      "slug": "auric-polyresin-family-accent-225cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2996-casa-metal-accent-with-marble-base-gold-565cm",
+      "name": "Casa Metal Accent With Marble Base Gold 56.5cm",
+      "slug": "casa-metal-accent-with-marble-base-gold-565cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2994-casa-metal-wood-accent-nickle-385cm",
+      "name": "Casa Metal Wood Accent Nickle -38.5cm",
+      "slug": "casa-metal-wood-accent-nickle-385cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2992-casa-metal-marble-accent-with-wooden-base-26cm",
+      "name": "Casa Metal Marble Accent With Wooden Base -26cm",
+      "slug": "casa-metal-marble-accent-with-wooden-base-26cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2988-orline-abstract-black-metal-accent-25x25x25cm",
+      "name": "Orline Abstract Black Metal Accent -25x25x25cm",
+      "slug": "orline-abstract-black-metal-accent-25x25x25cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2974-verdant-polyresin-running-horses-40x10x163cm",
+      "name": "Verdant Polyresin Running Horses 40X10X16.3Cm",
+      "slug": "verdant-polyresin-running-horses-40x10x163cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2970-aurum-deco-jar-with-leaf-lid-gold-luster-glass-14x14x30-cm",
+      "name": "Aurum Deco jar with leaf lid gold luster glass 14x14x30 cm",
+      "slug": "aurum-deco-jar-with-leaf-lid-gold-luster-glass-14x14x30-cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2969-adro-metal-abstract-man-accent-75x5x29-cm",
+      "name": "Adro Metal abstract man accent 7.5X5X29 CM",
+      "slug": "adro-metal-abstract-man-accent-75x5x29-cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2921-lemont-glass-vase-amber-14x14x35cm-e8c469",
+      "name": "Lemont Glass Vase Amber 14X14X35Cm",
+      "slug": "lemont-glass-vase-amber-14x14x35cm-e8c469",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2919-lemont-glass-vase-amber-8x8x14cm",
+      "name": "Lemont Glass Vase Amber 8X8X14Cm",
+      "slug": "lemont-glass-vase-amber-8x8x14cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2916-lemont-glass-vase-brown-14x14x35cm",
+      "name": "Lemont Glass Vase Brown 14X14X35Cm",
+      "slug": "lemont-glass-vase-brown-14x14x35cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2912-lemont-glass-bird-vase-amber-14x9x145cm",
+      "name": "Lemont Glass Bird Vase Amber 14x9x14.5cm",
+      "slug": "lemont-glass-bird-vase-amber-14x9x145cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2897-delyn-ceramic-silver-vase-10821572215225cm",
+      "name": "Delyn Ceramic Silver Vase -10.8×7.2×22.5cm",
+      "slug": "delyn-ceramic-silver-vase-10821572215225cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2875-blenka-ceramic-black-vase-19x19x16cm",
+      "name": "Blenka Ceramic Black Vase -19x19x16cm",
+      "slug": "blenka-ceramic-black-vase-19x19x16cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2872-blenka-ceramic-white-vase-155215155x30cm",
+      "name": "Blenka Ceramic White Vase -15.5×15.5x30cm",
+      "slug": "blenka-ceramic-white-vase-155215155x30cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2856-avero-metal-table-lamp-gold-62cm",
+      "name": "Avero Metal Table Lamp Gold -62cm",
+      "slug": "avero-metal-table-lamp-gold-62cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2852-avero-glass-base-table-lamp-grey-56cm",
+      "name": "Avero Glass Base Table Lamp Grey -56cm",
+      "slug": "avero-glass-base-table-lamp-grey-56cm",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2829-simmon-table-lamp",
+      "name": "Simmon Table Lamp",
+      "slug": "simmon-table-lamp",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2827-avah-table-lamp",
+      "name": "Avah Table Lamp",
+      "slug": "avah-table-lamp",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2825-elora-table-lamp",
+      "name": "Elora Table Lamp",
+      "slug": "elora-table-lamp",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2790-leyna-bed-side-table",
+      "name": "Leyna Bed Side Table",
+      "slug": "leyna-bed-side-table",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2767-montana-night-stand",
+      "name": "Montana Night Stand",
+      "slug": "montana-night-stand",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2740-stanford-6-seater-recliner-sofa-set-01",
+      "name": "Stanford 6-Seater Recliner Sofa Set -01",
+      "slug": "stanford-6-seater-recliner-sofa-set-01",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2708-kangbo-rocking-chair-with-leg-rest-greywalnut",
+      "name": "Kangbo Rocking Chair with Leg Rest -Grey/Walnut",
+      "slug": "kangbo-rocking-chair-with-leg-rest-greywalnut",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "2696-bruno-single-recliner-dark-brown",
+      "name": "Bruno Single Recliner -Dark Brown",
+      "slug": "bruno-single-recliner-dark-brown",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "110-silua-corner-sofa",
+      "name": "Silua Corner Sofa",
+      "slug": "silua-corner-sofa",
+      "reason": "HTTP 404"
+    },
+    {
+      "id": "95-velora-6-seater-sofa-set",
+      "name": "Velora 6-Seater Sofa Set",
+      "slug": "velora-6-seater-sofa-set",
+      "reason": "HTTP 404"
+    }
+  ],
+  "errors": [],
+  "missingCloseups": [],
+  "notes": [
+    "Null values mean the website did not expose a usable value; nothing was invented.",
+    "Current Fabric uses the original product image and is never recoloured.",
+    "Repeated generic gallery images are not treated as official colour-variant photography.",
+    "Products with only generic Selectable/Fabric entries have no selector."
+  ]
+}

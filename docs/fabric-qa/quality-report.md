@@ -1,0 +1,456 @@
+# Fabric preview QA
+
+Generated: 2026-11-07T17:20:19.471597+00:00
+
+## Counts
+
+- **contactSheets:** 598
+- **renderedApproved:** 44
+- **officialVariantImages:** 60
+- **previewUnavailable:** 9360
+- **currentCloseupsRepaired:** 7
+- **catalogueOriginalFallbacks:** 596
+- **materialHexMismatches:** 437
+- **imageDownloadErrors:** 0
+
+## Material swatch / hex mismatches
+
+Swatch photographs are treated as the colour reference; mismatches are reported, not silently corrected to hex.
+
+- 7070-the-sibby-6-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 7070-the-sibby-6-seater-sofa / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 7070-the-sibby-6-seater-sofa / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 7067-the-relaxo-12-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 7067-the-relaxo-12-seater-sofa / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 7067-the-relaxo-12-seater-sofa / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 7063-the-ninea-6-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 7063-the-ninea-6-seater-sofa / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 7063-the-ninea-6-seater-sofa / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 7061-venetia-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 7061-venetia-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 7061-venetia-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 7059-lumina-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 7059-lumina-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 7059-lumina-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 7053-olivos-4-door-wardrobe-oak / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 7051-olivos-4-door-wardrobe-grey / particle-board / Grey: #808080, measured RGB [142.0, 111.0, 81.0], ΔE76 23.27
+- 7049-kaspar-6-door-wardrobe / mdf / Walnut & Grey: #773F1A, measured RGB [193.0, 158.0, 107.0], ΔE76 37.34
+- 7046-spinnet-kids-3-door-wardrobe / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 7042-modena-6-piece-king-bedroom-set-180-200-cm / mdf / Grey: #808080, measured RGB [244.0, 190.0, 134.0], ΔE76 46.47
+- 7040-kenley-6-piece-king-bedroom-set-180-x-200-cm / mdf / White: #FFFFFF, measured RGB [244.0, 190.0, 134.0], ΔE76 42.48
+- 7007-bronte-bunk-bed / fabric / Oak: #D8B589, measured RGB [197.0, 186.0, 181.0], ΔE76 23.49
+- 7004-anders-bunk-bed / fabric / Oak: #D8B589, measured RGB [197.0, 186.0, 181.0], ΔE76 23.49
+- 6982-siena-sofa-set-with-center-and-side-tables / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6982-siena-sofa-set-with-center-and-side-tables / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 6982-siena-sofa-set-with-center-and-side-tables / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 6978-the-vicario-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6978-the-vicario-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 6978-the-vicario-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 6967-noura-dresser-with-chair / mdf / Cream: #FFFDD0, measured RGB [201.0, 162.0, 115.0], ΔE76 33.77
+- 6302-elara-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6303-layan-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6304-leona-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6305-wave-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6297-simba-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6301-bella-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6296-the-relaxo-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6288-the-sibby-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6289-the-crest-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6282-the-troop-single-seater-sofa-29ff19 / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6283-the-adeline-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6284-the-ninea-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6277-valencia-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6279-the-chalis-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6281-alex-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6272-duke-accent-chair-23459d / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6273-the-cheryl-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6274-the-lima-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6275-staten-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6276-lima-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6266-nixon-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6267-the-fox-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6268-duke-accent-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6269-duke-accent-chair-0a90f2 / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6270-duke-accent-chair-d767fb / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6271-the-troop-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6265-drake-arm-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6264-boost-chair-with-black-base / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6263-ashi-arm-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6261-the-tristan-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6262-the-jordan-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6260-the-aviva-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6259-axis-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6258-uptown-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6257-the-harlow-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6256-bronx-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6254-the-jesse-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6253-the-adriel-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6252-jenson-single-seater / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6250-nokin-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6249-zaina-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6248-the-trust-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6247-tegan-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6245-the-ozler-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6244-brock-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6243-alara-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6242-the-dune-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6241-regis-chair-set-of-2 / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6240-the-gayana-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6239-opulent-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6238-the-lender-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6237-noah-swivel-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6235-gala-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6234-boss-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6233-the-alvarez-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6232-travis-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6231-renzo-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6230-ava-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6229-suzy-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6227-the-andre-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6225-the-franklin-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6221-dario-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6220-elliot-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6219-trento-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6217-zhuri-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6215-ayilin-lux-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6214-ayilin-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6211-brando-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6209-zarah-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6208-atom-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6203-lucia-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6202-amala-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6201-omar-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6200-felix-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6199-cruz-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6198-candace-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6197-tia-single-seater-swivel-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6196-della-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6195-solero-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6194-austin-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6193-kite-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6192-lorenzo-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6191-opulence-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6190-altan-arm-chair / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6189-hazel-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 6188-enes-single-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 5886-dana-bunk-bed / fabric / Oak: #D8B589, measured RGB [197.0, 186.0, 181.0], ΔE76 23.49
+- 4139-the-lucas-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4139-the-lucas-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4139-the-lucas-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4138-the-destiny-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4138-the-destiny-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4138-the-destiny-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4137-the-andre-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4137-the-andre-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4137-the-andre-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4136-the-franklin-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4136-the-franklin-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4136-the-franklin-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4135-bayu-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4135-bayu-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4135-bayu-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4134-bayu-7-seater-sofa-set-with-centre-table / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4134-bayu-7-seater-sofa-set-with-centre-table / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4134-bayu-7-seater-sofa-set-with-centre-table / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4133-benjamin-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4133-benjamin-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4133-benjamin-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4132-the-peterson-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4132-the-peterson-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4132-the-peterson-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4131-boss-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4131-boss-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4131-boss-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4129-dario-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4129-dario-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4129-dario-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4128-elliot-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4128-elliot-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4128-elliot-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4127-zhuri-8-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4127-zhuri-8-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4127-zhuri-8-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4126-ayilin-lux-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4126-ayilin-lux-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4126-ayilin-lux-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4125-ayilin-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4125-ayilin-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4125-ayilin-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4124-brando-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4124-brando-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4124-brando-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4122-anita-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4122-anita-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4122-anita-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4119-amala-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4119-amala-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4119-amala-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4118-omar-8-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4118-omar-8-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4118-omar-8-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4117-the-felix-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4117-the-felix-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4117-the-felix-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4116-the-cora-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4116-the-cora-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4116-the-cora-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4115-austin-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4115-austin-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4115-austin-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4114-ira-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4114-ira-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4114-ira-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4113-orla-8-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4113-orla-8-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4113-orla-8-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4112-tokyo-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4112-tokyo-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4112-tokyo-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4111-atom-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4111-atom-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4111-atom-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4110-the-arah-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4110-the-arah-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4110-the-arah-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4108-diya-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4108-diya-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4108-diya-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4107-nayra-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4107-nayra-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4107-nayra-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4106-devine-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4106-devine-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4106-devine-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4104-refine-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4104-refine-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4104-refine-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4103-renzo-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4103-renzo-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4103-renzo-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4102-lush-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4102-lush-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4102-lush-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4101-the-jess-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4101-the-jess-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4101-the-jess-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4100-taara-4-seater-sofa / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4100-taara-4-seater-sofa / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4100-taara-4-seater-sofa / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4097-shell-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4097-shell-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4097-shell-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4096-milan-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4096-milan-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4096-milan-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4095-poise-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4095-poise-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4095-poise-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4094-gala-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4094-gala-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4094-gala-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4093-odyssey-7-seater-sofa-set-with-tables / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4093-odyssey-7-seater-sofa-set-with-tables / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4093-odyssey-7-seater-sofa-set-with-tables / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4092-ediz-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4092-ediz-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4092-ediz-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4091-solange-corner-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4091-solange-corner-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4091-solange-corner-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4090-chelsea-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4090-chelsea-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4090-chelsea-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4089-ava-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4089-ava-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4089-ava-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4088-lucia-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4088-lucia-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4088-lucia-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4086-suzy-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4086-suzy-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4086-suzy-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4085-floyd-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4085-floyd-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4085-floyd-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4084-boston-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4084-boston-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4084-boston-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4083-spear-4-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4083-spear-4-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4083-spear-4-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4081-arabell-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4081-arabell-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4081-arabell-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4080-kite-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4080-kite-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4080-kite-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4079-ashford-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4079-ashford-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4079-ashford-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4078-willow-8-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4078-willow-8-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4078-willow-8-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4077-noah-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4077-noah-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4077-noah-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4076-golf-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4076-golf-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4076-golf-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4075-anthem-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4075-anthem-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4075-anthem-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4074-supreme-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4074-supreme-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4074-supreme-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4073-rene-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4073-rene-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4073-rene-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4071-solero-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4071-solero-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4071-solero-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4070-heidi-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4070-heidi-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4070-heidi-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4069-the-astrid-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4069-the-astrid-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4069-the-astrid-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4068-the-host-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4068-the-host-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4068-the-host-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4067-boutique-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4067-boutique-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4067-boutique-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4066-jazz-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4066-jazz-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4066-jazz-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4065-hamza-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4065-hamza-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4065-hamza-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4063-altan-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4063-altan-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4063-altan-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4062-attwood-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4062-attwood-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4062-attwood-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4061-the-hera-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4061-the-hera-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4061-the-hera-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4060-bianca-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4060-bianca-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4060-bianca-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4059-rocco-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4059-rocco-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4059-rocco-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4058-bogota-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4058-bogota-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4058-bogota-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4057-the-freya-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4057-the-freya-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4057-the-freya-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4056-macie-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4056-macie-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4056-macie-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4055-grace-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4055-grace-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4055-grace-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4054-medusa-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4054-medusa-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4054-medusa-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4053-diamond-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4053-diamond-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4053-diamond-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4052-costa-rica-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4052-costa-rica-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4052-costa-rica-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4051-the-nelson-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4051-the-nelson-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4051-the-nelson-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4049-the-dilan-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4049-the-dilan-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4049-the-dilan-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4048-ayila-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4048-ayila-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4048-ayila-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4047-the-rezan-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4047-the-rezan-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4047-the-rezan-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4046-3d-pouffe / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4046-3d-pouffe / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4046-3d-pouffe / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4045-hazel-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4045-hazel-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4045-hazel-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4044-guild-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4044-guild-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4044-guild-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4043-giselle-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4043-giselle-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4043-giselle-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4041-hamilton-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4041-hamilton-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4041-hamilton-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4040-tiffany-7-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4040-tiffany-7-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4040-tiffany-7-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4039-the-kamil-7-seater-sofa-set-688bcd / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4039-the-kamil-7-seater-sofa-set-688bcd / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4039-the-kamil-7-seater-sofa-set-688bcd / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 4038-kingsbury-7-seater-sofa-set-c8c8a9 / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 4038-kingsbury-7-seater-sofa-set-c8c8a9 / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 4038-kingsbury-7-seater-sofa-set-c8c8a9 / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 3761-celestine-knitted-blanket-pink-127152-cm / polyster / Pink: #FFC0CB, measured RGB [36.0, 64.0, 100.0], ΔE76 67.14
+- 3710-maras-6-piece-super-king-bedroom-set-with-hydraulic-storage / mdf / Oak & Grey: #6A584D, measured RGB [244.0, 190.0, 134.0], ΔE76 49.97
+- 3708-serenity-6-piece-bedroom-set-200180 / mdf / Grey: #808080, measured RGB [244.0, 190.0, 134.0], ΔE76 46.47
+- 3706-anker-king-size-bedroom-set / mdf / Champagne Gold: #E8D6B3, measured RGB [244.0, 190.0, 134.0], ΔE76 20.71
+- 3704-keo-bedroom-set / mdf / Grey Oak & White: #988E90, measured RGB [244.0, 190.0, 134.0], ΔE76 41.86
+- 3702-prizma-king-180200-bedroom-set / mdf / Cream: #FFFDD0, measured RGB [244.0, 190.0, 134.0], ΔE76 29.52
+- 3694-edessa-hydraulic-king-bedroom-set-200x180 / mdf / White: #FFFFFF, measured RGB [244.0, 190.0, 134.0], ΔE76 42.48
+- 3692-garcia-king-bedroom-set-200x180 / mdf / Grey: #808080, measured RGB [244.0, 190.0, 134.0], ΔE76 46.47
+- 3691-audace-bedroom-set-6pcs-200x180-white-light-oak / mdf / White & Light Oak: #F5F5F1, measured RGB [244.0, 190.0, 134.0], ΔE76 39.55
+- 3650-montana-queen-bedroom-set-4-pcs / particle-board / Walnut: #31241A, measured RGB [142.0, 111.0, 81.0], ΔE76 36.07
+- 3642-nazario-king-bedroom-set / mdf / Light Oak: #AF855C, measured RGB [244.0, 190.0, 134.0], ΔE76 23.22
+- 3637-knox-bedroom-set / mdf / Beige: #F5F5DC, measured RGB [244.0, 190.0, 134.0], ΔE76 32.74
+- 3399-rosita-king-bedroom-set / mdf / Grey: #808080, measured RGB [244.0, 190.0, 134.0], ΔE76 46.47
+- 3269-jesna-king-bedroom-set / mdf / Light Grey & Walnut: #A59891, measured RGB [244.0, 190.0, 134.0], ΔE76 35.79
+- 3192-senna-bed / mdf / White: #FFFFFF, measured RGB [193.0, 158.0, 107.0], ΔE76 45.91
+- 3059-riverina-queen-size-bed-grey-oak / particle-board / Grey &Oak: #8E857C, measured RGB [196.0, 165.0, 126.0], ΔE76 23.18
+- 3053-como-bed-walnut / melamine-laminated-mdf / Walnut: #773F1A, measured RGB [218.0, 222.0, 227.0], ΔE76 69.08
+- 2967-safari-king-bed / particle-board / White: #FFFFFF, measured RGB [196.0, 165.0, 126.0], ΔE76 39.47
+- 2965-grevia-plum-blossom-without-vase-pink-78cm / plastic-metal / Pink: #FFB6C1, measured RGB [30.0, 83.0, 97.0], ΔE76 65.79
+- 2963-grevia-pampas-grass-without-vase-beige-44cm / plastic-metal / Beige: #F5F5DC, measured RGB [30.0, 83.0, 97.0], ΔE76 68.80
+- 2952-como-dresser-with-mirror / particle-board / Walnut: #3E2B23, measured RGB [142.0, 111.0, 81.0], ΔE76 32.23
+- 2948-ocean-dresser-with-mirror-walnut-and-grey / mdf / Walnut & Grey: #3E2B23, measured RGB [196.0, 165.0, 126.0], ΔE76 52.51
+- 2945-alexandia-dresser-with-mirror-walnut / mdf / Walnut: #3E2B23, measured RGB [196.0, 165.0, 126.0], ΔE76 52.51
+- 2862-quirrell-kids-dresser-with-mirror / particle-board / Whitewash/ Oak: #CAC9C0, measured RGB [201.0, 162.0, 115.0], ΔE76 29.39
+- 2800-rosemary-dresser-with-mirror-brown / mdf-and-rubberwood / Brown: #964B00, measured RGB [244.0, 190.0, 134.0], ΔE76 45.26
+- 2796-tribeca-dresser-with-mirror-stool-only-black-beige / mdf / Black & Beige: #F5F5DC, measured RGB [142.0, 111.0, 81.0], ΔE76 49.27
+- 2793-custom-night-stand / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 2786-chestnut-night-table / laminated-particle-board / Grey: #808080, measured RGB [193.0, 158.0, 107.0], ΔE76 34.84
+- 2775-como-night-stand-grey / particle-board / Grey: #808080, measured RGB [244.0, 190.0, 134.0], ΔE76 46.47
+- 2774-gabella-end-table / rubberwood / Walnut: #773F1A, measured RGB [196.0, 165.0, 126.0], ΔE76 40.48
+- 2766-majestic-night-stand-oak / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 2764-rosemary-night-stand-brown / mdf / Brown: #964B00, measured RGB [244.0, 190.0, 134.0], ΔE76 45.26
+- 2762-victoria-night-stand-chocolate / rubberwood / Chocolate: #7B3F00, measured RGB [196.0, 165.0, 126.0], ΔE76 44.15
+- 2760-safari-4-door-wardrobe / particle-board / White: #FFFFFF, measured RGB [142.0, 111.0, 81.0], ΔE76 55.75
+- 2758-ocean-6-door-wardrobe-walnut-grey / mdf / Walnut & Grey: #773F1A, measured RGB [193.0, 158.0, 107.0], ΔE76 37.34
+- 2756-como-4-door-wardrobe-walnut / particle-board / Walnut: #31241A, measured RGB [142.0, 111.0, 81.0], ΔE76 36.07
+- 2754-majestic-3-door-wardrobe-oak / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 2753-majestic-6-door-wardrobe-oak / particle-board / Oak: #D8B589, measured RGB [142.0, 111.0, 81.0], ΔE76 27.25
+- 2750-victoria-6-door-wardrobe-chocolate / mdf-and-rubberwood / Chocolate: #7B3F00, measured RGB [193.0, 158.0, 107.0], ΔE76 39.31
+- 2749-bean-bag-black / fabric / Black: #000000, measured RGB [61.0, 55.0, 59.0], ΔE76 24.11
+- 2748-bean-bag-brown / fabric / Brown: #964B00, measured RGB [255.0, 255.0, 255.0], ΔE76 82.58
+- 97-della-6-seater-sofa-set-0c95c9 / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 97-della-6-seater-sofa-set-0c95c9 / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 97-della-6-seater-sofa-set-0c95c9 / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 96-bella-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 96-bella-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 96-bella-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 94-cliff-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 94-cliff-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 94-cliff-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 90-fabian-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 90-fabian-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 90-fabian-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09
+- 89-elara-6-seater-sofa-set / velvet / WARM CREAM YELLOW /1882-5: #F5E6B3, measured RGB [154.0, 154.0, 138.0], ΔE76 33.61
+- 89-elara-6-seater-sofa-set / chenille / TAUPE GRY /1906 B-8: #939791, measured RGB [69.0, 70.0, 63.0], ΔE76 32.60
+- 89-elara-6-seater-sofa-set / boucle / WARM TAUPE /1949-7: #D5D5CA, measured RGB [139.0, 137.0, 125.0], ΔE76 28.09

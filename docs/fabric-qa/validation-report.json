@@ -1,0 +1,1937 @@
+{
+  "valid": true,
+  "counts": {
+    "appProducts": 1360,
+    "matched": 1202,
+    "unmatched": 158,
+    "productsWithOptions": 598,
+    "types": 20,
+    "colours": 10062,
+    "currentFabrics": 598,
+    "localAssets": 19844,
+    "previewUnavailable": 9360
+  },
+  "errors": [],
+  "sourceOmissions": [
+    {
+      "kind": "type-image-not-published",
+      "productId": "7058-trilo-6l-dustbin",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7058-trilo-6l-dustbin",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7057-elm-set-of-2-framed-canvas-wall-art-4038x50cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7057-elm-set-of-2-framed-canvas-wall-art-4038x50cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7055-timbre-matt-finish-tea-light-holder-multi-9x8cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7055-timbre-matt-finish-tea-light-holder-multi-9x8cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7053-olivos-4-door-wardrobe-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7053-olivos-4-door-wardrobe-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7051-olivos-4-door-wardrobe-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7051-olivos-4-door-wardrobe-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7049-kaspar-6-door-wardrobe",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7049-kaspar-6-door-wardrobe",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7046-spinnet-kids-3-door-wardrobe",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7046-spinnet-kids-3-door-wardrobe",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7042-modena-6-piece-king-bedroom-set-180-200-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7042-modena-6-piece-king-bedroom-set-180-200-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7040-kenley-6-piece-king-bedroom-set-180-x-200-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7040-kenley-6-piece-king-bedroom-set-180-x-200-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7034-dynamic-tv-unit-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7034-dynamic-tv-unit-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7032-the-moon-kids-bunk-bed-90-190-cm-120-190-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7032-the-moon-kids-bunk-bed-90-190-cm-120-190-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7031-expresso-shoe-cabinet-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7031-expresso-shoe-cabinet-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7027-dynamic-end-table-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7027-dynamic-end-table-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7025-dynamic-end-table-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7025-dynamic-end-table-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7020-dynamic-coffee-table-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7020-dynamic-coffee-table-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7018-dynamic-coffee-table-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7018-dynamic-coffee-table-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7007-bronte-bunk-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7007-bronte-bunk-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7004-anders-bunk-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7004-anders-bunk-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "7002-avalon-bunk-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "7002-avalon-bunk-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "6975-bar-cabinet-maple-4b3163",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "6975-bar-cabinet-maple-4b3163",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "6967-noura-dresser-with-chair",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "6967-noura-dresser-with-chair",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "6945-barbie-multi-layered-kid-bunk-bed-bec365",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "6945-barbie-multi-layered-kid-bunk-bed-bec365",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "5886-dana-bunk-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "5886-dana-bunk-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4705-strava-coffee-table-set-of-3-beige-gold",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4705-strava-coffee-table-set-of-3-beige-gold",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4704-pearl-coffee-table-set-of-2-white-grey-gold",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4704-pearl-coffee-table-set-of-2-white-grey-gold",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4695-trafford-coffee-table-set-of-2",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4695-trafford-coffee-table-set-of-2",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4689-tanix-centre-table-with-drawer-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4689-tanix-centre-table-with-drawer-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4688-natsuki-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4688-natsuki-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4685-thierry-coffee-table-set-of-2",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4685-thierry-coffee-table-set-of-2",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4681-petros-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4681-petros-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4677-glen-coffee-table-set-of-2",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4677-glen-coffee-table-set-of-2",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4676-canary-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4676-canary-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4651-anthro-centre-table-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4651-anthro-centre-table-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4650-mariyan-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4650-mariyan-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4649-sirlon-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4649-sirlon-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4622-budapest-coffee-table-with-lift-top-mechanism-038-storage",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4622-budapest-coffee-table-with-lift-top-mechanism-038-storage",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4621-teramo-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4621-teramo-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4620-lorento-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4620-lorento-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4619-dice-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4619-dice-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4613-mercury-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4613-mercury-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4608-inaya-centre-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4608-inaya-centre-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4329-tyrell-wine-cabinet-91f381",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4329-tyrell-wine-cabinet-91f381",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4327-tyrell-wine-cabinet",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4327-tyrell-wine-cabinet",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4315-petros-console-table-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4315-petros-console-table-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "4312-wine-cabinet-model-8876-white",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "4312-wine-cabinet-model-8876-white",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3761-celestine-knitted-blanket-pink-127152-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3761-celestine-knitted-blanket-pink-127152-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3720-trilo-30l-dustbin-62cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3720-trilo-30l-dustbin-62cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3716-taliah-ceramic-tissue-box-whitegold-25x13x10cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3716-taliah-ceramic-tissue-box-whitegold-25x13x10cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3710-maras-6-piece-super-king-bedroom-set-with-hydraulic-storage",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3710-maras-6-piece-super-king-bedroom-set-with-hydraulic-storage",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3708-serenity-6-piece-bedroom-set-200180",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3708-serenity-6-piece-bedroom-set-200180",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3706-anker-king-size-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3706-anker-king-size-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3704-keo-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3704-keo-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3702-prizma-king-180200-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3702-prizma-king-180200-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3694-edessa-hydraulic-king-bedroom-set-200x180",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3694-edessa-hydraulic-king-bedroom-set-200x180",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3692-garcia-king-bedroom-set-200x180",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3692-garcia-king-bedroom-set-200x180",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3691-audace-bedroom-set-6pcs-200x180-white-light-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3691-audace-bedroom-set-6pcs-200x180-white-light-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3650-montana-queen-bedroom-set-4-pcs",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3650-montana-queen-bedroom-set-4-pcs",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3642-nazario-king-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3642-nazario-king-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3637-knox-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3637-knox-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3606-viola-bar-chair-walnut-and-beige",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3606-viola-bar-chair-walnut-and-beige",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3605-ario-bar-table-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3605-ario-bar-table-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3603-ela-bar-chair-walnut-and-taupe-8aaa96",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3603-ela-bar-chair-walnut-and-taupe-8aaa96",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3592-stella-bar-stool-brown-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3592-stella-bar-stool-brown-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3519-delmar-kids-study-desk-chair-set-yellow-beech",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3519-delmar-kids-study-desk-chair-set-yellow-beech",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3518-delmar-kids-study-desk-with-chair-set-beech",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3518-delmar-kids-study-desk-with-chair-set-beech",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3514-ace-office-chair-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3514-ace-office-chair-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3513-jade-office-table-dark-oak-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3513-jade-office-table-dark-oak-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3512-arena-office-table-dark-oak-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3512-arena-office-table-dark-oak-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3510-movo-office-table-beigewalnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3510-movo-office-table-beigewalnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3493-riccardo-high-back-office-chair-brown",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3493-riccardo-high-back-office-chair-brown",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3490-riccardo-high-back-office-chair-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3490-riccardo-high-back-office-chair-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3481-verona-visitor-chair-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3481-verona-visitor-chair-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3478-venus-office-desk-beige",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3478-venus-office-desk-beige",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3446-lukas-shoe-cabinet",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3446-lukas-shoe-cabinet",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3444-simona-4-door-shoe-cabinet",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3444-simona-4-door-shoe-cabinet",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3423-obito-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3423-obito-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3419-curve-180-cms-tv-unit-6c75c0",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3419-curve-180-cms-tv-unit-6c75c0",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3414-curve-180-cms-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3414-curve-180-cms-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3413-dynamic-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3413-dynamic-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3403-toscana-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3403-toscana-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3401-pier-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3401-pier-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3400-falco-tv-unit",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3400-falco-tv-unit",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3399-rosita-king-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3399-rosita-king-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3390-petros-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3390-petros-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3344-acia-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3344-acia-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3311-agoda-end-table-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3311-agoda-end-table-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3298-moon-storage-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3298-moon-storage-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3289-moon-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3289-moon-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3285-austin-manual-standing-end-table-white",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3285-austin-manual-standing-end-table-white",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3283-austin-manual-standing-end-table-black-f1ed07",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3283-austin-manual-standing-end-table-black-f1ed07",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3277-zipora-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3277-zipora-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3272-olivos-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3272-olivos-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3270-berto-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3270-berto-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3269-jesna-king-bedroom-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3269-jesna-king-bedroom-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3268-hamburg-coffee-table-off-white",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3268-hamburg-coffee-table-off-white",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3264-runto-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3264-runto-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3263-bratislava-smart-coffee-table-with-built-in-fridge-6c552d",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3263-bratislava-smart-coffee-table-with-built-in-fridge-6c552d",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3262-bratislava-smart-coffee-table-with-fridge",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3262-bratislava-smart-coffee-table-with-fridge",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3260-akio-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3260-akio-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3259-acia-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3259-acia-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3255-barley-marble-coffee-table-col-whitewalnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3255-barley-marble-coffee-table-col-whitewalnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3253-porteno-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3253-porteno-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3251-dynamic-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3251-dynamic-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3250-yamba-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3250-yamba-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3248-tambour-coffee-table-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3248-tambour-coffee-table-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3247-tasha-coffee-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3247-tasha-coffee-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3246-rayong-coffee-table-set-of-2",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3246-rayong-coffee-table-set-of-2",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3245-elva-coffee-table-set-of-2",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3245-elva-coffee-table-set-of-2",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3240-nile-3-piece-coffee-table-set-beige",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3240-nile-3-piece-coffee-table-set-beige",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3236-nile-3piece-coffee-table-set-concrete",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3236-nile-3piece-coffee-table-set-concrete",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3231-fern-coffee-table-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3231-fern-coffee-table-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3230-jane-centre-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3230-jane-centre-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3226-nile-3piece-coffee-table-set",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3226-nile-3piece-coffee-table-set",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3192-senna-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3192-senna-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3159-taliah-ceramic-decor-plate-whitegold-30x30x4cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3159-taliah-ceramic-decor-plate-whitegold-30x30x4cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3155-auden-wooden-deco-tray",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3155-auden-wooden-deco-tray",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3149-eclat-metal-glass-black-deco-bowl-24x24x15cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3149-eclat-metal-glass-black-deco-bowl-24x24x15cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3136-rivulet-water-wheel-indoor-fountain",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3136-rivulet-water-wheel-indoor-fountain",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3135-rivulet-elephant-cub-indoor-fountain-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3135-rivulet-elephant-cub-indoor-fountain-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3134-rivulet-lotus-flower-metal-indoor-fountain-with-ring-led",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3134-rivulet-lotus-flower-metal-indoor-fountain-with-ring-led",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3133-rivulet-resting-buddha-indoor-fountain",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3133-rivulet-resting-buddha-indoor-fountain",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3129-rivulet-plant-pot-indoor-fountain",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3129-rivulet-plant-pot-indoor-fountain",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3111-mesa-metal-candle-holder-15cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3111-mesa-metal-candle-holder-15cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3110-mesa-metal-candle-holder-25cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3110-mesa-metal-candle-holder-25cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3108-mesa-metal-antique-finish-candle-holder",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3108-mesa-metal-antique-finish-candle-holder",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3096-quinn-ceramic-pear-candle-holder-11x11x33cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3096-quinn-ceramic-pear-candle-holder-11x11x33cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3067-adro-metal-candle-holder-with-marble-base-10x10x21cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3067-adro-metal-candle-holder-with-marble-base-10x10x21cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3059-riverina-queen-size-bed-grey-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3059-riverina-queen-size-bed-grey-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3053-como-bed-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3053-como-bed-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3050-auden-wooden-accent-8x5x29cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3050-auden-wooden-accent-8x5x29cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "3042-oder-decorative-figurine-23x12x28cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "3042-oder-decorative-figurine-23x12x28cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2987-casa-metal-marble-accent-gold-265x8x525cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2987-casa-metal-marble-accent-gold-265x8x525cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2971-blenka-ceramic-black-deco-platter-30x16x55cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2971-blenka-ceramic-black-deco-platter-30x16x55cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2967-safari-king-bed",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2967-safari-king-bed",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2965-grevia-plum-blossom-without-vase-pink-78cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2965-grevia-plum-blossom-without-vase-pink-78cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2963-grevia-pampas-grass-without-vase-beige-44cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2963-grevia-pampas-grass-without-vase-beige-44cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2952-como-dresser-with-mirror",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2952-como-dresser-with-mirror",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2948-ocean-dresser-with-mirror-walnut-and-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2948-ocean-dresser-with-mirror-walnut-and-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2945-alexandia-dresser-with-mirror-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2945-alexandia-dresser-with-mirror-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2944-serenya-trinket-jar-large-gold-038-bronze-16x16x29",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2944-serenya-trinket-jar-large-gold-038-bronze-16x16x29",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2941-taliah-ceramic-vase-whitegold",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2941-taliah-ceramic-vase-whitegold",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2940-taliah-ceramic-jar-whitegold",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2940-taliah-ceramic-jar-whitegold",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2938-auric-ceramic-vase-creamblack-9bbd2e",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2938-auric-ceramic-vase-creamblack-9bbd2e",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2931-auden-seagrass-vase-22x22x36-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2931-auden-seagrass-vase-22x22x36-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2930-auden-seagrass-vase-21x105x255cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2930-auden-seagrass-vase-21x105x255cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2929-auden-ceramic-vase-162x115x201cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2929-auden-ceramic-vase-162x115x201cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2928-auden-ceramic-vase-203x13x208cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2928-auden-ceramic-vase-203x13x208cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2927-auden-ceramic-vase-184x123x201cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2927-auden-ceramic-vase-184x123x201cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2926-lemont-glass-vase-blue-14x14x35cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2926-lemont-glass-vase-blue-14x14x35cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2925-lemont-glass-vase-brown-12x12x28cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2925-lemont-glass-vase-brown-12x12x28cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2924-lemont-glass-vase-amber-12x12x28cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2924-lemont-glass-vase-amber-12x12x28cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2922-lemont-glass-vase-blue-15x15x46cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2922-lemont-glass-vase-blue-15x15x46cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2920-lemont-glass-vase-brown-15x15x46cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2920-lemont-glass-vase-brown-15x15x46cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2915-lemont-glass-vase-with-marble-base-135215135x24cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2915-lemont-glass-vase-with-marble-base-135215135x24cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2913-lemont-glass-vase-blue-12x12x28cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2913-lemont-glass-vase-blue-12x12x28cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2907-quinn-ceramic-vase-lilac-1155218cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2907-quinn-ceramic-vase-lilac-1155218cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2886-atlas-clear-glass-cylinder-vase-10x10cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2886-atlas-clear-glass-cylinder-vase-10x10cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2882-ruse-glass-amber-texture-vase-185215185x24cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2882-ruse-glass-amber-texture-vase-185215185x24cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2880-ruse-glass-amber-texture-vase-18x18x20-cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2880-ruse-glass-amber-texture-vase-18x18x20-cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2878-ruse-glass-amber-texture-vase-165215165215245cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2878-ruse-glass-amber-texture-vase-165215165215245cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2871-blenka-ceramic-beige-vase-175x12x25cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2871-blenka-ceramic-beige-vase-175x12x25cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2870-blenka-ceramic-beige-vase-205x14x30cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2870-blenka-ceramic-beige-vase-205x14x30cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2869-blenka-ceramic-beige-vase-16x16x30cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2869-blenka-ceramic-beige-vase-16x16x30cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2862-quirrell-kids-dresser-with-mirror",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2862-quirrell-kids-dresser-with-mirror",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2859-avero-travertine-table-lamp-48cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2859-avero-travertine-table-lamp-48cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2858-avero-metal-table-lamp-silver-62cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2858-avero-metal-table-lamp-silver-62cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2854-avero-metal-table-lamp-gold-54cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2854-avero-metal-table-lamp-gold-54cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2851-avero-glass-base-table-lamp-silver-53cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2851-avero-glass-base-table-lamp-silver-53cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2850-skyarc-floor-lamp",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2850-skyarc-floor-lamp",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2849-rixi-floor-lamp-gold",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2849-rixi-floor-lamp-gold",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2848-avero-glass-table-lamp-grey-43cm",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2848-avero-glass-table-lamp-grey-43cm",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2828-collin-table-lamp",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2828-collin-table-lamp",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2826-porus-table-lamp",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2826-porus-table-lamp",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2824-anya-table-lamp",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2824-anya-table-lamp",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2801-majestic-dresser-with-mirror-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2801-majestic-dresser-with-mirror-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2800-rosemary-dresser-with-mirror-brown",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2800-rosemary-dresser-with-mirror-brown",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2796-tribeca-dresser-with-mirror-stool-only-black-beige",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2796-tribeca-dresser-with-mirror-stool-only-black-beige",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2793-custom-night-stand",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2793-custom-night-stand",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2786-chestnut-night-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2786-chestnut-night-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2775-como-night-stand-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2775-como-night-stand-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2774-gabella-end-table",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2774-gabella-end-table",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2766-majestic-night-stand-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2766-majestic-night-stand-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2764-rosemary-night-stand-brown",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2764-rosemary-night-stand-brown",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2762-victoria-night-stand-chocolate",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2762-victoria-night-stand-chocolate",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2760-safari-4-door-wardrobe",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2760-safari-4-door-wardrobe",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2758-ocean-6-door-wardrobe-walnut-grey",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2758-ocean-6-door-wardrobe-walnut-grey",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2756-como-4-door-wardrobe-walnut",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2756-como-4-door-wardrobe-walnut",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2754-majestic-3-door-wardrobe-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2754-majestic-3-door-wardrobe-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2753-majestic-6-door-wardrobe-oak",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2753-majestic-6-door-wardrobe-oak",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2750-victoria-6-door-wardrobe-chocolate",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2750-victoria-6-door-wardrobe-chocolate",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2749-bean-bag-black",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2749-bean-bag-black",
+      "id": "fabric-current::current"
+    },
+    {
+      "kind": "type-image-not-published",
+      "productId": "2748-bean-bag-brown",
+      "fabricId": "fabric-current"
+    },
+    {
+      "kind": "closeup-not-published",
+      "productId": "2748-bean-bag-brown",
+      "id": "fabric-current::current"
+    }
+  ]
+}
