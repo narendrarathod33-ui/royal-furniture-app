@@ -1,6 +1,11 @@
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from scripts.fabrics.extract import extract_product, slug_for, valid_hex
+from scripts.fabrics.extract import Harvester, extract_product, slug_for, valid_hex
+from scripts.fabrics.test_white_base import product_image
+from scripts.fabrics.white_base import average_hash
 
 
 ROW = {
@@ -95,6 +100,21 @@ class ExtractTests(unittest.TestCase):
         product, assets = extract_product(ROW, data)
         self.assertEqual(assets["galleryUrls"], ["https://img.invalid/original.webp", "https://img.invalid/front.jpg", "https://img.invalid/back.jpg"])
         self.assertEqual(product["previewBaseStatus"], "pending")
+
+    def test_angle_deduplication_uses_source_bytes_not_perceptual_hash(self):
+        first = product_image()
+        second = first.copy()
+        second.putpixel((100, 120), (182, 158, 126))
+        self.assertEqual(average_hash(first), average_hash(second))
+        downloads = iter([(b"first-source", first, "JPEG"), (b"different-angle", second, "JPEG"), (b"first-source", first, "JPEG")])
+        with tempfile.TemporaryDirectory() as directory:
+            harvester = Harvester(Path(directory), delay=0, refresh=False)
+            product = {"id": "1-example-sofa", "name": "Example Sofa"}
+            with patch.object(harvester, "fetch_gallery_image", side_effect=lambda _url: next(downloads)):
+                harvester.select_white_bases(product, ["front", "real-second-angle", "exact-duplicate"])
+            self.assertEqual([item["angleId"] for item in product["whiteBaseImages"]], ["front", "angle-2"])
+            statuses = [row["status"] for row in harvester.baseReports[0]["candidates"]]
+            self.assertEqual(statuses, ["white-background", "white-background", "duplicate-angle-exact"])
 
     def test_catalogue_id_prefix_is_not_part_of_live_slug(self):
         self.assertEqual(slug_for("7072-serafina-corner-sofa"), "serafina-corner-sofa")

@@ -1,5 +1,5 @@
 import rawManifest from './fabricManifest.json';
-import type { Fabric, FabricProduct, FabricType } from './fabrics';
+import type { Fabric, FabricPreviewAngle, FabricProduct, FabricType } from './fabrics';
 
 type RawSizeVariant = {
   size: string;
@@ -22,6 +22,7 @@ type RawColour = {
   swatchPath?: string | null;
   variantPath?: string | null;
   variantKind?: string;
+  renderRgb?: number[];
   current?: boolean;
   available?: boolean | null;
   priceDelta?: number | null;
@@ -35,6 +36,17 @@ type RawType = {
   swatchThumbPath?: string;
   colours: RawColour[];
 };
+type RawAngle = {
+  angleId: string;
+  originalBaseImage: string;
+  baseImageSourceUrl?: string;
+  baseImage: string;
+  maskImage: string;
+  maskConfidence: number;
+  maskCoverage?: number;
+  borderWhiteRatio: number;
+  singleObjectConfidence: number;
+};
 type RawProduct = {
   id: string;
   name: string;
@@ -42,6 +54,12 @@ type RawProduct = {
   sourceUrl: string;
   productPageUrl: string;
   baseImageSourceUrl?: string | null;
+  previewBaseOriginalPath?: string | null;
+  previewBaseStatus?: string;
+  baseImagePath?: string | null;
+  maskImagePath?: string | null;
+  maskConfidence?: number;
+  previewAngles?: RawAngle[];
   hasOptions: boolean;
   fabricTypes: RawType[];
 };
@@ -70,7 +88,8 @@ function convert(product: RawProduct): FabricProduct {
       closeupImage: colour.closeupPath || undefined,
       swatchImage: colour.swatchPath || colour.closeupPath || undefined,
       variantImage: colour.variantPath || undefined,
-      variantKind: colour.variantKind === 'official' || colour.variantKind === 'rendered' ? colour.variantKind : 'unavailable',
+      variantKind: colour.variantKind === 'official' || colour.variantKind === 'rendered' || colour.variantKind === 'white-base' || colour.variantKind === 'white-mask' ? colour.variantKind : 'unavailable',
+      renderRgb: colour.renderRgb,
       previewUnavailable: !!colour.previewUnavailable,
       isCurrent: !!colour.current,
       inStock: colour.available !== false,
@@ -80,10 +99,17 @@ function convert(product: RawProduct): FabricProduct {
       sourceUrl: product.sourceUrl,
     })),
   }));
+  const previewAngles: FabricPreviewAngle[] | undefined = product.previewAngles?.map((angle) => ({ ...angle }));
   return {
     id: product.id,
     fabricTypes,
     fabrics: fabricTypes.flatMap((type) => type.colours),
+    baseImage: product.baseImagePath || previewAngles?.[0]?.baseImage,
+    maskImage: product.maskImagePath || previewAngles?.[0]?.maskImage,
+    previewBaseOriginalPath: product.previewBaseOriginalPath || undefined,
+    previewBaseStatus: product.previewBaseStatus === 'white-background' ? 'white-background' : 'flagged',
+    maskConfidence: product.maskConfidence,
+    previewAngles,
   };
 }
 

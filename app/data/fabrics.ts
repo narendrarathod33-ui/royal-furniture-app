@@ -30,7 +30,9 @@ export type Fabric = {
   swatchImage?: string;
   closeupImage?: string;
   variantImage?: string;
-  variantKind?: 'official' | 'rendered' | 'unavailable';
+  variantKind?: 'official' | 'rendered' | 'white-base' | 'white-mask' | 'unavailable';
+  /** Median RGB measured from the official close-up, never inferred from hex. */
+  renderRgb?: readonly number[];
   previewUnavailable?: boolean;
   isCurrent?: boolean;
   /** Backwards-compatible stock flag; unknown availability remains selectable. */
@@ -70,14 +72,34 @@ export type FabricSelection = {
   sku?: string;
 };
 
+export type FabricPreviewAngle = {
+  angleId: string;
+  originalBaseImage: string;
+  baseImageSourceUrl?: string;
+  /** Cleaned Current Fabric image; the untouched source JPEG is separate. */
+  baseImage: string;
+  /** Transparent upholstery-only PNG aligned to baseImage. */
+  maskImage: string;
+  maskConfidence: number;
+  maskCoverage?: number;
+  borderWhiteRatio: number;
+  singleObjectConfidence: number;
+};
+
 export type FabricProduct = {
   id: string;
   /** Generated official groups. Products without them keep their original UI. */
   fabricTypes?: readonly FabricType[];
   /** Flat compatibility list, also used by the pre-manifest saved data. */
   fabrics?: readonly Fabric[];
-  /** Transparent PNG aligned with the primary product photo; upholstery is white. */
+  /** Cleaned white front base; lifestyle photos are never recoloured. */
+  baseImage?: string;
+  /** Transparent PNG aligned with baseImage; upholstery is white. */
   maskImage?: string;
+  previewBaseOriginalPath?: string;
+  previewBaseStatus?: 'white-background' | 'flagged' | 'not-applicable';
+  maskConfidence?: number;
+  previewAngles?: readonly FabricPreviewAngle[];
   selectedFabric?: FabricSelection;
 };
 
@@ -93,6 +115,14 @@ export function resolveFabricImage(source?: string | ImageSourcePropType): Image
   if (local) return local;
   if (/^(?:https?:|data:|blob:|file:)/i.test(source)) return { uri: source };
   return undefined;
+}
+
+export function fabricRenderColor(fabric?: Pick<Fabric, 'renderRgb' | 'hex'>): string | undefined {
+  const rgb = fabric?.renderRgb;
+  if (rgb?.length === 3 && rgb.every((value) => Number.isFinite(value) && value >= 0 && value <= 255)) {
+    return `rgb(${rgb.map((value) => Math.round(value)).join(',')})`;
+  }
+  return fabric?.hex && /^#[\da-f]{6}$/i.test(fabric.hex) ? fabric.hex : undefined;
 }
 
 export function fabricPriceDelta(fabric?: Pick<Fabric, 'priceDelta'> | FabricSelection): number {

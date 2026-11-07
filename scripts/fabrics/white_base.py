@@ -299,7 +299,10 @@ def build_upholstery_mask(image: Image.Image, closeup: Image.Image | None = None
         "selectedClusterColourDifference": None if selected_difference is None else round(selected_difference, 5),
         "flagReasons": reasons or (["automatic-mask-review-recommended"] if accepted else []),
         "candidate": candidate,
-        "upholsteryMask": full_mask(upholstery),
+        # Store the same one-pixel protected edge used by QA and every runtime.
+        # Eroding only inside the Python renderer would let the native/web mask
+        # tint the anti-aliased source edge and reintroduce a white fringe.
+        "upholsteryMask": full_mask(upholstery).filter(ImageFilter.MinFilter(3)),
         "subjectMask": full_mask(subject_alpha, alpha=True),
         "shadowMask": full_mask(shadow_alpha, alpha=True),
         "backgroundColour": background.round(2).tolist(),

@@ -51,8 +51,8 @@ function productSelection({ siblings = [], official = [], api = [], local = [], 
     fabricPriceDelta: (fabric) => typeof fabric?.priceDelta === 'number' ? fabric.priceDelta : 0,
     initialFabric: () => undefined,
     useMemo: (callback) => callback(),
-    // selectedSize, selectedFabricId, fabricOpen, then selectedVariantId.
-    useState: (initial) => [hook++ === 3 ? selectedKey : initial, () => {}],
+    // selectedSize, selected/draft fabric, gallery flag, fabricOpen, then selectedVariantId.
+    useState: (initial) => [hook++ === 5 ? selectedKey : initial, () => {}],
   };
   vm.runInNewContext(ts.transpileModule(selectionCode + '\nexports.selection = { sizeOptions, activeSize, displayPrice, displayListPrice, displayPhoto, selectedPrice, localSizePrices };', {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },

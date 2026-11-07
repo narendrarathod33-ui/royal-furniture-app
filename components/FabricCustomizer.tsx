@@ -22,6 +22,7 @@ import {
   toFabricSelection,
   type Fabric,
   type FabricProduct,
+  type FabricType,
 } from '../app/data/fabrics';
 
 const INK = '#291F24';
@@ -64,15 +65,22 @@ export function FabricCustomizer({ visible, product, source, selectedFabric, sel
   const closeup = resolveFabricImage(selectedFabric?.closeupImage || selectedFabric?.textureImage);
   const zoomPhotos = closeup ? [{ key: 'official-closeup', source: closeup }] : [];
   const delta = fabricPriceDelta(selectedFabric);
-  const previewNote = selectedFabric?.previewUnavailable
-    ? 'Preview unavailable — use the official close-up.'
-    : selectedFabric?.isCurrent
-      ? 'Current Fabric · original photo unchanged'
-      : selectedFabric?.variantKind === 'rendered'
-        ? 'Indicative upholstery preview · official close-up is the colour reference'
-        : selectedFabric?.variantKind === 'official'
-          ? 'Official colour-specific product photo'
-          : 'Original photo retained';
+  const hasWhitePreview = product.previewBaseStatus === 'white-background' && !!product.baseImage && !!product.maskImage;
+  const previewNote = !hasWhitePreview
+    ? 'No accepted white-background front image · close-up and swatch only'
+    : selectedFabric?.previewUnavailable
+      ? 'This colour is close-up only; its white-base render did not pass QA.'
+      : selectedFabric?.isCurrent
+        ? 'Current Fabric · pure white-background base'
+        : selectedFabric?.variantKind === 'white-mask'
+          ? 'White-background upholstery preview · official close-up is the colour reference'
+          : 'White-base preview unavailable';
+  const selectType = (type: FabricType) => {
+    setTypeId(type.id);
+    if (type.id === selectedFabric?.fabricTypeId) return;
+    const firstAvailable = type.colours.map((fabric) => fabricForSize(fabric, selectedSize)).find((fabric) => fabric.inStock);
+    if (firstAvailable) onSelect(firstAvailable);
+  };
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -93,14 +101,14 @@ export function FabricCustomizer({ visible, product, source, selectedFabric, sel
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, desktop && styles.desktopContent]}>
-            <View style={[styles.previews, desktop && styles.desktopPreviews]}>
-              <View style={[styles.previewCard, desktop && styles.desktopProductPreview]}>
-                <View style={styles.previewHeading}><Text style={styles.previewLabel}>PRODUCT PREVIEW</Text>{selectedFabric?.previewUnavailable && <Text style={styles.flag}>Preview unavailable</Text>}</View>
+            <View style={[styles.previews, desktop && styles.desktopPreviews, !hasWhitePreview && styles.allCloseupPreviews, desktop && !hasWhitePreview && styles.desktopCloseupOnlyPreviews]}>
+              {hasWhitePreview && <View style={[styles.previewCard, desktop && styles.desktopProductPreview]}>
+                <View style={styles.previewHeading}><Text style={styles.previewLabel}>WHITE-BACKGROUND PREVIEW</Text>{selectedFabric?.previewUnavailable && <Text style={styles.flag}>Close-up only</Text>}</View>
                 <View style={[styles.productPreview, desktop && { height: 310 }]}>
                   <FabricPreview product={product} fabric={selectedFabric} source={source} style={styles.fill} />
                 </View>
                 <Text style={styles.previewNote}>{previewNote}</Text>
-              </View>
+              </View>}
               <View style={[styles.previewCard, desktop && styles.desktopCloseupPreview]}>
                 <View style={styles.previewHeading}><Text style={styles.previewLabel}>FABRIC CLOSE-UP</Text><ZoomIn size={15} color={MUTED} /></View>
                 <Pressable
@@ -118,6 +126,7 @@ export function FabricCustomizer({ visible, product, source, selectedFabric, sel
             </View>
 
             <View style={[styles.controls, desktop && styles.desktopControls]}>
+              {!hasWhitePreview && <Text style={styles.baseFlagNote}>A product-only front image on a plain white background is required. No lifestyle photo has been recoloured; only the official close-up and swatches are shown.</Text>}
               <Text style={styles.sectionLabel}>Fabric type</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeRow} accessibilityRole="radiogroup" accessibilityLabel="Fabric types">
                 {groups.map((type) => {
@@ -129,7 +138,7 @@ export function FabricCustomizer({ visible, product, source, selectedFabric, sel
                       accessibilityLabel={`Show ${type.name} colours`}
                       accessibilityState={{ selected: active, checked: active }}
                       aria-checked={active}
-                      onPress={() => setTypeId(type.id)}
+                      onPress={() => selectType(type)}
                       style={[styles.typeButton, active && styles.typeButtonActive]}
                     >
                       <OfficialImage source={type.swatchImage} style={styles.typeSwatch} label={`${type.name} material`} cover />
@@ -204,7 +213,7 @@ const styles = StyleSheet.create({
   headerCopy: { flex: 1, minWidth: 0 }, eyebrow: { color: RED, fontSize: 9, fontWeight: '800', letterSpacing: 1.2 }, title: { color: INK, fontSize: 23, fontWeight: '800', marginTop: 3 }, productName: { color: MUTED, fontSize: 12, marginTop: 3 },
   close: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: '#F0E9EB' },
   content: { padding: 12, gap: 18 }, desktopContent: { padding: 20, flexDirection: 'row', alignItems: 'flex-start', gap: 24 },
-  previews: { flexDirection: 'row', gap: 8 }, desktopPreviews: { width: '53%', gap: 12 },
+  previews: { flexDirection: 'row', gap: 8 }, desktopPreviews: { width: '53%', gap: 12 }, allCloseupPreviews: { width: '100%' }, desktopCloseupOnlyPreviews: { width: '38%' }, baseFlagNote: { color: RED, fontSize: 10, lineHeight: 15, backgroundColor: '#F9ECEB', borderRadius: 10, padding: 10, marginBottom: 14 },
   previewCard: { flex: 1, minWidth: 0, backgroundColor: '#F3ECEE', borderRadius: 14, padding: 8, borderWidth: 1, borderColor: LINE }, desktopProductPreview: { flex: 1.25 }, desktopCloseupPreview: { flex: 1 },
   previewHeading: { minHeight: 25, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 }, previewLabel: { color: MUTED, fontSize: 8, letterSpacing: 0.6, fontWeight: '800', flexShrink: 1 }, flag: { color: RED, fontSize: 8, fontWeight: '700' },
   productPreview: { height: 145, width: '100%' }, fill: { width: '100%', height: '100%' },

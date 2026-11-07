@@ -21,7 +21,10 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # A QA run pushes its validated generated catalogue near the end. That normal
+  # Pages commit must not cancel the QA job before its reports are uploaded;
+  # harvests likewise remain atomic. Ordinary Pages builds may still supersede.
+  cancel-in-progress: ${{ !inputs.harvest_fabrics && !contains(github.event.head_commit.message, '[fabric-qa]') && !contains(github.event.head_commit.message, '[harvest-fabrics]') }}
 
 jobs:
   harvest-fabrics:
@@ -55,13 +58,15 @@ jobs:
     # Runs against the reviewed/installed manifest; does not repeat API harvests.
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[fabric-qa]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
     permissions:
       contents: write
     env:
       # One-time bootstrap for the successful harvest whose blob download is
       # restricted in the sandbox. Future QA runs use the installed manifest.
       HARVEST_RUN_ID: '42385992930'
+      # Explicit new harvest overrides the installed manifest for a schema update.
+      QA_HARVEST_RUN_ID: '42411611165'
       # Optional one-time resume checkpoint; empty for normal installed-data QA.
       QA_CHECKPOINT_RUN_ID: ''
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,11 +80,13 @@ jobs:
       - name: Install image and HTTP tools
         run: python -m pip install -r scripts/fabrics/requirements.txt
       - name: Validate render tools
-        run: python -m unittest scripts.fabrics.test_extract scripts.fabrics.test_render -v
+        run: python -m unittest scripts.fabrics.test_extract scripts.fabrics.test_white_base scripts.fabrics.test_render -v
       - name: Stage reviewed official assets (or bootstrap downloaded harvest)
         run: |
           rm -rf fabric-output
-          if [ -n "$QA_CHECKPOINT_RUN_ID" ]; then
+          if [ -n "$QA_HARVEST_RUN_ID" ]; then
+            gh run download "$QA_HARVEST_RUN_ID" -n "official-fabric-catalogue-$QA_HARVEST_RUN_ID" --dir fabric-output
+          elif [ -n "$QA_CHECKPOINT_RUN_ID" ]; then
             gh run download "$QA_CHECKPOINT_RUN_ID" -n "fabric-qa-checkpoint-$QA_CHECKPOINT_RUN_ID" --dir fabric-output
           elif python -c 'import json,sys; sys.exit(0 if not json.load(open("app/data/fabricManifest.json")).get("products") else 1)'; then
             gh run download "$HARVEST_RUN_ID" -n "official-fabric-catalogue-$HARVEST_RUN_ID" --dir fabric-output
@@ -88,6 +95,8 @@ jobs:
             cp app/data/fabricManifest.json fabric-output/fabric-manifest.json
             cp -r assets/fabrics fabric-output/assets/fabrics
             if [ -d assets/variants ]; then cp -r assets/variants fabric-output/assets/variants; fi
+            if [ -d assets/base ]; then cp -r assets/base fabric-output/assets/base; fi
+            if [ -d assets/masks ]; then cp -r assets/masks fabric-output/assets/masks; fi
           fi
           # Normalize Current Fabric before validation; also updates the staged JSON.
           python scripts/fabrics/install.py fabric-output
@@ -109,6 +118,8 @@ jobs:
         run: python scripts/fabrics/validate.py --input fabric-output
       - name: Install reviewed QA output
         run: python scripts/fabrics/install.py fabric-output
+      - name: Re-render and verify encoded WebP outputs
+        run: python scripts/fabrics/verify_encoded.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -125,9 +136,11 @@ jobs:
           git config user.email "arena-fabric-qa@users.noreply.github.com"
           git add app/data/fabricManifest.json app/data/fabricAssets.ts assets/fabrics data/fabric-product-map.json docs/fabric-qa
           if [ -d assets/variants ]; then git add assets/variants; fi
+          if [ -d assets/base ]; then git add assets/base; fi
+          if [ -d assets/masks ]; then git add assets/masks; fi
           if git diff --cached --quiet; then echo "No generated changes"; exit 0; fi
           git diff --cached --stat
-          git commit -m "Install current official fabric catalogue and QA"
+          git commit -m "[catalogue-staging] Install current official fabric catalogue and QA"
           git push origin HEAD:arena/7580beb8-royal-furniture-app
       - name: Upload compact QA reports
         if: always()
@@ -138,11 +151,12 @@ jobs:
             fabric-output/*report.json
             fabric-output/*report.md
             fabric-output/contact-sheet-index.html
+            docs/fabric-qa/encoded-quality-report.json
           if-no-files-found: warn
           retention-days: 30
 
   build:
-    if: ${{ !contains(github.event.head_commit.message, '[fabric-qa]') && !contains(github.event.head_commit.message, '[harvest-fabrics]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[fabric-qa]') && !contains(github.event.head_commit.message, '[harvest-fabrics]') && !contains(github.event.head_commit.message, '[catalogue-staging]') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

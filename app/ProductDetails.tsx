@@ -3,7 +3,7 @@ import { attachGalleryPointerNavigation } from '../utils/galleryPointer';
 import { ProductPhotoViewer } from '../components/ProductPhotoViewer';
 import { FabricPreview } from '../components/FabricPreview';
 import { FabricCustomizer } from '../components/FabricCustomizer';
-import { fabricForSize, fabricPriceDelta, initialFabric, resolveFabricImage, toFabricSelection, type Fabric, type FabricSelection, type FabricType } from './data/fabrics';
+import { fabricForSize, fabricPriceDelta, initialFabric, resolveFabricImage, toFabricSelection, type Fabric, type FabricPreviewAngle, type FabricSelection, type FabricType } from './data/fabrics';
 import { getFabricProduct, hasFabricManifestRecord } from './data/fabricCatalog';
 import { useFabricChoiceStore } from '../stores/fabricChoices';
 import { sortSizesByPrice, selectSizeOption } from '../utils/sizePricing';
@@ -72,9 +72,16 @@ type ProductDetailsProduct = {
   sp?: unknown;
   fabrics?: readonly Fabric[];
   fabricTypes?: readonly FabricType[];
+  baseImage?: string;
   maskImage?: string;
+  previewBaseOriginalPath?: string;
+  previewBaseStatus?: 'white-background' | 'flagged' | 'not-applicable';
+  maskConfidence?: number;
+  previewAngles?: readonly FabricPreviewAngle[];
   selectedFabric?: FabricSelection;
 };
+
+type ProductGallerySlide = { key: string; source: ImageSourcePropType; primary?: boolean; lifestyle?: boolean; previewAngle?: FabricPreviewAngle };
 
 type DetailRow = { label?: string; value?: string };
 type ApiColor = {
@@ -497,7 +504,7 @@ export default function ProductDetails({
   const hasFabricRecord = useMemo(() => hasFabricManifestRecord(sourceId), [sourceId]);
   const persistedFabric = useFabricChoiceStore((state) => state.choices[sourceId]);
   const fabricProduct: ProductDetailsProduct = officialFabricProduct
-    ? { ...product, fabricTypes: officialFabricProduct.fabricTypes, fabrics: officialFabricProduct.fabrics, selectedFabric: product.selectedFabric || persistedFabric }
+    ? { ...product, ...officialFabricProduct, selectedFabric: product.selectedFabric || persistedFabric }
     : { ...product, selectedFabric: product.selectedFabric || persistedFabric };
   // The API slug is the catalogue id minus its leading number. A trailing hash is
   // part of the slug on some rows (e.g. `azilea-smart-pro-grid-mattress-56bb1d`) and
@@ -526,6 +533,8 @@ export default function ProductDetails({
   const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? baseProductListPrice : baseProductListPrice;
   const fabricOptions = fabricProduct.fabrics;
   const [selectedFabricId, setSelectedFabricId] = useState(() => initialFabric(fabricProduct)?.id || '');
+  const [draftFabricId, setDraftFabricId] = useState(selectedFabricId);
+  const [galleryCustomized, setGalleryCustomized] = useState(() => !!(product.selectedFabric || persistedFabric));
   const [fabricOpen, setFabricOpen] = useState(false);
   const chosenFabric = fabricOptions?.find((fabric) => fabric.id === selectedFabricId)
     || initialFabric(fabricProduct);
@@ -572,6 +581,9 @@ export default function ProductDetails({
   const selectedSizeText = activeSize?.label || (usingOfficialSizes || usingApiSizes ? 'Select size' : '');
   const sizedFabric = chosenFabric ? fabricForSize(chosenFabric, selectedSizeText) : undefined;
   const selectedFabric = sizedFabric?.inStock ? sizedFabric : initialFabric(fabricProduct, selectedSizeText);
+  const draftOption = fabricOptions?.find((fabric) => fabric.id === draftFabricId) || chosenFabric;
+  const sizedDraft = draftOption ? fabricForSize(draftOption, selectedSizeText) : undefined;
+  const draftFabric = sizedDraft?.inStock ? sizedDraft : selectedFabric;
   // Display the cheapest known size immediately, unless a customer/cart size is selected.
   const displayBasePrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
   const displayPrice = Math.max(0, displayBasePrice + fabricPriceDelta(selectedFabric));
@@ -686,16 +698,23 @@ export default function ProductDetails({
   // the only slide for a product the harvest has no gallery for, so nothing
   // regresses offline.
   const galleryKey = gallery.join('|');
-  const slides = useMemo(() => {
-    const list: { key: string; source: ImageSourcePropType; primary?: boolean }[] = galleryKey
-      ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri }, primary: index === 0 }))
+  const slides = useMemo<ProductGallerySlide[]>(() => {
+    const lifestyle: ProductGallerySlide[] = galleryKey
+      ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri }, primary: index === 0, lifestyle: true }))
       : [];
-    if (!list.length && displayPhoto) list.push({ key: 'listing', source: displayPhoto, primary: true });
-    // A local aligned photo/mask pair takes the primary slot; all other gallery
-    // angles remain exactly as they were. Remote variantImages need no such swap.
-    if (list.length && product.maskImage && displayPhoto) list[0] = { ...list[0], source: displayPhoto };
-    return list;
-  }, [galleryKey, displayPhoto, product.maskImage]);
+    if (!lifestyle.length && displayPhoto) lifestyle.push({ key: 'listing', source: displayPhoto, primary: true, lifestyle: true });
+    const angles = fabricProduct.previewAngles || [];
+    if (!galleryCustomized || !selectedFabric || selectedFabric.previewUnavailable || !angles.length) return lifestyle;
+    // Continue prepends/replaces the white preview slides; every lifestyle
+    // photograph remains available, unchanged, after the accepted white angles.
+    const white = angles.map((angle, index) => ({
+      key: `white-${angle.angleId}`,
+      source: resolveFabricImage(angle.baseImage)!,
+      primary: index === 0,
+      previewAngle: angle,
+    }));
+    return [...white, ...lifestyle.map((slide) => ({ ...slide, primary: false }))];
+  }, [galleryKey, displayPhoto, galleryCustomized, selectedFabric?.id, selectedFabric?.previewUnavailable, fabricProduct.previewAngles]);
   const [galleryIndex, setGalleryIndex] = useState(0);
   // Measured on the image frame so a slide is exactly one page wide, at whatever
   // size the layout gives it (the frame keeps its own square sizing).
@@ -738,10 +757,23 @@ export default function ProductDetails({
       galleryRef.current?.scrollTo({ x: position * slideBox.width, animated: true });
     }
   };
-  const chooseFabric = (fabric: Fabric) => {
-    if (!fabric.inStock) return;
-    setSelectedFabricId(fabric.id);
-    useFabricChoiceStore.getState().choose(sourceId, toFabricSelection(fabric));
+  const previewFabricChoice = (fabric: Fabric) => {
+    if (fabric.inStock) setDraftFabricId(fabric.id);
+  };
+  const openFabricCustomizer = () => {
+    setDraftFabricId(selectedFabricId);
+    setFabricOpen(true);
+  };
+  const closeFabricCustomizer = () => {
+    setDraftFabricId(selectedFabricId);
+    setFabricOpen(false);
+  };
+  const continueWithFabric = () => {
+    if (!draftFabric?.inStock) return;
+    setSelectedFabricId(draftFabric.id);
+    useFabricChoiceStore.getState().choose(sourceId, toFabricSelection(draftFabric));
+    setGalleryCustomized(true);
+    setFabricOpen(false);
     if (activeSlide !== 0) goToSlide(0);
   };
   const handleGalleryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -819,21 +851,37 @@ export default function ProductDetails({
   // The options section is only worth showing when at least one row has content.
   const hasProductOptions = !!madeToOrderText || !!customizationText || !!displaySizes.length || !!fabrics.length
     || !!displayColors.length || !!titleColors.length || (hasDifferentSizePrices && !hasSizeMenu);
+  const zoomSlides = slides.filter((slide) => !slide.previewAngle);
+  const activeSlideData = slides[activeSlide];
+  const activeZoomIndex = Math.max(0, zoomSlides.findIndex((slide) => slide.key === activeSlideData?.key));
+  const renderGallerySlide = (slide: (typeof slides)[number]) => (
+    <View key={slide.key} style={[styles.gallerySlide, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}>
+      {slide.previewAngle ? (
+        <FabricPreview product={fabricProduct} fabric={selectedFabric} source={slide.source} angle={slide.previewAngle} prewarm={!!slide.primary} style={styles.image} />
+      ) : (
+        <Image source={slide.source} style={styles.image} resizeMode="contain" />
+      )}
+      {galleryCustomized && slide.lifestyle && <View pointerEvents="none" style={styles.lifestyleNote}><Text style={styles.lifestyleNoteText}>Lifestyle photos show the original fabric.</Text></View>}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.safe}>
       <SchemeBackdrop />
       {header}
-      <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={productName} onClose={() => setPhotoZoomOpen(false)} />
+      <ProductPhotoViewer visible={photoZoomOpen} photos={zoomSlides} index={activeZoomIndex} onIndexChange={(index) => {
+        const target = slides.findIndex((slide) => slide.key === zoomSlides[index]?.key);
+        if (target >= 0) goToSlide(target);
+      }} name={productName} onClose={() => setPhotoZoomOpen(false)} />
       <FabricCustomizer
         visible={fabricOpen}
         product={fabricProduct}
         source={displayPhoto}
-        selectedFabric={selectedFabric}
+        selectedFabric={draftFabric}
         selectedSize={selectedSizeText}
-        onSelect={chooseFabric}
-        onClose={() => setFabricOpen(false)}
-        onContinue={() => setFabricOpen(false)}
+        onSelect={previewFabricChoice}
+        onClose={closeFabricCustomizer}
+        onContinue={continueWithFabric}
       />
       <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={[styles.back, { alignSelf: 'flex-start', minWidth: 44, minHeight: 44 }]}>
@@ -857,11 +905,7 @@ export default function ProductDetails({
               style={[styles.slider, { overflow: 'hidden' }, WEB_TOUCH_ACTION]}
             >
               <Animated.View pointerEvents="none" style={{ flexDirection: 'row', width: loopingSlides.length * slideBox.width, height: '100%', transform: [{ translateX: webGalleryOffset }] }}>
-                {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
-                  <FabricPreview key={slide.key} product={fabricProduct} fabric={selectedFabric} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} />
-                ) : (
-                  <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />
-                ))}
+                {loopingSlides.map(renderGallerySlide)}
               </Animated.View>
             </View>
           ) : (
@@ -879,28 +923,13 @@ export default function ProductDetails({
               onMomentumScrollEnd={(event) => settleGallery(event.nativeEvent.contentOffset.x)}
               style={styles.slider}
             >
-              {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
-                <FabricPreview
-                  key={slide.key}
-                  product={fabricProduct}
-                  fabric={selectedFabric}
-                  source={slide.source}
-                  style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
-                />
-              ) : (
-                <Image
-                  key={slide.key}
-                  source={slide.source}
-                  style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
-                  resizeMode="contain"
-                />
-              ))}
+              {loopingSlides.map(renderGallerySlide)}
             </ScrollView>
           ) : (
             <Text style={styles.imageFallback}>{productName.slice(0, 1)}</Text>
           )}
 
-          {slides.length > 0 && <Pressable accessibilityRole="button" accessibilityLabel="Open photo zoom" onPress={() => setPhotoZoomOpen(true)} style={styles.photoZoomButton}><ZoomIn size={20} color={COLORS.ink} /></Pressable>}
+          {!!zoomSlides.length && !activeSlideData?.previewAngle && <Pressable accessibilityRole="button" accessibilityLabel="Open photo zoom" onPress={() => setPhotoZoomOpen(true)} style={styles.photoZoomButton}><ZoomIn size={20} color={COLORS.ink} /></Pressable>}
           {slides.length > 1 && (
             <>
               <View style={styles.sliderDots}>
@@ -923,7 +952,7 @@ export default function ProductDetails({
                 onPress={() => goToSlide(index)}
                 style={[styles.galleryThumb, index === activeSlide && styles.galleryThumbActive]}
               >
-                <Image source={slide.source} style={styles.galleryThumbImage} resizeMode="contain" />
+                {slide.previewAngle ? <FabricPreview product={fabricProduct} fabric={selectedFabric} source={slide.source} angle={slide.previewAngle} prewarm={false} style={styles.galleryThumbImage} /> : <Image source={slide.source} style={styles.galleryThumbImage} resizeMode="contain" />}
               </Pressable>
             ))}
           </ScrollView>
@@ -936,7 +965,7 @@ export default function ProductDetails({
             testID="fabric-selector"
             accessibilityRole="button"
             accessibilityLabel={`Customize fabric and colour. Selected ${selectedFabric?.fabricTypeName || ''} ${selectedFabric?.name || ''}${selectedFabric?.code ? `, ${selectedFabric.code}` : ''}`}
-            onPress={() => setFabricOpen(true)}
+            onPress={openFabricCustomizer}
             style={styles.fabricCustomizeButton}
           >
             {!!selectedFabric?.swatchImage && <Image source={resolveFabricImage(selectedFabric.swatchImage)} style={styles.fabricCustomizeSwatch} resizeMode="cover" accessibilityLabel={`${selectedFabric.name} swatch`} />}
@@ -1269,6 +1298,9 @@ const styles = StyleSheet.create({
   backText: { color: COLORS.ink, fontSize: 14, fontWeight: '600' },
   imageWrap: { minHeight: 250, aspectRatio: 1, borderRadius: 18, backgroundColor: '#E6E0D9', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' , ...GLASS.hero, ...glassTilt(1.5, -1.4) },
   image: { width: '100%', height: '100%' },
+  gallerySlide: { position: 'relative', height: '100%', backgroundColor: '#FFF', overflow: 'hidden' },
+  lifestyleNote: { position: 'absolute', left: 12, right: 12, bottom: 12, alignSelf: 'center', borderRadius: 9, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: '#291F24C9', alignItems: 'center' },
+  lifestyleNoteText: { color: '#FFF', fontSize: 10, lineHeight: 14, fontWeight: '700', textAlign: 'center' },
   imageFallback: { color: COLORS.ink, fontSize: 64, fontWeight: '700' },
   productIntro: { paddingTop: 18, paddingBottom: 16 },
   category: { color: COLORS.red, fontSize: 11, fontWeight: '800', letterSpacing: 1.1, textTransform: 'uppercase' },

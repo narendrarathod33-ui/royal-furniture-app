@@ -297,19 +297,21 @@ class Harvester:
         """Inspect every gallery angle; retain only accepted white product views."""
         selected: list[dict[str, Any]] = []
         candidates: list[dict[str, Any]] = []
-        seen_hashes: list[int] = []
+        seen_source_hashes: set[str] = set()
         for index, url in enumerate(urls):
             row: dict[str, Any] = {"url": url, "galleryIndex": index}
             try:
                 content, image, source_format = self.fetch_gallery_image(url)
                 row.update({"width": image.width, "height": image.height, "sourceFormat": source_format, "sourceSha256": hashlib.sha256(content).hexdigest()})
                 digest = average_hash(image)
-                duplicate = next((old for old in seen_hashes if (digest ^ old).bit_count() <= 2), None)
-                if duplicate is not None:
-                    row.update({"status": "duplicate-angle", "averageHash": f"{digest:016x}"})
+                # A perceptual hash is useful in the report but is not an exact
+                # identity: two real angles can share all 64 average-hash bits.
+                # Only byte-identical source downloads are safe to deduplicate.
+                if row["sourceSha256"] in seen_source_hashes:
+                    row.update({"status": "duplicate-angle-exact", "averageHash": f"{digest:016x}"})
                     candidates.append(row)
                     continue
-                seen_hashes.append(digest)
+                seen_source_hashes.add(row["sourceSha256"])
                 analysis = analyse_candidate(image)
                 row.update(analysis)
                 row["averageHash"] = f"{digest:016x}"

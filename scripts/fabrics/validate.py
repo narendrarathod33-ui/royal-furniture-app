@@ -2,6 +2,7 @@
 """Validate completeness and safety invariants of an official fabric artifact."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -27,7 +28,7 @@ def main() -> int:
     unmatched = {row["id"] for row in manifest.get("unmatched", [])}
     errors = []
     warnings = []
-    counts = {"appProducts": len(expected), "matched": len(matched), "unmatched": len(unmatched), "productsWithOptions": 0, "types": 0, "colours": 0, "currentFabrics": 0, "localAssets": 0, "previewUnavailable": 0}
+    counts = {"appProducts": len(expected), "matched": len(matched), "unmatched": len(unmatched), "productsWithOptions": 0, "types": 0, "colours": 0, "currentFabrics": 0, "localAssets": 0, "previewUnavailable": 0, "whiteBackgroundProducts": 0, "flaggedBaseProducts": 0, "whiteMaskVariants": 0, "whiteBackgroundAngles": 0}
     if matched & unmatched or matched | unmatched != expected:
         errors.append({"kind": "coverage", "missing": sorted(expected - matched - unmatched), "duplicate": sorted(matched & unmatched), "unexpected": sorted((matched | unmatched) - expected)})
     type_names = set()
@@ -40,6 +41,28 @@ def main() -> int:
         currents = [(fabric, colour) for fabric in product["fabricTypes"] for colour in fabric["colours"] if colour.get("current")]
         if len(currents) != 1:
             errors.append({"kind": "current-fabric-count", "productId": product_id, "count": len(currents)})
+        angles = product.get("previewAngles", [])
+        if angles:
+            counts["whiteBackgroundProducts"] += 1
+            counts["whiteBackgroundAngles"] += len(angles)
+            if angles[0].get("angleId") != "front":
+                errors.append({"kind": "front-white-base-required", "productId": product_id})
+            for angle in angles:
+                if angle.get("borderWhiteRatio", 0) <= 0.90 or angle.get("singleObjectConfidence", 0) < 0.80 or angle.get("maskConfidence", 0) < 0.70:
+                    errors.append({"kind": "white-base-threshold", "productId": product_id, "angleId": angle.get("angleId")})
+                for key in ("baseImage", "maskImage", "originalBaseImage"):
+                    if not angle.get(key) or not (root / angle[key]).is_file():
+                        errors.append({"kind": "missing-white-base-asset", "productId": product_id, "angleId": angle.get("angleId"), "path": angle.get(key)})
+        else:
+            counts["flaggedBaseProducts"] += 1
+            if not product.get("previewBaseAttention"):
+                errors.append({"kind": "flagged-base-without-attention", "productId": product_id})
+        for angle in product.get("whiteBaseImages", []):
+            original = root / angle.get("originalPath", "")
+            if not original.is_file():
+                errors.append({"kind": "missing-preserved-original", "productId": product_id, "path": angle.get("originalPath")})
+            elif angle.get("storedSha256") and hashlib.sha256(original.read_bytes()).hexdigest() != angle["storedSha256"]:
+                errors.append({"kind": "original-base-modified", "productId": product_id, "path": angle.get("originalPath")})
         ids = set()
         for fabric in product["fabricTypes"]:
             type_names.add((fabric["id"], fabric["name"]))
@@ -75,14 +98,26 @@ def main() -> int:
                         errors.append({"kind": "missing-variant", "productId": product_id, "id": combination, "path": colour["variantPath"]})
                 if colour.get("current"):
                     counts["currentFabrics"] += 1
-                    if colour.get("variantPath") or colour.get("previewUnavailable"):
-                        errors.append({"kind": "current-image-changed", "productId": product_id, "id": combination})
+                    if angles:
+                        if colour.get("variantPath") != angles[0].get("baseImage") or colour.get("variantKind") != "white-base" or colour.get("previewUnavailable"):
+                            errors.append({"kind": "current-not-white-base", "productId": product_id, "id": combination})
+                    elif colour.get("variantPath") or not colour.get("previewUnavailable"):
+                        errors.append({"kind": "flagged-current-has-live-preview", "productId": product_id, "id": combination})
                 elif colour.get("previewUnavailable"):
                     counts["previewUnavailable"] += 1
                     if colour.get("variantPath"):
                         errors.append({"kind": "flagged-variant-shipped", "productId": product_id, "id": combination})
-                elif not colour.get("variantPath"):
-                    errors.append({"kind": "unflagged-missing-preview", "productId": product_id, "id": combination})
+                    if angles and colour.get("variantKind") != "unavailable":
+                        errors.append({"kind": "flagged-colour-kind", "productId": product_id, "id": combination})
+                elif not angles:
+                    errors.append({"kind": "live-colour-without-white-base", "productId": product_id, "id": combination})
+                elif colour.get("variantKind") != "white-mask" or colour.get("variantPath"):
+                    errors.append({"kind": "named-colour-not-white-mask", "productId": product_id, "id": combination})
+                else:
+                    counts["whiteMaskVariants"] += 1
+                    rgb = colour.get("renderRgb")
+                    if not isinstance(rgb, list) or len(rgb) != 3 or any(not isinstance(value, (int, float)) or value < 0 or value > 255 for value in rgb):
+                        errors.append({"kind": "missing-swatch-render-colour", "productId": product_id, "id": combination})
     counts["types"] = len(type_names)
     report = {"valid": not errors, "counts": counts, "errors": errors, "sourceOmissions": warnings}
     (root / "validation-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")

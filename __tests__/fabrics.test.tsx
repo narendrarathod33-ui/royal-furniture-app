@@ -52,10 +52,14 @@ test('official fabrics select instantly, crossfade for 180ms, and retain the ver
 
   await fireEvent(swatch(screen.root, pebble), 'press');
   expect(swatch(screen.root, pebble).props.accessibilityState.selected).toBe(true);
-  expect(byProps(screen.root, { testID: `fabric-preview-${pebble}` }).length).toBeGreaterThan(0);
+  if (serafina.baseImage) expect(byProps(screen.root, { testID: `fabric-preview-${pebble}` }).length).toBeGreaterThan(0);
+  else expect(flattenText(screen.root)).toContain('No lifestyle photo has been recoloured');
   expect(flattenText(screen.root)).toContain(pebbleOption.name);
-  expect(flattenText(screen.root)).toContain(`AED ${(serafinaBase.o + (pebbleOption.priceDelta || 0)).toLocaleString('en-US')}`);
+  expect(flattenText(screen.root)).toContain(`AED ${serafinaBase.o.toLocaleString('en-US')}`);
 
+  const continueButton = screen.root.queryAll((node: any) => node.props.accessibilityLabel === `Continue with ${pebbleOption.name}`, {})[0];
+  await fireEvent(continueButton, 'press');
+  expect(flattenText(screen.root)).toContain(`AED ${(serafinaBase.o + (pebbleOption.priceDelta || 0)).toLocaleString('en-US')}`);
   const add = screen.root.queryAll((node: any) => typeof node.props.accessibilityLabel === 'string' && node.props.accessibilityLabel.startsWith('Add to bag'), {})[0];
   await fireEvent(add, 'press');
   expect(onAdd).toHaveBeenCalledWith(expect.objectContaining({
@@ -171,15 +175,18 @@ test('per-size metadata and summary labels retain only official values', () => {
 });
 
 test('mobile customizer keeps product and close-up visible, supports zoom and Continue', async () => {
-  const current: Fabric = { id: 'fabric::current', fabricTypeId: 'fabric', fabricTypeName: 'Fabric', name: 'Current Fabric', hex: '', inStock: true, isCurrent: true, closeupImage: 'https://example.invalid/current.jpg' };
-  const named: Fabric = { id: 'velvet::fc-test', colourId: 'fc-test', fabricTypeId: 'velvet', fabricTypeName: 'VELVET', name: 'TEST BLUE', code: '#123456', hex: '#123456', inStock: true, closeupImage: 'https://example.invalid/blue.jpg', previewUnavailable: true };
-  const product = { id: 'fixture-only', n: 'Fixture Sofa', fabricTypes: [{ id: 'fabric', name: 'Fabric', colours: [current] }, { id: 'velvet', name: 'VELVET', colours: [named] }], fabrics: [current, named] };
+  const current: Fabric = { id: 'fabric::current', fabricTypeId: 'fabric', fabricTypeName: 'Fabric', name: 'Current Fabric', hex: '', inStock: true, isCurrent: true, closeupImage: 'https://example.invalid/current.jpg', variantImage: 'https://example.invalid/white.jpg', variantKind: 'white-base' };
+  const named: Fabric = { id: 'velvet::fc-test', colourId: 'fc-test', fabricTypeId: 'velvet', fabricTypeName: 'VELVET', name: 'TEST BLUE', code: '#123456', hex: '#123456', renderRgb: [18, 52, 86], inStock: true, closeupImage: 'https://example.invalid/blue.jpg', variantKind: 'white-mask' };
+  const angle = { angleId: 'front', originalBaseImage: 'assets/base/fixture-only.jpg', baseImage: 'https://example.invalid/white.jpg', maskImage: 'serafina-corner-sofa.png', maskConfidence: 0.91, borderWhiteRatio: 0.99, singleObjectConfidence: 0.95 };
+  const product = { id: 'fixture-only', n: 'Fixture Sofa', fabricTypes: [{ id: 'fabric', name: 'Fabric', colours: [current] }, { id: 'velvet', name: 'VELVET', colours: [named] }], fabrics: [current, named], baseImage: angle.baseImage, maskImage: angle.maskImage, previewBaseStatus: 'white-background' as const, previewAngles: [angle] };
   const onSelect = jest.fn(); const onContinue = jest.fn();
   const screen = await render(<FabricCustomizer visible product={product} selectedFabric={current} onSelect={onSelect} onClose={() => {}} onContinue={onContinue} />);
-  expect(flattenText(screen.root)).toContain('PRODUCT PREVIEW');
+  expect(flattenText(screen.root)).toContain('WHITE-BACKGROUND PREVIEW');
   expect(flattenText(screen.root)).toContain('FABRIC CLOSE-UP');
   const velvetTab = screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Show VELVET colours', {})[0];
   await fireEvent(velvetTab, 'press');
+  expect(onSelect).toHaveBeenCalledTimes(1);
+  expect(onSelect).toHaveBeenLastCalledWith(named);
   const button = swatch(screen.root, named.id);
   expect(StyleSheet.flatten(button.props.style).width).toBeGreaterThanOrEqual(44);
   expect(StyleSheet.flatten(button.props.style).height).toBeGreaterThanOrEqual(44);
@@ -191,6 +198,43 @@ test('mobile customizer keeps product and close-up visible, supports zoom and Co
   const continueButton = screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Continue with Current Fabric', {})[0];
   await fireEvent(continueButton, 'press');
   expect(onContinue).toHaveBeenCalled();
+});
+
+test('a product without an accepted white front base shows only close-up and swatches', async () => {
+  const current: Fabric = { id: 'fabric::current', name: 'Current Fabric', hex: '', inStock: true, isCurrent: true, closeupImage: 'https://example.invalid/current.jpg', previewUnavailable: true };
+  const product = { id: 'flagged-white-base', n: 'Flagged Sofa', fabricTypes: [{ id: 'fabric', name: 'Fabric', colours: [current] }], fabrics: [current], previewBaseStatus: 'flagged' as const };
+  const screen = await render(<FabricCustomizer visible product={product} selectedFabric={current} onSelect={() => {}} onClose={() => {}} onContinue={() => {}} />);
+  expect(flattenText(screen.root)).toContain('FABRIC CLOSE-UP');
+  expect(flattenText(screen.root)).not.toContain('WHITE-BACKGROUND PREVIEW');
+  expect(flattenText(screen.root)).toContain('No lifestyle photo has been recoloured');
+  await screen.unmount();
+});
+
+test('Continue commits the draft and prepends all white angles while preserving lifestyle photos', async () => {
+  const base = catalogData.find((item) => !getFabricProduct(item.id))!;
+  const current: Fabric = { id: 'fabric::current', fabricTypeId: 'fabric', fabricTypeName: 'Fabric', name: 'Current Fabric', hex: '', inStock: true, isCurrent: true, variantKind: 'white-base', variantImage: 'https://example.invalid/white-front.jpg' };
+  const named: Fabric = { id: 'velvet::fc-test', fabricTypeId: 'velvet', fabricTypeName: 'VELVET', name: 'TEST BLUE', hex: '#123456', renderRgb: [18, 52, 86], inStock: true, variantKind: 'white-mask', closeupImage: 'https://example.invalid/blue.jpg' };
+  const front = { angleId: 'front', originalBaseImage: 'assets/base/fixture.jpg', baseImage: 'https://example.invalid/white-front.jpg', maskImage: 'serafina-corner-sofa.png', maskConfidence: 0.93, borderWhiteRatio: 0.99, singleObjectConfidence: 0.96 };
+  const side = { ...front, angleId: 'angle-2', baseImage: 'https://example.invalid/white-side.jpg' };
+  const product = { ...base, id: 'fixture-white-gallery', n: 'Fixture White Gallery', fabrics: [current, named], fabricTypes: [{ id: 'fabric', name: 'Fabric', colours: [current] }, { id: 'velvet', name: 'VELVET', colours: [named] }], baseImage: front.baseImage, maskImage: front.maskImage, previewBaseStatus: 'white-background' as const, previewAngles: [front, side] } as unknown as Product;
+  const screen = await render(<ProductDetails product={product} photoSource={{ uri: 'https://example.invalid/lifestyle.jpg' }} onBack={() => {}} onSave={() => {}} onAdd={() => {}} isSaved={false} />);
+  await openCustomizer(screen.root);
+  await fireEvent(screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Show VELVET colours', {})[0], 'press');
+  await fireEvent(swatch(screen.root, named.id), 'press');
+  await fireEvent(screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Close fabric customizer', {})[0], 'press');
+  expect(useFabricChoiceStore.getState().choices[product.id]).toBeUndefined();
+  expect(flattenText(screen.root)).not.toContain('Lifestyle photos show the original fabric.');
+
+  await openCustomizer(screen.root);
+  await fireEvent(screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Show VELVET colours', {})[0], 'press');
+  await fireEvent(swatch(screen.root, named.id), 'press');
+  await fireEvent(screen.root.queryAll((node: any) => node.props.accessibilityLabel === 'Continue with TEST BLUE', {})[0], 'press');
+  expect(useFabricChoiceStore.getState().choices[product.id]?.id).toBe(named.id);
+  expect(flattenText(screen.root)).toContain('Lifestyle photos show the original fabric.');
+  expect(byProps(screen.root, { testID: `fabric-preview-${named.id}-front` }).length).toBeGreaterThan(0);
+  expect(byProps(screen.root, { testID: `fabric-preview-${named.id}-angle-2` }).length).toBeGreaterThan(0);
+  expect(byProps(screen.root, { accessibilityLabel: 'Product image 1 of 3' }).length).toBeGreaterThan(0);
+  await screen.unmount();
 });
 
 test('a flagged masked fabric never tints the product or background', async () => {

@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import Svg, { Defs, G, Image as SvgImage, Mask } from 'react-native-svg';
 import {
+  fabricRenderColor,
   resolveFabricImage,
   type Fabric,
+  type FabricPreviewAngle,
   type FabricProduct,
 } from '../app/data/fabrics';
 
@@ -32,7 +34,7 @@ function uriFor(source?: ImageSourcePropType): string | undefined {
 }
 
 function cacheKey(productId: string, source: string, mask: string, fabric: Fabric) {
-  return [productId, source, mask, fabric.id, fabric.hex, fabric.textureImage || ''].join('|');
+  return [productId, source, mask, fabric.id, fabricRenderColor(fabric) || '', fabric.textureImage || ''].join('|');
 }
 
 /** Synchronous cache read used on every swatch press — no canvas work in the tap path. */
@@ -50,13 +52,14 @@ function loadWebImage(uri: string): Promise<HTMLImageElement> {
   });
 }
 
-function brightness(hex: string) {
-  const match = /^#([\da-f]{6})$/i.exec(hex);
-  if (!match) return 0.5;
-  const value = parseInt(match[1], 16);
-  const r = (value >> 16) & 255;
-  const g = (value >> 8) & 255;
-  const b = value & 255;
+function brightness(colour: string) {
+  const match = /^#([\da-f]{6})$/i.exec(colour);
+  const rgb = /^rgb\((\d+),(\d+),(\d+)\)$/.exec(colour);
+  if (!match && !rgb) return 0.5;
+  const value = match ? parseInt(match[1], 16) : 0;
+  const r = rgb ? Number(rgb[1]) : (value >> 16) & 255;
+  const g = rgb ? Number(rgb[2]) : (value >> 8) & 255;
+  const b = rgb ? Number(rgb[3]) : value & 255;
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 }
 
@@ -89,7 +92,9 @@ async function renderWebRecolour(productId: string, source: string, mask: string
     layer.height = height;
     const layerContext = layer.getContext('2d');
     if (!layerContext) return null;
-    layerContext.fillStyle = fabric.hex;
+    const renderColor = fabricRenderColor(fabric);
+    if (!renderColor) return null;
+    layerContext.fillStyle = renderColor;
     layerContext.fillRect(0, 0, width, height);
     if (texture) {
       const pattern = layerContext.createPattern(texture, 'repeat');
@@ -114,7 +119,7 @@ async function renderWebRecolour(productId: string, source: string, mask: string
     context.globalAlpha = 0.9;
     context.drawImage(layer, 0, 0);
     context.globalCompositeOperation = 'multiply';
-    context.globalAlpha = multiplyOpacity(fabric.hex);
+    context.globalAlpha = multiplyOpacity(renderColor);
     context.drawImage(layer, 0, 0);
     context.globalCompositeOperation = 'source-over';
     context.globalAlpha = 1;
@@ -152,6 +157,7 @@ type VisualProps = {
   fabric?: Fabric;
   source?: ImageSourcePropType;
   cachedSource?: ImageSourcePropType;
+  angle?: FabricPreviewAngle;
 };
 
 function MaskedTexture({ product, fabric, mask }: { product: PreviewProduct; fabric: Fabric; mask: ImageSourcePropType }) {
@@ -174,27 +180,31 @@ function MaskedTexture({ product, fabric, mask }: { product: PreviewProduct; fab
   );
 }
 
-function FabricVisual({ product, fabric, source, cachedSource }: VisualProps) {
+function FabricVisual({ product, fabric, source, cachedSource, angle }: VisualProps) {
+  const whiteBase = resolveFabricImage(angle?.baseImage || product.baseImage);
   const variant = resolveFabricImage(fabric?.variantImage);
-  const direct = variant || cachedSource;
+  // Current Fabric uses the angle's cleaned white base. Named colours use the
+  // same base plus its aligned mask; a lifestyle source is never a substitute.
+  const direct = (fabric?.isCurrent && whiteBase) || variant || cachedSource;
   const name = product.n || product.id;
   if (direct) {
     return <Image source={direct} style={styles.image} resizeMode="contain" accessibilityLabel={`${name}${fabric ? ` in ${fabric.name} fabric` : ''}`} />;
   }
 
-  const mask = resolveFabricImage(product.maskImage);
-  const canRecolour = !!fabric && !fabric.previewUnavailable && !fabric.isCurrent;
+  const mask = resolveFabricImage(angle?.maskImage || product.maskImage);
+  const renderColor = fabricRenderColor(fabric);
+  const canRecolour = !!fabric && !fabric.previewUnavailable && !fabric.isCurrent && !!renderColor;
   const supportsBlend = Platform.OS !== 'android' || Number(Platform.Version) >= 29;
   return (
     <View style={styles.fill} pointerEvents="none">
-      <Image source={source} style={styles.image} resizeMode="contain" accessibilityLabel={`${name}${fabric ? ` in ${fabric.name} fabric` : ''}`} />
+      <Image source={whiteBase || source} style={styles.image} resizeMode="contain" accessibilityLabel={`${name}${fabric ? ` in ${fabric.name} fabric` : ''}`} />
       {fabric && canRecolour && mask ? (
         <>
           <View accessible={false} style={[styles.fill, styles.colourBlend, { opacity: supportsBlend ? 0.9 : 0.22 }]}>
-            <Image source={mask} resizeMode="contain" accessible={false} style={[styles.image, { tintColor: fabric.hex }]} />
+            <Image source={mask} resizeMode="contain" accessible={false} style={[styles.image, { tintColor: renderColor }]} />
           </View>
-          {supportsBlend && <View accessible={false} style={[styles.fill, styles.multiplyBlend, { opacity: multiplyOpacity(fabric.hex) }]}>
-            <Image source={mask} resizeMode="contain" accessible={false} style={[styles.image, { tintColor: fabric.hex }]} />
+          {supportsBlend && <View accessible={false} style={[styles.fill, styles.multiplyBlend, { opacity: multiplyOpacity(renderColor!) }]}>
+            <Image source={mask} resizeMode="contain" accessible={false} style={[styles.image, { tintColor: renderColor }]} />
           </View>}
           <MaskedTexture product={product} fabric={fabric} mask={mask} />
         </>
@@ -209,25 +219,29 @@ export function FabricPreview({
   fabric,
   source,
   style,
+  angle,
+  prewarm = true,
 }: {
   product: PreviewProduct;
   fabric?: Fabric;
   source?: ImageSourcePropType;
   style?: StyleProp<ViewStyle>;
+  angle?: FabricPreviewAngle;
+  prewarm?: boolean;
 }) {
   const [previous, setPrevious] = useState<Fabric>();
   const [cacheVersion, setCacheVersion] = useState(0);
   const lastFabric = useRef(fabric);
   const fade = useRef(new Animated.Value(1)).current;
-  const sourceUri = uriFor(source);
-  const maskUri = uriFor(resolveFabricImage(product.maskImage));
+  const sourceUri = uriFor(resolveFabricImage(angle?.baseImage || product.baseImage) || source);
+  const maskUri = uriFor(resolveFabricImage(angle?.maskImage || product.maskImage));
 
   useEffect(() => {
-    if (!__DEV__ || !fabric || fabric.variantImage || fabric.previewUnavailable || fabric.isCurrent || product.maskImage) return;
+    if (!__DEV__ || !fabric || fabric.variantImage || fabric.previewUnavailable || fabric.isCurrent || product.maskImage || angle?.maskImage) return;
     if (missingMaskWarnings.has(product.id)) return;
     missingMaskWarnings.add(product.id);
     console.warn(`FabricPreview: product "${product.id}" needs a maskImage aligned to its primary product image; keeping the original photograph unchanged.`);
-  }, [fabric, product.id, product.maskImage]);
+  }, [fabric, product.id, product.maskImage, angle?.maskImage]);
 
   useEffect(() => {
     if (lastFabric.current?.id === fabric?.id) return;
@@ -243,6 +257,7 @@ export function FabricPreview({
   useEffect(() => () => fade.stopAnimation(), [fade]);
 
   useEffect(() => {
+    if (!prewarm) return;
     let active = true;
     const options = product.fabrics?.filter((option) => option.inStock) || [];
     // Warm direct variants and real close-ups before the customizer opens.
@@ -258,7 +273,7 @@ export function FabricPreview({
     );
     void Promise.all(jobs).then(() => { if (active) setCacheVersion((value) => value + 1); });
     return () => { active = false; };
-  }, [product.id, product.fabrics, sourceUri, maskUri]);
+  }, [product.id, product.fabrics, sourceUri, maskUri, prewarm]);
 
   // cacheVersion is intentionally read: completed pre-renders replace fallback layers.
   void cacheVersion;
@@ -268,10 +283,10 @@ export function FabricPreview({
   const cachedSource = cachedUri ? { uri: cachedUri } : undefined;
 
   return (
-    <View style={[styles.root, style]} testID={`fabric-preview-${fabric?.id || 'base'}`}>
-      {previous && <View pointerEvents="none" style={styles.fill}><FabricVisual product={product} fabric={previous} source={source} /></View>}
+    <View style={[styles.root, style]} testID={`fabric-preview-${fabric?.id || 'base'}${angle ? `-${angle.angleId}` : ''}`}>
+      {previous && <View pointerEvents="none" style={styles.fill}><FabricVisual product={product} fabric={previous} source={source} angle={angle} /></View>}
       <Animated.View style={[styles.fill, { opacity: fade }]}>
-        <FabricVisual product={product} fabric={fabric} source={source} cachedSource={cachedSource} />
+        <FabricVisual product={product} fabric={fabric} source={source} cachedSource={cachedSource} angle={angle} />
       </Animated.View>
     </View>
   );

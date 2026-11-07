@@ -35,6 +35,13 @@ def deduplicate_assets(data: dict, folders: list[Path]) -> dict[str, int]:
                 duplicate.unlink()
                 removed += 1
     for product in data['products'].values():
+        for key in ('baseImagePath', 'maskImagePath'):
+            if product.get(key) in redirects:
+                product[key] = redirects[product[key]]
+        for angle in product.get('previewAngles', []):
+            for key in ('baseImage', 'maskImage'):
+                if angle.get(key) in redirects:
+                    angle[key] = redirects[angle[key]]
         for fabric in product.get('fabricTypes', []):
             for key in ('swatchPath', 'swatchThumbPath'):
                 if fabric.get(key) in redirects:
@@ -44,6 +51,20 @@ def deduplicate_assets(data: dict, folders: list[Path]) -> dict[str, int]:
                     if colour.get(key) in redirects:
                         colour[key] = redirects[colour[key]]
     return {'duplicateAssetsRemoved': removed, 'duplicateAssetBytesSaved': bytes_saved}
+
+
+def runtime_references(data: dict) -> set[str]:
+    """Only runtime images are bundled; untouched source JPEGs remain in Git."""
+    referenced = set()
+    for product in data['products'].values():
+        referenced.update(product.get(key) for key in ('baseImagePath', 'maskImagePath'))
+        for angle in product.get('previewAngles', []):
+            referenced.update(angle.get(key) for key in ('baseImage', 'maskImage'))
+        for fabric in product.get('fabricTypes', []):
+            referenced.update(fabric.get(key) for key in ('swatchPath', 'swatchThumbPath'))
+            for colour in fabric.get('colours', []):
+                referenced.update(colour.get(key) for key in ('swatchPath', 'closeupPath', 'variantPath'))
+    return {path for path in referenced if isinstance(path, str)}
 
 
 def main() -> None:
@@ -86,19 +107,23 @@ def main() -> None:
                 colour['available'] = True if any(value is True for value in values) else False if values and all(value is False for value in values) else None
     target_assets = ROOT / 'assets/fabrics'
     target_variants = ROOT / 'assets/variants'
-    for name, target in [('assets/fabrics', target_assets), ('assets/variants', target_variants)]:
+    target_bases = ROOT / 'assets/base'
+    target_masks = ROOT / 'assets/masks'
+    for name, target in [('assets/fabrics', target_assets), ('assets/variants', target_variants), ('assets/base', target_bases), ('assets/masks', target_masks)]:
         origin = source / name
         if origin.exists():
             if target.exists():
                 shutil.rmtree(target)
             shutil.copytree(origin, target)
+        elif name in {'assets/base', 'assets/masks'} and target.exists():
+            shutil.rmtree(target)
     manifest.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
     (ROOT / 'app/data/fabricManifest.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
     if (source / 'product-map.json').is_file():
         shutil.copy2(source / 'product-map.json', ROOT / 'data/fabric-product-map.json')
     reports = ROOT / 'docs/fabric-qa'
     reports.mkdir(parents=True, exist_ok=True)
-    for name in ('extraction-report.json', 'quality-report.json', 'quality-report.md', 'validation-report.json', 'contact-sheet-index.html'):
+    for name in ('extraction-report.json', 'white-base-extraction-report.json', 'base-image-report.json', 'base-image-report.md', 'quality-report.json', 'quality-report.md', 'validation-report.json', 'contact-sheet-index.html'):
         if (source / name).is_file():
             shutil.copy2(source / name, reports / name)
     if (source / 'contact-sheets').is_dir():
@@ -106,23 +131,23 @@ def main() -> None:
         if destination.exists():
             shutil.rmtree(destination)
         shutil.copytree(source / 'contact-sheets', destination)
-    referenced = set()
-    for product in data['products'].values():
-        for fabric in product.get('fabricTypes', []):
-            referenced.update(fabric.get(key) for key in ('swatchPath', 'swatchThumbPath'))
-            for colour in fabric.get('colours', []):
-                referenced.update(colour.get(key) for key in ('swatchPath', 'closeupPath', 'variantPath'))
+    referenced = runtime_references(data)
     for folder in (target_assets, target_variants):
         if not folder.exists():
             continue
         for image in folder.rglob('*.webp'):
             if image.relative_to(ROOT).as_posix() not in referenced:
                 image.unlink()
+    if target_masks.exists():
+        for image in target_masks.rglob('*.png'):
+            if image.relative_to(ROOT).as_posix() not in referenced:
+                image.unlink()
     deduplication = deduplicate_assets(data, [target_assets, target_variants])
     # Persist the canonical paths in both the staged and minified app manifests.
     manifest.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
     (ROOT / 'app/data/fabricManifest.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
-    paths = sorted({str(image) for folder in (target_assets, target_variants) if folder.exists() for image in folder.rglob('*.webp')})
+    referenced = runtime_references(data)
+    paths = sorted(str(ROOT / path) for path in referenced if (ROOT / path).is_file())
     lines = [
         "import type { ImageSourcePropType } from 'react-native';",
         '',
@@ -135,7 +160,7 @@ def main() -> None:
         lines.append(f"  {json.dumps(key)}: require({json.dumps(require_path)}),")
     lines += ['};', '']
     (ROOT / 'app/data/fabricAssets.ts').write_text('\n'.join(lines))
-    (reports / 'install-report.json').write_text(json.dumps({'matchedProducts': len(data['products']), 'staticImageAssets': len(paths), 'currentEntriesAddedBecauseApiOmittedOriginalRow': added_current, 'duplicateCurrentEntriesRemoved': duplicate_current, 'currentEntriesPresent': sum(colour.get('current') is True for product in data['products'].values() for fabric in product.get('fabricTypes', []) for colour in fabric.get('colours', [])), **deduplication}, indent=2) + '\n')
+    (reports / 'install-report.json').write_text(json.dumps({'matchedProducts': len(data['products']), 'staticImageAssets': len(paths), 'whiteBackgroundProducts': sum(bool(product.get('previewAngles')) for product in data['products'].values()), 'preservedOriginalBaseImages': sum(len(product.get('whiteBaseImages', [])) for product in data['products'].values()), 'currentEntriesAddedBecauseApiOmittedOriginalRow': added_current, 'duplicateCurrentEntriesRemoved': duplicate_current, 'currentEntriesPresent': sum(colour.get('current') is True for product in data['products'].values() for fabric in product.get('fabricTypes', []) for colour in fabric.get('colours', [])), **deduplication}, indent=2) + '\n')
     print(f'Installed {len(data["products"])} matched products and {len(paths)} static image assets; current additions {added_current}, duplicate originals removed {duplicate_current}, duplicate assets removed {deduplication["duplicateAssetsRemoved"]}')
 
 
