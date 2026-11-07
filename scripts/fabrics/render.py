@@ -13,18 +13,21 @@ import html
 import io
 import json
 import math
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import numpy as np
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
 
 from scripts.fabrics.extract import colour_asset_id
-
-ROOT = Path(__file__).resolve().parents[2]
 MASKS = {
     "7072-serafina-corner-sofa": {
         "base": "assets/images/catalog-live/serafina-corner-sofa.webp",
