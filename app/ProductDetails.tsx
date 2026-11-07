@@ -788,7 +788,9 @@ export default function ProductDetails({
     if (Platform.OS !== 'web' || !slides.length) return;
     const node = webGallerySurface.current as unknown as HTMLElement | null;
     if (!node) return;
-    return attachGalleryPointerNavigation(node, (direction) => goToSlide(activeSlide + direction), () => setPhotoZoomOpen(true));
+    return attachGalleryPointerNavigation(node, (direction) => goToSlide(activeSlide + direction), () => {
+      if (!activeSlideData?.previewAngle) setPhotoZoomOpen(true);
+    });
   }, [sourceId, activeSlide, slides.length, slideBox.width]);
   // Only new product/gallery data resets selection; resizing retains the active image.
   useEffect(() => {
