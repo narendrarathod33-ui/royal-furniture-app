@@ -27,7 +27,7 @@ import numpy as np
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
 
-from scripts.fabrics.extract import colour_asset_id
+from scripts.fabrics.extract import colour_asset_id, load_catalog
 MASKS = {
     "7072-serafina-corner-sofa": {
         "base": "assets/images/catalog-live/serafina-corner-sofa.webp",
@@ -217,11 +217,16 @@ def repair_current_closeups(products: list[dict[str, Any]], output: Path, delay:
     return errors, downloaded
 
 
-def download_originals(products: list[dict[str, Any]], output: Path, delay: float) -> tuple[dict[str, Path], list[dict[str, str]]]:
+def download_originals(products: list[dict[str, Any]], output: Path, delay: float) -> tuple[dict[str, Path], list[dict[str, str]], list[str]]:
     session = requests.Session()
     session.headers.update({"User-Agent": "RoyalFurnitureInternalDemoFabricQA/1.0", "Accept": "image/avif,image/webp,image/*,*/*;q=0.8"})
     originals: dict[str, Path] = {}
     errors = []
+    catalogue_fallbacks: list[str] = []
+    # Older harvested manifests missed the API's direct primary_images.web.url
+    # shape. Their existing official catalogue photo is a valid original for QA;
+    # use it locally instead of repeating hundreds of product API requests.
+    catalogue_originals = {product["id"]: product.get("remoteImage") for product in load_catalog()}
     last = 0.0
     for index, product in enumerate(products, 1):
         product_id = product["id"]
@@ -233,6 +238,9 @@ def download_originals(products: list[dict[str, Any]], output: Path, delay: floa
             originals[product_id] = destination
             continue
         url = product.get("baseImageSourceUrl")
+        if not url and catalogue_originals.get(product_id):
+            url = catalogue_originals[product_id]
+            catalogue_fallbacks.append(product_id)
         if not url:
             errors.append({"productId": product_id, "error": "No primary original URL"})
             continue
@@ -255,7 +263,7 @@ def download_originals(products: list[dict[str, Any]], output: Path, delay: floa
             raise
         except Exception as error:
             errors.append({"productId": product_id, "url": url, "error": str(error)})
-    return originals, errors
+    return originals, errors, catalogue_fallbacks
 
 
 def contact_sheet(product: dict[str, Any], original: Image.Image | None, output: Path) -> Path:
@@ -311,9 +319,10 @@ def main() -> int:
     errors: list[dict[str, str]] = []
     originals: dict[str, Path] = {}
     repaired_closeups = 0
+    catalogue_fallbacks: list[str] = []
     if not args.skip_original_download:
         repair_errors, repaired_closeups = repair_current_closeups(products, output, args.delay)
-        originals, original_errors = download_originals(products, output, args.delay)
+        originals, original_errors, catalogue_fallbacks = download_originals(products, output, args.delay)
         errors = repair_errors + original_errors
     for product_id, config in MASKS.items():
         originals[product_id] = ROOT / config["base"]
@@ -377,11 +386,11 @@ def main() -> int:
             "contactSheets": len(products), "renderedApproved": sum(colour.get("variantKind") == "rendered" for _, _, colour in all_colours),
             "officialVariantImages": sum(colour.get("variantKind") == "official" for _, _, colour in all_colours),
             "previewUnavailable": sum(bool(colour.get("previewUnavailable")) and not colour.get("current") for _, _, colour in all_colours),
-            "currentCloseupsRepaired": repaired_closeups,
+            "currentCloseupsRepaired": repaired_closeups, "catalogueOriginalFallbacks": len(catalogue_fallbacks),
             "materialHexMismatches": len(mismatches), "imageDownloadErrors": len(errors),
         },
         "thresholds": {"deltaE76Max": 25, "unmaskedMeanMax": 4, "maskLeakRatioMax": 0.02, "protectedMeanMax": 4, "highlightIncreaseMax": 0.04, "hexMismatchReviewDeltaE76": 20},
-        "renderChecks": quality, "materialHexMismatches": mismatches, "imageDownloadErrors": errors,
+        "renderChecks": quality, "materialHexMismatches": mismatches, "imageDownloadErrors": errors, "catalogueOriginalFallbacks": catalogue_fallbacks,
         "flagged": [{"productId": product["id"], "fabricId": fabric["id"], "colourId": colour["id"], "name": colour["name"], "reasons": colour.get("flagReasons", ["no-aligned-mask-or-official-photo"])} for product, fabric, colour in all_colours if colour.get("previewUnavailable") and not colour.get("current")],
     }
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")

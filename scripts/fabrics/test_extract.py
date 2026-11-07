@@ -80,6 +80,12 @@ class ExtractTests(unittest.TestCase):
         self.assertIsNone(valid_hex("#12235"))
         self.assertEqual(valid_hex("#a0b0c0"), "#A0B0C0")
 
+    def test_current_direct_primary_image_shape_is_supported(self):
+        data = payload([{"name": "VELVET", "colorsList": [colour(2, "REAL BLUE", 1000)]}])
+        data["data"]["primary_images"] = {"web": {"url": "https://img.invalid/direct-original.webp", "width": 1080}}
+        product, _ = extract_product(ROW, data)
+        self.assertEqual(product["baseImageSourceUrl"], "https://img.invalid/direct-original.webp")
+
     def test_catalogue_id_prefix_is_not_part_of_live_slug(self):
         self.assertEqual(slug_for("7072-serafina-corner-sofa"), "serafina-corner-sofa")
 

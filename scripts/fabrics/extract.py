@@ -62,7 +62,9 @@ def valid_hex(value: Any) -> str | None:
 def image_url(node: Any) -> str | None:
     if not isinstance(node, dict):
         return None
-    responsive = node.get("responsive_images") or node.get("images")
+    # Current primary_images exposes web/ipad/mobile directly; gallery rows wrap
+    # the same shape in responsive_images. Support both without inventing URLs.
+    responsive = node.get("responsive_images") or node.get("images") or node
     if isinstance(responsive, dict):
         # Web/iPad originals are larger than mobile; never manufacture a resize URL.
         for key in ("web", "ipad", "mobile"):
