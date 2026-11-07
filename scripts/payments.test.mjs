@@ -27,15 +27,20 @@ test('catalog loads and server pricing rejects forged values/sizes/quantities', 
   const sizes = { products: catalog.products, sizes: { chair: [['Large', 200]] } };
   assert.equal(priceCart([{ productId: 'chair::size=Large', quantity: 1 }], sizes).total, 20000);
   const fabricProduct = real.products.get('7072-serafina-corner-sofa');
-  const navy = fabricProduct.fabrics.find((fabric) => fabric.id === 'navy');
-  const pricedFabric = priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'navy' }], real);
-  assert.equal(pricedFabric.total, Math.round((fabricProduct.price + navy.priceDelta) * 100));
-  assert.match(pricedFabric.lines[0].name, /Fabric: Navy/);
+  const pebbleId = 'chenille-pebble-beige-1906-b-3';
+  const lightGreyId = 'velvet-light-warm-grey-beige-1882-4';
+  const pebble = fabricProduct.fabrics.find((fabric) => fabric.id === pebbleId);
+  const pricedFabric = priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: pebbleId }], real);
+  assert.equal(pricedFabric.total, Math.round((fabricProduct.price + (pebble.priceDelta || 0)) * 100));
+  assert.match(pricedFabric.lines[0].name, /Fabric: PEBBLE BEIGE \/1906 B-3/);
   assert.equal(priceCart([
-    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'navy' },
-    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: 'charcoal' },
-  ], real).lines.length, 2, 'Different fabrics remain separate server-priced lines');
-  for (const fabricId of ['rust', 'missing', 42]) assert.throws(() => priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId }], real));
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: pebbleId },
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: lightGreyId },
+  ], real).lines.length, 2, 'Different official fabrics remain separate server-priced lines');
+  for (const fabricId of ['missing', 42]) assert.throws(() => priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId }], real));
+  assert.throws(() => priceCart([{ productId: '6219-trento-single-seater-sofa', quantity: 1, fabricId: 'velvet-warm-cream-yellow-1882-5' }], real), 'Current out-of-stock website options are rejected');
+  const deltaCatalog = { products: new Map([['chair', { name: 'Chair', price: 100, fabrics: [{ id: 'test-premium', name: 'Test premium', inStock: true, priceDelta: 25 }] }]]), sizes: {} };
+  assert.equal(priceCart([{ productId: 'chair', quantity: 1, fabricId: 'test-premium' }], deltaCatalog).total, 12500, 'Server-side non-zero deltas remain covered by a test fixture');
 });
 
 async function fixture() {

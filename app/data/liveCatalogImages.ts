@@ -64,6 +64,8 @@ export const liveCatalogImages: Record<string, ImageSourcePropType> = {
   "runto-coffee-table": require('../../assets/images/catalog-live/runto-coffee-table.webp'),
   "sansy-single-bed-frame-black": require('../../assets/images/catalog-live/sansy-single-bed-frame-black.webp'),
   "sbd-lac-single-bed-blue": require('../../assets/images/catalog-live/sbd-lac-single-bed-blue.webp'),
+  "serafina-corner-sofa": require('../../assets/images/catalog-live/serafina-corner-sofa.webp'),
+  "7072-serafina-corner-sofa": require('../../assets/images/catalog-live/serafina-corner-sofa.webp'),
   "serenya-trinket-jar-large-gold-038-bronze-16x16x29": require('../../assets/images/catalog-live/serenya-trinket-jar-large-gold-038-bronze-16x16x29.webp'),
   "sierra-metal-wall-mirror-black-5021525x50cm": require('../../assets/images/catalog-live/sierra-metal-wall-mirror-black-5021525x50cm.webp'),
   "siv-metal-gold-candle-holder-215cm": require('../../assets/images/catalog-live/siv-metal-gold-candle-holder-215cm.webp'),

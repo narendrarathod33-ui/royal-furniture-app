@@ -36,8 +36,8 @@ export type FabricProduct = {
  * here after copying them into assets/images/fabric-masks (or another asset folder).
  */
 const fabricImageAssets: Record<string, ImageSourcePropType> = {
+  'serafina-corner-sofa.png': require('../../assets/images/fabric-masks/serafina-corner-sofa.png'),
   'trento-single-seater-sofa.png': require('../../assets/images/fabric-masks/trento-single-seater-sofa.png'),
-  'the-rainbow-bed.png': require('../../assets/images/fabric-masks/the-rainbow-bed.png'),
 };
 
 export function resolveFabricImage(source?: string | ImageSourcePropType): ImageSourcePropType | undefined {

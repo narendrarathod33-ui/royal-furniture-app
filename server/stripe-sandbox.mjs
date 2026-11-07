@@ -17,7 +17,7 @@ export async function loadCatalog() {
   for (const name of ['royalFurnitureData', 'dealsCatalog', 'catalogData']) {
     const source = await readFile(new URL(`../app/data/${name}.ts`, import.meta.url), 'utf8');
     // Catalog entries remain JSON literals; full-line comments document the
-    // structured demo fabrics without becoming executable server config.
+    // structured official fabrics without becoming executable server config.
     const literal = source.slice(source.indexOf('=') + 1)
       .replace(/\s+as const;?\s*$/, '')
       .replace(/^\s*\/\/[^\n]*$/gm, '');

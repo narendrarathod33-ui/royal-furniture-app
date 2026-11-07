@@ -197,8 +197,6 @@ function FabricVisual({ product, fabric, source, cachedSource }: VisualProps) {
           </View>}
           <MaskedTexture product={product} fabric={fabric} mask={mask} />
         </>
-      ) : fabric ? (
-        <View accessible={false} style={[styles.fill, { backgroundColor: fabric.hex, opacity: 0.16 }]} />
       ) : null}
     </View>
   );
@@ -224,10 +222,10 @@ export function FabricPreview({
   const maskUri = uriFor(resolveFabricImage(product.maskImage));
 
   useEffect(() => {
-    if (!fabric || fabric.variantImage || product.maskImage) return;
+    if (!__DEV__ || !fabric || fabric.variantImage || product.maskImage) return;
     if (missingMaskWarnings.has(product.id)) return;
     missingMaskWarnings.add(product.id);
-    console.warn(`FabricPreview: product "${product.id}" needs a maskImage aligned to its primary product image; using the subtle tint fallback.`);
+    console.warn(`FabricPreview: product "${product.id}" needs a maskImage aligned to its primary product image; keeping the original photograph unchanged.`);
   }, [fabric, product.id, product.maskImage]);
 
   useEffect(() => {

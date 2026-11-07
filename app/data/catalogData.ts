@@ -19,13 +19,15 @@ export const catalogData = [
     "z": [],
     "sp": {},
     "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/SERAFINA-2-20261015-165048.jpg",
-    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
+    "maskImage": "serafina-corner-sofa.png",
+    // Verified 7 Nov 2026: rylqus.ae/api/products/product-detail/serafina-corner-sofa/
+    // The API reuses the same gallery and exposes no colour-specific price delta.
     "fabrics": [
-      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
-      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
-      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
-      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
-      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
+      { "id": "velvet-light-warm-grey-beige-1882-4", "name": "LIGHT WARM GREY BEIGE /1882-4", "hex": "#C8C2B6", "inStock": true },
+      { "id": "chenille-pale-mint-1906-b-1", "name": "PALE MINT /1906 B-1", "hex": "#DDE6E3", "inStock": true },
+      { "id": "chenille-ivory-white-1906-b-2", "name": "IVORY WHITE /1906 B-2", "hex": "#FFFFF0", "inStock": true },
+      { "id": "chenille-pebble-beige-1906-b-3", "name": "PEBBLE BEIGE /1906 B-3", "hex": "#B0ADA3", "inStock": true },
+      { "id": "suede-pearl-white-2962-1", "name": "PEARL WHITE /2962-1", "hex": "#C6CAC5", "inStock": true }
     ]
   },
   {
@@ -1467,16 +1469,9 @@ export const catalogData = [
     "fa": 1,
     "z": [],
     "sp": {},
-    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/THE-RAINBOW-2_5bc35073_dN3f1IM.webp",
-    "maskImage": "the-rainbow-bed.png",
-    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
-    "fabrics": [
-      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
-      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
-      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
-      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
-      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
-    ]
+    "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/THE-RAINBOW-2_5bc35073_dN3f1IM.webp"
+    // Live customization_options reports total_fabric_options/total_color_options: 0;
+    // "Selectable" is only a placeholder. Do not invent swatches or tint the photo.
   },
   {
     "id": "6865-the-stokes-bed",
@@ -5666,13 +5661,14 @@ export const catalogData = [
     "sp": {},
     "remoteImage": "https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/images/web/1-SEATER-1_ba8a27d4.webp",
     "maskImage": "trento-single-seater-sofa.png",
-    // DEMO fabric data for the selector prototype; replace with approved inventory/photos.
+    // Verified 7 Nov 2026: rylqus.ae/api/products/product-detail/trento-single-seater-sofa/
+    // No unverified surcharge is added to the official selected-size price.
     "fabrics": [
-      { "id": "charcoal", "name": "Charcoal", "hex": "#3F4245", "inStock": true, "priceDelta": 0 },
-      { "id": "beige", "name": "Beige", "hex": "#C8B8A6", "inStock": true, "priceDelta": 150 },
-      { "id": "navy", "name": "Navy", "hex": "#263B5A", "inStock": true, "priceDelta": 250 },
-      { "id": "olive", "name": "Olive", "hex": "#687055", "inStock": true, "priceDelta": 400 },
-      { "id": "rust", "name": "Rust", "hex": "#A5533C", "inStock": false, "priceDelta": 0 }
+      { "id": "feather-cream-white-1941-1", "name": "CREAM WHITE /1941-1", "hex": "#ACAEA8", "inStock": true },
+      { "id": "feather-cream-beige-1941-2", "name": "CREAM BEIGE /1941-2", "hex": "#B1B2AC", "inStock": true },
+      { "id": "velvet-light-warm-grey-beige-1882-4", "name": "LIGHT WARM GREY BEIGE /1882-4", "hex": "#C8C2B6", "inStock": true },
+      { "id": "feather-black-1941-9", "name": "BLACK /1941-9", "hex": "#101215", "inStock": true },
+      { "id": "velvet-warm-cream-yellow-1882-5", "name": "WARM CREAM YELLOW /1882-5", "hex": "#F5E6B3", "inStock": false }
     ]
   },
   {
