@@ -2,6 +2,15 @@
 
 Expo / React Native furniture catalog with a web preview.
 
+## Public web app
+
+The web app is deployed with GitHub Pages:
+
+**https://narendrarathod33-ui.github.io/royal-furniture-app/**
+
+The workflow in `.github/workflows/deploy-pages.yml` checks TypeScript, builds the
+Pages-specific Expo export, and deploys it after pushes to the deployment branch.
+
 ## Run
 
 ```sh
