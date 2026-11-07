@@ -52,3 +52,7 @@ google_drive/
 # Polite local fabric-harvest cache and downloadable run artifacts
 .cache/
 fabric-output/
+
+# Python tooling caches
+__pycache__/
+*.py[cod]

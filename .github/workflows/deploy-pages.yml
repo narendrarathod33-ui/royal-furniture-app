@@ -5,6 +5,16 @@ on:
     branches:
       - arena/7580beb8-royal-furniture-app
   workflow_dispatch:
+    inputs:
+      harvest_fabrics:
+        description: Refresh official fabrics/colours and upload a downloadable artifact
+        required: true
+        default: false
+        type: boolean
+      harvest_delay:
+        description: Minimum seconds between harvest requests
+        required: true
+        default: '0.25'
 
 permissions:
   contents: read
@@ -14,6 +24,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  harvest-fabrics:
+    # Opt-in manual refresh; ordinary pushes never contact the catalogue API.
+    if: ${{ inputs.harvest_fabrics }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install image and HTTP tools
+        run: python -m pip install requests==2.32.5 Pillow==12.0.0 numpy==2.3.4
+      - name: Validate extractor
+        run: python -m unittest scripts.fabrics.test_extract -v
+      - name: Extract current official variants and assets
+        run: python scripts/fabrics/extract.py --refresh --delay "${{ inputs.harvest_delay }}" --output fabric-output
+      - name: Upload official fabric catalogue
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-fabric-catalogue-${{ github.run_id }}
+          path: fabric-output/
+          if-no-files-found: warn
+          retention-days: 30
+
   build:
     runs-on: ubuntu-latest
     permissions:
