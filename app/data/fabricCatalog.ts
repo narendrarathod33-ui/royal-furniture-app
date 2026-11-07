@@ -1,6 +1,15 @@
 import rawManifest from './fabricManifest.json';
 import type { Fabric, FabricProduct, FabricType } from './fabrics';
 
+type RawSizeVariant = {
+  size: string;
+  sku?: string | null;
+  available: boolean | null;
+  stock?: number | null;
+  price?: number | null;
+  listPrice?: number | null;
+  priceDelta?: number | null;
+};
 type RawColour = {
   id: string;
   name: string;
@@ -12,12 +21,12 @@ type RawColour = {
   closeupPath?: string | null;
   swatchPath?: string | null;
   variantPath?: string | null;
-  variantKind?: 'official' | 'rendered' | 'unavailable';
+  variantKind?: string;
   current?: boolean;
   available?: boolean | null;
   priceDelta?: number | null;
   previewUnavailable?: boolean;
-  sizeVariants?: Fabric['sizeVariants'];
+  sizeVariants?: RawSizeVariant[];
 };
 type RawType = {
   id: string;
@@ -32,7 +41,7 @@ type RawProduct = {
   slug: string;
   sourceUrl: string;
   productPageUrl: string;
-  baseImageSourceUrl?: string;
+  baseImageSourceUrl?: string | null;
   hasOptions: boolean;
   fabricTypes: RawType[];
 };
@@ -61,13 +70,13 @@ function convert(product: RawProduct): FabricProduct {
       closeupImage: colour.closeupPath || undefined,
       swatchImage: colour.swatchPath || colour.closeupPath || undefined,
       variantImage: colour.variantPath || undefined,
-      variantKind: colour.variantKind || 'unavailable',
+      variantKind: colour.variantKind === 'official' || colour.variantKind === 'rendered' ? colour.variantKind : 'unavailable',
       previewUnavailable: !!colour.previewUnavailable,
       isCurrent: !!colour.current,
       inStock: colour.available !== false,
       availability: colour.available ?? null,
       priceDelta: typeof colour.priceDelta === 'number' ? colour.priceDelta : undefined,
-      sizeVariants: colour.sizeVariants,
+      sizeVariants: colour.sizeVariants?.map((variant) => ({ ...variant, sku: variant.sku ?? undefined })),
       sourceUrl: product.sourceUrl,
     })),
   }));

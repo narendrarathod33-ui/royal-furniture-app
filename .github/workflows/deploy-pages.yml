@@ -62,6 +62,9 @@ jobs:
       # One-time bootstrap for the successful harvest whose blob download is
       # restricted in the sandbox. Future QA runs use the installed manifest.
       HARVEST_RUN_ID: '42385992930'
+      # Resume the already-rendered/audited checkpoint after integration fixes.
+      # Clear this after the generated catalogue has been committed.
+      QA_CHECKPOINT_RUN_ID: '42395077324'
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -77,7 +80,9 @@ jobs:
       - name: Stage reviewed official assets (or bootstrap downloaded harvest)
         run: |
           rm -rf fabric-output
-          if python -c 'import json,sys; sys.exit(0 if not json.load(open("app/data/fabricManifest.json")).get("products") else 1)'; then
+          if [ -n "$QA_CHECKPOINT_RUN_ID" ]; then
+            gh run download "$QA_CHECKPOINT_RUN_ID" -n "fabric-qa-checkpoint-$QA_CHECKPOINT_RUN_ID" --dir fabric-output
+          elif python -c 'import json,sys; sys.exit(0 if not json.load(open("app/data/fabricManifest.json")).get("products") else 1)'; then
             gh run download "$HARVEST_RUN_ID" -n "official-fabric-catalogue-$HARVEST_RUN_ID" --dir fabric-output
           else
             mkdir -p fabric-output/assets
@@ -88,9 +93,14 @@ jobs:
           # Normalize Current Fabric before validation; also updates the staged JSON.
           python scripts/fabrics/install.py fabric-output
       - name: Render approved masks and generate all contact sheets
-        run: python scripts/fabrics/render.py --input fabric-output --delay 0.15
+        run: |
+          if [ -n "$QA_CHECKPOINT_RUN_ID" ]; then
+            echo "Reusing rendered checkpoint $QA_CHECKPOINT_RUN_ID; no image or API requests"
+          else
+            python scripts/fabrics/render.py --input fabric-output --delay 0.15
+          fi
       - name: Upload rendered QA checkpoint
-        if: success()
+        if: ${{ success() && env.QA_CHECKPOINT_RUN_ID == '' }}
         uses: actions/upload-artifact@v4
         with:
           name: fabric-qa-checkpoint-${{ github.run_id }}
