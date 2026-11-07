@@ -27,20 +27,25 @@ test('catalog loads and server pricing rejects forged values/sizes/quantities', 
   const sizes = { products: catalog.products, sizes: { chair: [['Large', 200]] } };
   assert.equal(priceCart([{ productId: 'chair::size=Large', quantity: 1 }], sizes).total, 20000);
   const fabricProduct = real.products.get('7072-serafina-corner-sofa');
-  const pebbleId = 'chenille-pebble-beige-1906-b-3';
-  const lightGreyId = 'velvet-light-warm-grey-beige-1882-4';
-  const pebble = fabricProduct.fabrics.find((fabric) => fabric.id === pebbleId);
-  const pricedFabric = priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: pebbleId }], real);
-  assert.equal(pricedFabric.total, Math.round((fabricProduct.price + (pebble.priceDelta || 0)) * 100));
-  assert.match(pricedFabric.lines[0].name, /Fabric: PEBBLE BEIGE \/1906 B-3/);
+  const enabled = fabricProduct.fabrics.filter((fabric) => fabric.inStock);
+  const first = enabled[0];
+  const second = enabled.find((fabric) => fabric.id !== first.id);
+  const pricedFabric = priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: first.id }], real);
+  assert.equal(pricedFabric.total, Math.round((fabricProduct.price + (first.priceDelta || 0)) * 100));
+  assert(pricedFabric.lines[0].name.includes(first.name));
   assert.equal(priceCart([
-    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: pebbleId },
-    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: lightGreyId },
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: first.id },
+    { productId: '7072-serafina-corner-sofa', quantity: 1, fabricId: second.id },
   ], real).lines.length, 2, 'Different official fabrics remain separate server-priced lines');
   for (const fabricId of ['missing', 42]) assert.throws(() => priceCart([{ productId: '7072-serafina-corner-sofa', quantity: 1, fabricId }], real));
-  assert.throws(() => priceCart([{ productId: '6219-trento-single-seater-sofa', quantity: 1, fabricId: 'velvet-warm-cream-yellow-1882-5' }], real), 'Current out-of-stock website options are rejected');
+  const unavailable = [...real.products.entries()].flatMap(([productId, product]) => (product.fabrics || []).filter((fabric) => !fabric.inStock).map((fabric) => ({ productId, fabric })))[0];
+  assert(unavailable, 'The current official catalogue has an out-of-stock fixture');
+  assert.throws(() => priceCart([{ productId: unavailable.productId, quantity: 1, fabricId: unavailable.fabric.id }], real), 'Current out-of-stock website options are rejected');
   const deltaCatalog = { products: new Map([['chair', { name: 'Chair', price: 100, fabrics: [{ id: 'test-premium', name: 'Test premium', inStock: true, priceDelta: 25 }] }]]), sizes: {} };
   assert.equal(priceCart([{ productId: 'chair', quantity: 1, fabricId: 'test-premium' }], deltaCatalog).total, 12500, 'Server-side non-zero deltas remain covered by a test fixture');
+  const perSize = { products: new Map([['chair', { name: 'Chair', price: 100, fabrics: [{ id: 'test-sized', name: 'Test sized', inStock: true, priceDelta: 0, sizeVariants: [{ size: 'King - 200x180 cm', available: true, priceDelta: 40 }, { size: 'Queen', available: false, priceDelta: 20 }] }] }]]), sizes: { chair: [['King · 200x180', 200], ['Queen', 150]] } };
+  assert.equal(priceCart([{ productId: 'chair::size=King%20%C2%B7%20200x180', quantity: 1, fabricId: 'test-sized' }], perSize).total, 24000);
+  assert.throws(() => priceCart([{ productId: 'chair::size=Queen', quantity: 1, fabricId: 'test-sized' }], perSize));
 });
 
 async function fixture() {

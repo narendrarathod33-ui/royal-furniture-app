@@ -20,6 +20,7 @@ import { photoFor, photoForCatalogId, styles, type Product } from '../../compone
 import { ToastHost, showToast } from '../../components/catalog/Toast';
 import { SchemeBackdrop } from '../../components/catalog/SchemeBackdrop';
 import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
+import { useFabricChoiceStore } from '../../stores/fabricChoices';
 import { QuickViewSheet } from '../../components/catalog/QuickView';
 import { useSessionStore } from '../../stores/session';
 import { useLangStore } from '../../app/i18n';
@@ -43,6 +44,7 @@ export default function HomeScreen() {
       }
     }
     useCartStore.getState().resetUserData();
+    useFabricChoiceStore.getState().resetUserData();
     useSessionStore.getState().resetUserData();
     setSession((value) => value + 1);
   }} />;

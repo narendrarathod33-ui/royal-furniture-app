@@ -44,15 +44,15 @@ function productSelection({ siblings = [], official = [], api = [], local = [], 
   let hook = 0;
   const runtime = {
     exports: {}, sortSizesByPrice, selectSizeOption,
-    product: { id: 'bed', n: 'Bed', o: 999, l: 1200 }, detail: null, sizeVariants: siblings, photoSource: 'listing.jpg',
+    product: { id: 'bed', n: 'Bed', o: 999, l: 1200 }, fabricProduct: { id: 'bed', n: 'Bed', o: 999, l: 1200 }, detail: null, sizeVariants: siblings, photoSource: 'listing.jpg',
     sizeFromProductId: () => cartSize,
     getLocalOptions: () => ({ sizePrices: local }), extractApiOptions: () => ({}),
     getOfficialSizes: () => official, extractApiSizeOptions: () => api,
     fabricPriceDelta: (fabric) => typeof fabric?.priceDelta === 'number' ? fabric.priceDelta : 0,
     initialFabric: () => undefined,
     useMemo: (callback) => callback(),
-    // selectedSize, selectedFabricId, then selectedVariantId.
-    useState: (initial) => [hook++ === 2 ? selectedKey : initial, () => {}],
+    // selectedSize, selectedFabricId, fabricOpen, then selectedVariantId.
+    useState: (initial) => [hook++ === 3 ? selectedKey : initial, () => {}],
   };
   vm.runInNewContext(ts.transpileModule(selectionCode + '\nexports.selection = { sizeOptions, activeSize, displayPrice, displayListPrice, displayPhoto, selectedPrice, localSizePrices };', {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },

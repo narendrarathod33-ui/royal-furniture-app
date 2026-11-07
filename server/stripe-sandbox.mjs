@@ -24,9 +24,25 @@ export async function loadCatalog() {
     const data = JSON.parse(literal);
     for (const item of Array.isArray(data) ? data : data.products) products.set(item.id, { name: item.n, price: item.o, fabrics: item.fabrics });
   }
+  // The reviewed official variant manifest overrides the two legacy fabric arrays.
+  // It is parsed as JSON only; no client price or executable configuration is used.
+  const fabricManifest = JSON.parse(await readFile(new URL('../app/data/fabricManifest.json', import.meta.url), 'utf8'));
+  for (const [id, entry] of Object.entries(fabricManifest.products || {})) {
+    const product = products.get(id);
+    if (!product || !entry?.hasOptions) continue;
+    product.fabrics = (entry.fabricTypes || []).flatMap((type) => (type.colours || []).map((colour) => ({
+      id: `${type.id}::${colour.id}`,
+      name: `${type.name} — ${colour.name}`,
+      inStock: colour.available !== false,
+      priceDelta: Number.isFinite(colour.priceDelta) ? colour.priceDelta : 0,
+      sizeVariants: colour.sizeVariants || [],
+    })));
+  }
   const sizes = JSON.parse(await readFile(new URL('../harvest/sizes-priced.json', import.meta.url), 'utf8')).sizes;
   return { products, sizes };
 }
+
+const normalSize = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
 
 export function priceCart(items, catalog) {
   if (!Array.isArray(items) || !items.length || items.length > 30) throw new Error('INVALID_CART');
@@ -38,8 +54,10 @@ export function priceCart(items, catalog) {
     if (!product || extra.length) throw new Error('INVALID_CART');
     let price = product.price;
     let name = product.name;
+    let selectedSize;
     if (encoded !== undefined) {
       const size = decodeURIComponent(encoded);
+      selectedSize = size;
       const slug = base.replace(/^\d+-/, '');
       const options = catalog.sizes[slug] || catalog.sizes[slug.replace(/-[0-9a-f]{6}$/, '')] || [];
       const option = options.find(([label]) => label === size);
@@ -48,7 +66,16 @@ export function priceCart(items, catalog) {
       price = option[1]; name += ` — ${size}`;
     }
     if (item.fabricId !== undefined) {
-      const fabric = product.fabrics?.find((option) => option.id === item.fabricId);
+      let fabric = product.fabrics?.find((option) => option.id === item.fabricId);
+      if (fabric && selectedSize && fabric.sizeVariants?.length) {
+        const wanted = normalSize(selectedSize);
+        const variant = fabric.sizeVariants.find((option) => normalSize(option.size) === wanted)
+          || fabric.sizeVariants.find((option) => wanted.length >= 5 && (normalSize(option.size).includes(wanted) || wanted.includes(normalSize(option.size))));
+        // When per-size data exists, an unknown size fails closed rather than
+        // silently borrowing another size's availability or surcharge.
+        if (!variant) throw new Error('INVALID_CART');
+        fabric = { ...fabric, inStock: variant.available !== false, priceDelta: Number.isFinite(variant.priceDelta) ? variant.priceDelta : 0 };
+      }
       // Fabric prices and availability are server catalog data, never client prices.
       if (!fabric?.inStock) throw new Error('INVALID_CART');
       price += Number.isFinite(fabric.priceDelta) ? fabric.priceDelta : 0;

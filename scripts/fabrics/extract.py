@@ -258,6 +258,16 @@ class Harvester:
             return None
 
 
+def colour_asset_id(colour: dict[str, Any]) -> str:
+    if not colour.get("current"):
+        return colour["id"]
+    official_id = colour.get("fabricColorId")
+    if official_id is not None:
+        return f"current-fc-{official_id}"
+    digest = hashlib.sha256(str(colour.get("closeupSourceUrl") or "missing").encode()).hexdigest()[:12]
+    return f"current-{digest}"
+
+
 def extract_product(row: dict[str, Any], payload: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     data = payload.get("data") or payload
     primary = data.get("primary_images") or {}
@@ -341,7 +351,7 @@ def extract_product(row: dict[str, Any], payload: dict[str, Any]) -> tuple[dict[
         for colour in colours:
             variants = colour["sizeVariants"]
             available_values = [item["available"] for item in variants]
-            colour["available"] = any(value is True for value in available_values) if available_values else None
+            colour["available"] = True if any(value is True for value in available_values) else False if available_values and all(value is False for value in available_values) else None
             deltas = []
             for item in variants:
                 base = baseline.get(item["size"])
@@ -423,7 +433,7 @@ def main() -> int:
                     fabric["swatchPath"] = type_asset["path"]
                     fabric["swatchThumbPath"] = type_asset["thumbPath"]
                 for colour in fabric["colours"]:
-                    closeup = harvester.download(colour.get("closeupSourceUrl"), output / "assets/fabrics" / fabric["id"] / f"{colour['id']}.webp")
+                    closeup = harvester.download(colour.get("closeupSourceUrl"), output / "assets/fabrics" / fabric["id"] / f"{colour_asset_id(colour)}.webp")
                     if closeup:
                         colour["swatchPath"] = closeup["thumbPath"]
                         colour["closeupPath"] = closeup["path"]

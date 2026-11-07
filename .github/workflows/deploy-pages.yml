@@ -51,7 +51,82 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  fabric-qa:
+    # Runs against the reviewed/installed manifest; does not repeat API harvests.
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[fabric-qa]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      # One-time bootstrap for the successful harvest whose blob download is
+      # restricted in the sandbox. Future QA runs use the installed manifest.
+      HARVEST_RUN_ID: '42385992930'
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/fabrics/requirements.txt
+      - name: Install image and HTTP tools
+        run: python -m pip install -r scripts/fabrics/requirements.txt
+      - name: Validate render tools
+        run: python -m unittest scripts.fabrics.test_extract scripts.fabrics.test_render -v
+      - name: Stage reviewed official assets (or bootstrap downloaded harvest)
+        run: |
+          rm -rf fabric-output
+          if python -c 'import json,sys; sys.exit(0 if not json.load(open("app/data/fabricManifest.json")).get("products") else 1)'; then
+            gh run download "$HARVEST_RUN_ID" -n "official-fabric-catalogue-$HARVEST_RUN_ID" --dir fabric-output
+          else
+            mkdir -p fabric-output/assets
+            cp app/data/fabricManifest.json fabric-output/fabric-manifest.json
+            cp -r assets/fabrics fabric-output/assets/fabrics
+            if [ -d assets/variants ]; then cp -r assets/variants fabric-output/assets/variants; fi
+          fi
+          # Normalize Current Fabric before validation; also updates the staged JSON.
+          python scripts/fabrics/install.py fabric-output
+      - name: Render approved masks and generate all contact sheets
+        run: python scripts/fabrics/render.py --input fabric-output --delay 0.15
+      - name: Audit manifest and shipped/flagged assets
+        run: python scripts/fabrics/validate.py --input fabric-output
+      - name: Install reviewed QA output
+        run: python scripts/fabrics/install.py fabric-output
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify real catalogue integration
+        run: |
+          npm run typecheck
+          npx jest __tests__/fabrics.test.tsx --runInBand --silent
+          npm run test:payments
+      - name: Commit validated catalogue to this session branch
+        run: |
+          git config user.name "Arena Fabric QA"
+          git config user.email "arena-fabric-qa@users.noreply.github.com"
+          git add app/data/fabricManifest.json app/data/fabricAssets.ts assets/fabrics data/fabric-product-map.json docs/fabric-qa
+          if [ -d assets/variants ]; then git add assets/variants; fi
+          if git diff --cached --quiet; then echo "No generated changes"; exit 0; fi
+          git diff --cached --stat
+          git commit -m "Install current official fabric catalogue and QA"
+          git push origin HEAD:arena/7580beb8-royal-furniture-app
+      - name: Upload compact QA reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabric-qa-reports-${{ github.run_id }}
+          path: |
+            fabric-output/*report.json
+            fabric-output/*report.md
+            fabric-output/contact-sheet-index.html
+          if-no-files-found: warn
+          retention-days: 30
+
   build:
+    if: ${{ !contains(github.event.head_commit.message, '[fabric-qa]') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

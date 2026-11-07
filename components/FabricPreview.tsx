@@ -183,11 +183,12 @@ function FabricVisual({ product, fabric, source, cachedSource }: VisualProps) {
   }
 
   const mask = resolveFabricImage(product.maskImage);
+  const canRecolour = !!fabric && !fabric.previewUnavailable && !fabric.isCurrent;
   const supportsBlend = Platform.OS !== 'android' || Number(Platform.Version) >= 29;
   return (
     <View style={styles.fill} pointerEvents="none">
       <Image source={source} style={styles.image} resizeMode="contain" accessibilityLabel={`${name}${fabric ? ` in ${fabric.name} fabric` : ''}`} />
-      {fabric && mask ? (
+      {fabric && canRecolour && mask ? (
         <>
           <View accessible={false} style={[styles.fill, styles.colourBlend, { opacity: supportsBlend ? 0.9 : 0.22 }]}>
             <Image source={mask} resizeMode="contain" accessible={false} style={[styles.image, { tintColor: fabric.hex }]} />
@@ -222,7 +223,7 @@ export function FabricPreview({
   const maskUri = uriFor(resolveFabricImage(product.maskImage));
 
   useEffect(() => {
-    if (!__DEV__ || !fabric || fabric.variantImage || product.maskImage) return;
+    if (!__DEV__ || !fabric || fabric.variantImage || fabric.previewUnavailable || fabric.isCurrent || product.maskImage) return;
     if (missingMaskWarnings.has(product.id)) return;
     missingMaskWarnings.add(product.id);
     console.warn(`FabricPreview: product "${product.id}" needs a maskImage aligned to its primary product image; keeping the original photograph unchanged.`);
@@ -244,13 +245,15 @@ export function FabricPreview({
   useEffect(() => {
     let active = true;
     const options = product.fabrics?.filter((option) => option.inStock) || [];
-    // Warm variant-image caches as well as the recoloured canvas results.
+    // Warm direct variants and real close-ups before the customizer opens.
     for (const option of options) {
-      const variantUri = uriFor(resolveFabricImage(option.variantImage));
-      if (variantUri && typeof Image.prefetch === 'function') void Image.prefetch(variantUri).catch(() => false);
+      for (const source of [option.variantImage, option.closeupImage, option.swatchImage]) {
+        const uri = uriFor(resolveFabricImage(source));
+        if (uri && typeof Image.prefetch === 'function') void Promise.resolve(Image.prefetch(uri)).catch(() => false);
+      }
     }
     if (Platform.OS !== 'web' || !sourceUri || !maskUri) return () => { active = false; };
-    const jobs = options.filter((option) => !option.variantImage).map((option) =>
+    const jobs = options.filter((option) => !option.variantImage && !option.previewUnavailable && !option.isCurrent).map((option) =>
       precomputeWebRecolour(product.id, sourceUri, maskUri!, option),
     );
     void Promise.all(jobs).then(() => { if (active) setCacheVersion((value) => value + 1); });
@@ -259,7 +262,7 @@ export function FabricPreview({
 
   // cacheVersion is intentionally read: completed pre-renders replace fallback layers.
   void cacheVersion;
-  const cachedUri = fabric && sourceUri && maskUri && !fabric.variantImage
+  const cachedUri = fabric && sourceUri && maskUri && !fabric.variantImage && !fabric.previewUnavailable && !fabric.isCurrent
     ? cachedFabricRecolour(product.id, sourceUri, maskUri, fabric)
     : undefined;
   const cachedSource = cachedUri ? { uri: cachedUri } : undefined;

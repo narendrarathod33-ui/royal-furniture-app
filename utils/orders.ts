@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import { ORDERS_TOKEN, ORDERS_WEBHOOK_URL, WHATSAPP_NUMBER_INTL } from '../app/ordersConfig';
 import type { OrderRecord } from '../components/catalog/kit';
+import { fabricSelectionLabel } from '../app/data/fabrics';
 
 export const ordersConfigured = () => ORDERS_WEBHOOK_URL.length > 0;
 
@@ -13,7 +14,7 @@ export function orderItemsText(order: OrderRecord): string {
   return order.items.map((item) => {
     const qty = item.qty && item.qty > 1 ? `${item.qty}× ` : '';
     const size = item.size ? ` (${item.size})` : '';
-    const fabric = item.fabric ? ` · Fabric: ${item.fabric.name}` : '';
+    const fabric = item.fabric ? ` · Fabric: ${fabricSelectionLabel(item.fabric)}` : '';
     const price = typeof item.price === 'number'
       ? item.qty && item.qty > 1
         ? ` — ${aed(item.price)} each (${aed(item.price * item.qty)})`

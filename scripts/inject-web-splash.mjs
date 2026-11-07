@@ -16,7 +16,7 @@
  * Usage: node scripts/inject-web-splash.mjs [distDir]   (default: dist)
  * Idempotent: re-running replaces the previous injection.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const distDir = process.argv[2] || 'dist';
@@ -45,3 +45,11 @@ if (!html.includes(anchor)) {
 html = html.replace(anchor, `${anchor}${SPLASH}`);
 writeFileSync(file, html);
 console.log(`inject-web-splash: injected into ${file}`);
+
+// QA is reference documentation, not executable app code. Keep it beside the
+// app so reviewers can open every contact sheet without a repository checkout.
+const qaSource = join(process.cwd(), 'docs', 'fabric-qa');
+if (existsSync(qaSource)) {
+  cpSync(qaSource, join(distDir, 'fabric-qa'), { recursive: true });
+  console.log(`inject-web-splash: copied fabric QA reports/contact sheets`);
+}

@@ -2,7 +2,10 @@ import { useAdaptiveLayout } from '../hooks/useAdaptiveLayout';
 import { attachGalleryPointerNavigation } from '../utils/galleryPointer';
 import { ProductPhotoViewer } from '../components/ProductPhotoViewer';
 import { FabricPreview } from '../components/FabricPreview';
-import { fabricPriceDelta, initialFabric, toFabricSelection, type Fabric, type FabricSelection } from './data/fabrics';
+import { FabricCustomizer } from '../components/FabricCustomizer';
+import { fabricForSize, fabricPriceDelta, initialFabric, resolveFabricImage, toFabricSelection, type Fabric, type FabricSelection, type FabricType } from './data/fabrics';
+import { getFabricProduct, hasFabricManifestRecord } from './data/fabricCatalog';
+import { useFabricChoiceStore } from '../stores/fabricChoices';
 import { sortSizesByPrice, selectSizeOption } from '../utils/sizePricing';
 import { wrapSlideIndex, loopSlidePosition, settledSlidePosition } from '../utils/gallery';
 import { filterProductResponse } from './privacy/productResponse';
@@ -30,7 +33,7 @@ import {
 // literal is typed through a cast and shared by the two gallery surfaces.
 const WEB_TOUCH_ACTION = { touchAction: 'pan-y pinch-zoom' } as unknown as ViewStyle;
 import { BlurView } from 'expo-blur';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, X, ZoomIn } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 import { youMayAlsoLike, recentProducts } from './data/discovery';
@@ -68,6 +71,7 @@ type ProductDetailsProduct = {
   z?: unknown;
   sp?: unknown;
   fabrics?: readonly Fabric[];
+  fabricTypes?: readonly FabricType[];
   maskImage?: string;
   selectedFabric?: FabricSelection;
 };
@@ -210,6 +214,7 @@ function addColor(
   const cleanName = name?.trim();
   if (!cleanName) return;
   const key = cleanName.toLocaleLowerCase();
+  if (['selectable', 'select', 'default'].includes(key)) return;
   const existing = colors.get(key);
   const validHex = hex && /^#[\da-f]{6}$/i.test(hex) ? hex : undefined;
   colors.set(key, { name: cleanName, hex: existing?.hex || validHex, image: existing?.image || image });
@@ -456,6 +461,7 @@ function dedupeRows(rows: DetailRow[]) {
   const seen = new Set<string>();
   return rows.filter((row) => {
     if (!row.label || !row.value) return false;
+    if (/colou?r/i.test(row.label) && /^(?:selectable|select|default)$/i.test(row.value.trim())) return false;
     const key = `${row.label.toLowerCase()}|${row.value.toLowerCase()}`;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -487,6 +493,12 @@ export default function ProductDetails({
 }) {
   const adaptive = useAdaptiveLayout();
   const sourceId = product.id.split('::size=')[0];
+  const officialFabricProduct = useMemo(() => getFabricProduct(sourceId), [sourceId]);
+  const hasFabricRecord = useMemo(() => hasFabricManifestRecord(sourceId), [sourceId]);
+  const persistedFabric = useFabricChoiceStore((state) => state.choices[sourceId]);
+  const fabricProduct: ProductDetailsProduct = officialFabricProduct
+    ? { ...product, fabricTypes: officialFabricProduct.fabricTypes, fabrics: officialFabricProduct.fabrics, selectedFabric: product.selectedFabric || persistedFabric }
+    : { ...product, selectedFabric: product.selectedFabric || persistedFabric };
   // The API slug is the catalogue id minus its leading number. A trailing hash is
   // part of the slug on some rows (e.g. `azilea-smart-pro-grid-mattress-56bb1d`) and
   // absent on others, so both forms are tried.
@@ -512,10 +524,11 @@ export default function ProductDetails({
   const selectedSizeOption = localSizePrices.find((option) => option.name === selectedSize) || defaultSizeOption;
   const selectedPrice = hasDifferentSizePrices ? selectedSizeOption?.price ?? baseProductPrice : baseProductPrice;
   const selectedListPrice = hasDifferentSizePrices ? selectedSizeOption?.listPrice ?? baseProductListPrice : baseProductListPrice;
-  const fabricOptions = product.fabrics;
-  const [selectedFabricId, setSelectedFabricId] = useState(() => initialFabric(product)?.id || '');
-  const selectedFabric = fabricOptions?.find((fabric) => fabric.inStock && fabric.id === selectedFabricId)
-    || initialFabric(product);
+  const fabricOptions = fabricProduct.fabrics;
+  const [selectedFabricId, setSelectedFabricId] = useState(() => initialFabric(fabricProduct)?.id || '');
+  const [fabricOpen, setFabricOpen] = useState(false);
+  const chosenFabric = fabricOptions?.find((fabric) => fabric.id === selectedFabricId)
+    || initialFabric(fabricProduct);
   const productName = product.n.replace(/\s+—\s+Size:\s+.*$/, '');
 
   // Official size dropdown, in priority order:
@@ -556,6 +569,9 @@ export default function ProductDetails({
   const activeVariant = variants.find((variant) => variant.id === activeSize?.key) || variants[0];
   const hasSizeMenu = sizeOptions.length > 1;
   const hasPricedSizes = sizeOptions.some((option) => option.price !== undefined);
+  const selectedSizeText = activeSize?.label || (usingOfficialSizes || usingApiSizes ? 'Select size' : '');
+  const sizedFabric = chosenFabric ? fabricForSize(chosenFabric, selectedSizeText) : undefined;
+  const selectedFabric = sizedFabric?.inStock ? sizedFabric : initialFabric(fabricProduct, selectedSizeText);
   // Display the cheapest known size immediately, unless a customer/cart size is selected.
   const displayBasePrice = activeSize?.price !== undefined ? activeSize.price : selectedPrice;
   const displayPrice = Math.max(0, displayBasePrice + fabricPriceDelta(selectedFabric));
@@ -568,7 +584,6 @@ export default function ProductDetails({
     ? Math.max(0, displayBaseListPrice + fabricPriceDelta(selectedFabric))
     : undefined;
   const displayPhoto = (usingSizeVariants && activeVariant?.photo) || photoSource;
-  const selectedSizeText = activeSize?.label || (usingOfficialSizes || usingApiSizes ? 'Select size' : '');
   const savedAmount = displayListPrice && displayListPrice > displayPrice ? displayListPrice - displayPrice : 0;
 
   useEffect(() => {
@@ -626,9 +641,13 @@ export default function ProductDetails({
   const sizes = unique([...live.sizes, ...local.sizes]);
   const textSizes = extractTextSizes(`${productName} ${description}`);
   const displaySizes = sizes.length ? sizes : textSizes;
-  const fabrics = unique([...local.fabrics, ...live.fabrics, ...(baked?.fabrics || [])]);
+  const fabrics = hasFabricRecord
+    ? unique((officialFabricProduct?.fabricTypes || []).map((type) => type.name))
+    : unique([...local.fabrics, ...live.fabrics, ...(baked?.fabrics || [])]);
+  // Fresh-manifest products never fall back to historical colour lists. The
+  // customizer is their sole option display; unmatched products retain legacy UI.
   const colorMap = new Map<string, { name: string; hex?: string; image?: string }>();
-  [...local.colors, ...live.colors, ...(baked?.colors || [])].forEach((color) => addColor(colorMap, color.name, color.hex, color.image));
+  if (!hasFabricRecord) [...local.colors, ...live.colors, ...(baked?.colors || [])].forEach((color) => addColor(colorMap, color.name, color.hex, color.image));
   const displayColors = [...colorMap.values()];
   const titleColors = displayColors.length ? [] : extractTitleColors(productName);
   const detailRows = dedupeRows([...live.rows, ...local.rows]).slice(0, 10);
@@ -657,9 +676,9 @@ export default function ProductDetails({
   );
 
   // General Information, grouped the way the product page groups it.
-  const specSections = baked?.sections?.length
-    ? baked.sections
-    : live.sections;
+  const specSections = (baked?.sections?.length ? baked.sections : live.sections)
+    .map((section) => ({ ...section, rows: dedupeRows(section.rows) }))
+    .filter((section) => section.rows.length);
   const galleryPaths = baked?.gallery?.length ? baked.gallery : live.images;
   const gallery = galleryPaths.map((path) => (path.startsWith('http') ? path : productImageUrl(path)));
   // The slider shows every picture the site publishes for this product — the same
@@ -722,6 +741,7 @@ export default function ProductDetails({
   const chooseFabric = (fabric: Fabric) => {
     if (!fabric.inStock) return;
     setSelectedFabricId(fabric.id);
+    useFabricChoiceStore.getState().choose(sourceId, toFabricSelection(fabric));
     if (activeSlide !== 0) goToSlide(0);
   };
   const handleGalleryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -805,6 +825,16 @@ export default function ProductDetails({
       <SchemeBackdrop />
       {header}
       <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={productName} onClose={() => setPhotoZoomOpen(false)} />
+      <FabricCustomizer
+        visible={fabricOpen}
+        product={fabricProduct}
+        source={displayPhoto}
+        selectedFabric={selectedFabric}
+        selectedSize={selectedSizeText}
+        onSelect={chooseFabric}
+        onClose={() => setFabricOpen(false)}
+        onContinue={() => setFabricOpen(false)}
+      />
       <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={[styles.back, { alignSelf: 'flex-start', minWidth: 44, minHeight: 44 }]}>
           <ChevronLeft color={COLORS.ink} size={22} />
@@ -828,7 +858,7 @@ export default function ProductDetails({
             >
               <Animated.View pointerEvents="none" style={{ flexDirection: 'row', width: loopingSlides.length * slideBox.width, height: '100%', transform: [{ translateX: webGalleryOffset }] }}>
                 {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
-                  <FabricPreview key={slide.key} product={product} fabric={selectedFabric} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} />
+                  <FabricPreview key={slide.key} product={fabricProduct} fabric={selectedFabric} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} />
                 ) : (
                   <Image key={slide.key} source={slide.source} style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]} resizeMode="contain" />
                 ))}
@@ -852,7 +882,7 @@ export default function ProductDetails({
               {loopingSlides.map((slide) => slide.primary && fabricOptions?.length ? (
                 <FabricPreview
                   key={slide.key}
-                  product={product}
+                  product={fabricProduct}
                   fabric={selectedFabric}
                   source={slide.source}
                   style={[styles.image, { width: slideBox.width }, slideBox.height ? { height: slideBox.height } : null]}
@@ -902,45 +932,22 @@ export default function ProductDetails({
         {slides.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
 
         {!!fabricOptions?.length && (
-          <View style={styles.fabricSection} testID="fabric-selector">
-            <View style={styles.fabricHeading}>
-              <Text style={styles.fabricLabel}>{t('pdp.fabric')}</Text>
-              {!!selectedFabric && <Text style={styles.fabricSelectedName} accessibilityLiveRegion="polite">{selectedFabric.name}</Text>}
+          <Pressable
+            testID="fabric-selector"
+            accessibilityRole="button"
+            accessibilityLabel={`Customize fabric and colour. Selected ${selectedFabric?.fabricTypeName || ''} ${selectedFabric?.name || ''}${selectedFabric?.code ? `, ${selectedFabric.code}` : ''}`}
+            onPress={() => setFabricOpen(true)}
+            style={styles.fabricCustomizeButton}
+          >
+            {!!selectedFabric?.swatchImage && <Image source={resolveFabricImage(selectedFabric.swatchImage)} style={styles.fabricCustomizeSwatch} resizeMode="cover" accessibilityLabel={`${selectedFabric.name} swatch`} />}
+            <View style={styles.fabricCustomizeCopy}>
+              <Text style={styles.fabricLabel}>Fabric & colour</Text>
+              <Text style={styles.fabricSelectedName} accessibilityLiveRegion="polite">{[selectedFabric?.fabricTypeName, selectedFabric?.name, selectedFabric?.code].filter(Boolean).join(' · ')}</Text>
+              {!!selectedFabric?.previewUnavailable && <Text style={styles.fabricUnavailable}>Preview unavailable · official close-up available</Text>}
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.fabricScroll} contentContainerStyle={styles.fabricRow} keyboardShouldPersistTaps="handled">
-              {fabricOptions.map((fabric) => {
-                const selected = selectedFabric?.id === fabric.id;
-                const delta = fabricPriceDelta(fabric);
-                const availability = fabric.inStock ? '' : `, ${t('pdp.notAvailable')}`;
-                const price = delta ? `, ${delta > 0 ? '+' : '−'}${money(Math.abs(delta))}` : '';
-                return (
-                  <View key={fabric.id} style={styles.fabricOption}>
-                    <Pressable
-                      testID={`fabric-swatch-${fabric.id}`}
-                      accessibilityRole="radio"
-                      accessibilityLabel={`${fabric.name}${availability}${price}`}
-                      accessibilityState={{ selected, checked: selected, disabled: !fabric.inStock }}
-                      aria-checked={selected}
-                      aria-disabled={!fabric.inStock}
-                      disabled={!fabric.inStock}
-                      onPress={() => chooseFabric(fabric)}
-                      style={[styles.fabricSwatch, selected && styles.fabricSwatchSelected, !fabric.inStock && styles.fabricSwatchDisabled]}
-                    >
-                      <View style={[styles.fabricSwatchColour, { backgroundColor: fabric.hex }]}>
-                        {selected && <View style={styles.fabricCheck}><Check size={13} color={COLORS.ink} strokeWidth={3} /></View>}
-                        {!fabric.inStock && <X size={19} color={COLORS.ink} strokeWidth={2.5} />}
-                      </View>
-                    </Pressable>
-                    {!fabric.inStock ? (
-                      <Text style={styles.fabricUnavailable}>{t('pdp.notAvailable')}</Text>
-                    ) : delta !== 0 ? (
-                      <Text style={styles.fabricDelta}>{delta > 0 ? '+' : '−'}{money(Math.abs(delta))}</Text>
-                    ) : null}
-                  </View>
-                );
-              })}
-            </ScrollView>
-          </View>
+            <Text style={styles.fabricCustomizeAction}>Customize Yours</Text>
+            <ChevronRight size={18} color={COLORS.ink} />
+          </Pressable>
         )}
 
         </View><View style={{ width: '100%', flex: adaptive.twoPane ? 1 : undefined, minWidth: 0, maxWidth: adaptive.twoPane ? 680 : undefined }}>
@@ -1364,6 +1371,10 @@ const styles = StyleSheet.create({
   galleryThumbActive: { borderColor: COLORS.red, borderTopColor: COLORS.red },
   galleryThumbImage: { width: '100%', height: '100%' },
   imageNote: { color: COLORS.muted, fontSize: 10, lineHeight: 14, marginTop: 8 },
+  fabricCustomizeButton: { marginTop: 12, minHeight: 76, padding: 12, borderRadius: 16, backgroundColor: COLORS.white, flexDirection: 'row', alignItems: 'center', gap: 10, ...GLASS.panelStrong },
+  fabricCustomizeSwatch: { width: 48, height: 48, borderRadius: 24, borderWidth: 1, borderColor: COLORS.line },
+  fabricCustomizeCopy: { flex: 1, minWidth: 0, gap: 3 },
+  fabricCustomizeAction: { color: COLORS.red, fontSize: 11, fontWeight: '800' },
   fabricSection: { marginTop: 12, padding: 14, borderRadius: 16, backgroundColor: COLORS.white, ...GLASS.panelStrong },
   fabricHeading: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginBottom: 10 },
   fabricLabel: { color: COLORS.ink, fontSize: 14, fontWeight: '800' },
