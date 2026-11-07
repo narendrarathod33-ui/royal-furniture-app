@@ -41,7 +41,7 @@ jobs:
       - name: Validate extractor
         run: python -m unittest scripts.fabrics.test_extract -v
       - name: Extract current official variants and assets
-        run: python scripts/fabrics/extract.py --refresh --delay "${{ inputs.harvest_delay }}" --output fabric-output
+        run: python scripts/fabrics/extract.py --refresh --delay "${{ inputs.harvest_delay || '0.25' }}" --output fabric-output
       - name: Upload official fabric catalogue
         if: always()
         uses: actions/upload-artifact@v4
