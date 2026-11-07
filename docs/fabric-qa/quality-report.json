@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-11-07T17:20:19.471597+00:00",
+  "generatedAt": "2026-11-07T17:39:31.557088+00:00",
   "counts": {
     "contactSheets": 598,
     "renderedApproved": 44,
     "officialVariantImages": 60,
     "previewUnavailable": 9360,
-    "currentCloseupsRepaired": 7,
+    "currentCloseupsRepaired": 0,
     "catalogueOriginalFallbacks": 596,
     "materialHexMismatches": 437,
     "imageDownloadErrors": 0
@@ -2724,7 +2724,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "7070-the-sibby-6-seater-sofa",
@@ -2737,7 +2737,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "7070-the-sibby-6-seater-sofa",
@@ -2750,7 +2750,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "7067-the-relaxo-12-seater-sofa",
@@ -2763,7 +2763,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "7067-the-relaxo-12-seater-sofa",
@@ -2776,7 +2776,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "7067-the-relaxo-12-seater-sofa",
@@ -2789,7 +2789,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "7063-the-ninea-6-seater-sofa",
@@ -2802,7 +2802,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "7063-the-ninea-6-seater-sofa",
@@ -2815,7 +2815,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "7063-the-ninea-6-seater-sofa",
@@ -2828,7 +2828,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "7061-venetia-7-seater-sofa-set",
@@ -2841,7 +2841,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "7061-venetia-7-seater-sofa-set",
@@ -2854,7 +2854,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "7061-venetia-7-seater-sofa-set",
@@ -2867,7 +2867,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "7059-lumina-6-seater-sofa-set",
@@ -2880,7 +2880,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "7059-lumina-6-seater-sofa-set",
@@ -2893,7 +2893,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "7059-lumina-6-seater-sofa-set",
@@ -2906,7 +2906,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "7053-olivos-4-door-wardrobe-oak",
@@ -2919,7 +2919,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "7051-olivos-4-door-wardrobe-grey",
@@ -2932,7 +2932,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 23.272243825134353
+      "deltaE76": 23.272243825134385
     },
     {
       "productId": "7049-kaspar-6-door-wardrobe",
@@ -2945,7 +2945,7 @@
         158.0,
         107.0
       ],
-      "deltaE76": 37.33526761618375
+      "deltaE76": 37.335267616183714
     },
     {
       "productId": "7046-spinnet-kids-3-door-wardrobe",
@@ -2958,7 +2958,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "7042-modena-6-piece-king-bedroom-set-180-200-cm",
@@ -2984,7 +2984,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 42.48129911011089
+      "deltaE76": 42.481299110110854
     },
     {
       "productId": "7007-bronte-bunk-bed",
@@ -2997,7 +2997,7 @@
         186.0,
         181.0
       ],
-      "deltaE76": 23.494283404540514
+      "deltaE76": 23.49428340454054
     },
     {
       "productId": "7004-anders-bunk-bed",
@@ -3010,7 +3010,7 @@
         186.0,
         181.0
       ],
-      "deltaE76": 23.494283404540514
+      "deltaE76": 23.49428340454054
     },
     {
       "productId": "6982-siena-sofa-set-with-center-and-side-tables",
@@ -3023,7 +3023,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6982-siena-sofa-set-with-center-and-side-tables",
@@ -3036,7 +3036,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "6982-siena-sofa-set-with-center-and-side-tables",
@@ -3049,7 +3049,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "6978-the-vicario-sofa-set",
@@ -3062,7 +3062,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6978-the-vicario-sofa-set",
@@ -3075,7 +3075,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "6978-the-vicario-sofa-set",
@@ -3088,7 +3088,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "6967-noura-dresser-with-chair",
@@ -3101,7 +3101,7 @@
         162.0,
         115.0
       ],
-      "deltaE76": 33.77466705740233
+      "deltaE76": 33.77466705740235
     },
     {
       "productId": "6302-elara-single-seater-sofa",
@@ -3114,7 +3114,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6303-layan-single-seater-sofa",
@@ -3127,7 +3127,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6304-leona-single-seater-sofa",
@@ -3140,7 +3140,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6305-wave-single-seater-sofa",
@@ -3153,7 +3153,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6297-simba-single-seater-sofa",
@@ -3166,7 +3166,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6301-bella-single-seater-sofa",
@@ -3179,7 +3179,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6296-the-relaxo-single-seater-sofa",
@@ -3192,7 +3192,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6288-the-sibby-single-seater-sofa",
@@ -3205,7 +3205,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6289-the-crest-single-seater-sofa",
@@ -3218,7 +3218,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6282-the-troop-single-seater-sofa-29ff19",
@@ -3231,7 +3231,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6283-the-adeline-single-seater-sofa",
@@ -3244,7 +3244,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6284-the-ninea-single-seater-sofa",
@@ -3257,7 +3257,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6277-valencia-accent-chair",
@@ -3270,7 +3270,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6279-the-chalis-single-seater-sofa",
@@ -3283,7 +3283,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6281-alex-single-seater-sofa",
@@ -3296,7 +3296,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6272-duke-accent-chair-23459d",
@@ -3309,7 +3309,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6273-the-cheryl-single-seater-sofa",
@@ -3322,7 +3322,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6274-the-lima-accent-chair",
@@ -3335,7 +3335,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6275-staten-accent-chair",
@@ -3348,7 +3348,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6276-lima-accent-chair",
@@ -3361,7 +3361,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6266-nixon-accent-chair",
@@ -3374,7 +3374,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6267-the-fox-single-seater-sofa",
@@ -3387,7 +3387,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6268-duke-accent-chair",
@@ -3400,7 +3400,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6269-duke-accent-chair-0a90f2",
@@ -3413,7 +3413,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6270-duke-accent-chair-d767fb",
@@ -3426,7 +3426,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6271-the-troop-single-seater-sofa",
@@ -3439,7 +3439,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6265-drake-arm-chair",
@@ -3452,7 +3452,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6264-boost-chair-with-black-base",
@@ -3465,7 +3465,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6263-ashi-arm-chair",
@@ -3478,7 +3478,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6261-the-tristan-single-seater-sofa",
@@ -3491,7 +3491,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6262-the-jordan-single-seater-sofa",
@@ -3504,7 +3504,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6260-the-aviva-single-seater-sofa",
@@ -3517,7 +3517,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6259-axis-single-seater-sofa",
@@ -3530,7 +3530,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6258-uptown-single-seater-sofa",
@@ -3543,7 +3543,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6257-the-harlow-single-seater-sofa",
@@ -3556,7 +3556,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6256-bronx-single-seater-sofa",
@@ -3569,7 +3569,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6254-the-jesse-single-seater-sofa",
@@ -3582,7 +3582,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6253-the-adriel-single-seater-sofa",
@@ -3595,7 +3595,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6252-jenson-single-seater",
@@ -3608,7 +3608,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6250-nokin-single-seater-sofa",
@@ -3621,7 +3621,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6249-zaina-single-seater-sofa",
@@ -3634,7 +3634,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6248-the-trust-single-seater-sofa",
@@ -3647,7 +3647,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6247-tegan-single-seater-sofa",
@@ -3660,7 +3660,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6245-the-ozler-single-seater-sofa",
@@ -3673,7 +3673,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6244-brock-single-seater-sofa",
@@ -3686,7 +3686,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6243-alara-single-seater-sofa",
@@ -3699,7 +3699,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6242-the-dune-single-seater-sofa",
@@ -3712,7 +3712,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6241-regis-chair-set-of-2",
@@ -3725,7 +3725,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6240-the-gayana-single-seater-sofa",
@@ -3738,7 +3738,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6239-opulent-single-seater-sofa",
@@ -3751,7 +3751,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6238-the-lender-single-seater-sofa",
@@ -3764,7 +3764,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6237-noah-swivel-chair",
@@ -3777,7 +3777,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6235-gala-single-seater-sofa",
@@ -3790,7 +3790,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6234-boss-single-seater-sofa",
@@ -3803,7 +3803,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6233-the-alvarez-single-seater-sofa",
@@ -3816,7 +3816,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6232-travis-single-seater-sofa",
@@ -3829,7 +3829,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6231-renzo-single-seater-sofa",
@@ -3842,7 +3842,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6230-ava-single-seater-sofa",
@@ -3855,7 +3855,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6229-suzy-single-seater-sofa",
@@ -3868,7 +3868,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6227-the-andre-single-seater-sofa",
@@ -3881,7 +3881,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6225-the-franklin-single-seater-sofa",
@@ -3894,7 +3894,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6221-dario-single-seater-sofa",
@@ -3907,7 +3907,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6220-elliot-single-seater-sofa",
@@ -3920,7 +3920,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6219-trento-single-seater-sofa",
@@ -3933,7 +3933,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6217-zhuri-single-seater-sofa",
@@ -3946,7 +3946,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6215-ayilin-lux-single-seater-sofa",
@@ -3959,7 +3959,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6214-ayilin-single-seater-sofa",
@@ -3972,7 +3972,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6211-brando-single-seater-sofa",
@@ -3985,7 +3985,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6209-zarah-single-seater-sofa",
@@ -3998,7 +3998,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6208-atom-single-seater-sofa",
@@ -4011,7 +4011,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6203-lucia-single-seater-sofa",
@@ -4024,7 +4024,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6202-amala-single-seater-sofa",
@@ -4037,7 +4037,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6201-omar-single-seater-sofa",
@@ -4050,7 +4050,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6200-felix-single-seater-sofa",
@@ -4063,7 +4063,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6199-cruz-single-seater-sofa",
@@ -4076,7 +4076,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6198-candace-single-seater-sofa",
@@ -4089,7 +4089,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6197-tia-single-seater-swivel-chair",
@@ -4102,7 +4102,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6196-della-single-seater-sofa",
@@ -4115,7 +4115,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6195-solero-single-seater-sofa",
@@ -4128,7 +4128,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6194-austin-single-seater-sofa",
@@ -4141,7 +4141,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6193-kite-single-seater-sofa",
@@ -4154,7 +4154,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6192-lorenzo-single-seater-sofa",
@@ -4167,7 +4167,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6191-opulence-single-seater-sofa",
@@ -4180,7 +4180,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6190-altan-arm-chair",
@@ -4193,7 +4193,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6189-hazel-single-seater-sofa",
@@ -4206,7 +4206,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "6188-enes-single-seater-sofa",
@@ -4219,7 +4219,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "5886-dana-bunk-bed",
@@ -4232,7 +4232,7 @@
         186.0,
         181.0
       ],
-      "deltaE76": 23.494283404540514
+      "deltaE76": 23.49428340454054
     },
     {
       "productId": "4139-the-lucas-7-seater-sofa-set",
@@ -4245,7 +4245,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4139-the-lucas-7-seater-sofa-set",
@@ -4258,7 +4258,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4139-the-lucas-7-seater-sofa-set",
@@ -4271,7 +4271,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4138-the-destiny-6-seater-sofa-set",
@@ -4284,7 +4284,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4138-the-destiny-6-seater-sofa-set",
@@ -4297,7 +4297,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4138-the-destiny-6-seater-sofa-set",
@@ -4310,7 +4310,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4137-the-andre-6-seater-sofa-set",
@@ -4323,7 +4323,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4137-the-andre-6-seater-sofa-set",
@@ -4336,7 +4336,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4137-the-andre-6-seater-sofa-set",
@@ -4349,7 +4349,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4136-the-franklin-6-seater-sofa-set",
@@ -4362,7 +4362,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4136-the-franklin-6-seater-sofa-set",
@@ -4375,7 +4375,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4136-the-franklin-6-seater-sofa-set",
@@ -4388,7 +4388,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4135-bayu-7-seater-sofa-set",
@@ -4401,7 +4401,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4135-bayu-7-seater-sofa-set",
@@ -4414,7 +4414,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4135-bayu-7-seater-sofa-set",
@@ -4427,7 +4427,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4134-bayu-7-seater-sofa-set-with-centre-table",
@@ -4440,7 +4440,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4134-bayu-7-seater-sofa-set-with-centre-table",
@@ -4453,7 +4453,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4134-bayu-7-seater-sofa-set-with-centre-table",
@@ -4466,7 +4466,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4133-benjamin-6-seater-sofa-set",
@@ -4479,7 +4479,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4133-benjamin-6-seater-sofa-set",
@@ -4492,7 +4492,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4133-benjamin-6-seater-sofa-set",
@@ -4505,7 +4505,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4132-the-peterson-6-seater-sofa-set",
@@ -4518,7 +4518,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4132-the-peterson-6-seater-sofa-set",
@@ -4531,7 +4531,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4132-the-peterson-6-seater-sofa-set",
@@ -4544,7 +4544,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4131-boss-6-seater-sofa-set",
@@ -4557,7 +4557,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4131-boss-6-seater-sofa-set",
@@ -4570,7 +4570,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4131-boss-6-seater-sofa-set",
@@ -4583,7 +4583,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4129-dario-6-seater-sofa-set",
@@ -4596,7 +4596,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4129-dario-6-seater-sofa-set",
@@ -4609,7 +4609,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4129-dario-6-seater-sofa-set",
@@ -4622,7 +4622,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4128-elliot-6-seater-sofa-set",
@@ -4635,7 +4635,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4128-elliot-6-seater-sofa-set",
@@ -4648,7 +4648,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4128-elliot-6-seater-sofa-set",
@@ -4661,7 +4661,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4127-zhuri-8-seater-sofa-set",
@@ -4674,7 +4674,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4127-zhuri-8-seater-sofa-set",
@@ -4687,7 +4687,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4127-zhuri-8-seater-sofa-set",
@@ -4700,7 +4700,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4126-ayilin-lux-6-seater-sofa-set",
@@ -4713,7 +4713,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4126-ayilin-lux-6-seater-sofa-set",
@@ -4726,7 +4726,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4126-ayilin-lux-6-seater-sofa-set",
@@ -4739,7 +4739,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4125-ayilin-6-seater-sofa-set",
@@ -4752,7 +4752,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4125-ayilin-6-seater-sofa-set",
@@ -4765,7 +4765,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4125-ayilin-6-seater-sofa-set",
@@ -4778,7 +4778,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4124-brando-7-seater-sofa-set",
@@ -4791,7 +4791,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4124-brando-7-seater-sofa-set",
@@ -4804,7 +4804,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4124-brando-7-seater-sofa-set",
@@ -4817,7 +4817,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4122-anita-6-seater-sofa-set",
@@ -4830,7 +4830,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4122-anita-6-seater-sofa-set",
@@ -4843,7 +4843,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4122-anita-6-seater-sofa-set",
@@ -4856,7 +4856,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4119-amala-6-seater-sofa-set",
@@ -4869,7 +4869,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4119-amala-6-seater-sofa-set",
@@ -4882,7 +4882,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4119-amala-6-seater-sofa-set",
@@ -4895,7 +4895,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4118-omar-8-seater-sofa-set",
@@ -4908,7 +4908,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4118-omar-8-seater-sofa-set",
@@ -4921,7 +4921,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4118-omar-8-seater-sofa-set",
@@ -4934,7 +4934,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4117-the-felix-6-seater-sofa-set",
@@ -4947,7 +4947,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4117-the-felix-6-seater-sofa-set",
@@ -4960,7 +4960,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4117-the-felix-6-seater-sofa-set",
@@ -4973,7 +4973,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4116-the-cora-7-seater-sofa-set",
@@ -4986,7 +4986,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4116-the-cora-7-seater-sofa-set",
@@ -4999,7 +4999,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4116-the-cora-7-seater-sofa-set",
@@ -5012,7 +5012,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4115-austin-6-seater-sofa-set",
@@ -5025,7 +5025,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4115-austin-6-seater-sofa-set",
@@ -5038,7 +5038,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4115-austin-6-seater-sofa-set",
@@ -5051,7 +5051,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4114-ira-7-seater-sofa-set",
@@ -5064,7 +5064,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4114-ira-7-seater-sofa-set",
@@ -5077,7 +5077,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4114-ira-7-seater-sofa-set",
@@ -5090,7 +5090,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4113-orla-8-seater-sofa-set",
@@ -5103,7 +5103,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4113-orla-8-seater-sofa-set",
@@ -5116,7 +5116,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4113-orla-8-seater-sofa-set",
@@ -5129,7 +5129,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4112-tokyo-6-seater-sofa-set",
@@ -5142,7 +5142,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4112-tokyo-6-seater-sofa-set",
@@ -5155,7 +5155,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4112-tokyo-6-seater-sofa-set",
@@ -5168,7 +5168,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4111-atom-6-seater-sofa-set",
@@ -5181,7 +5181,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4111-atom-6-seater-sofa-set",
@@ -5194,7 +5194,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4111-atom-6-seater-sofa-set",
@@ -5207,7 +5207,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4110-the-arah-6-seater-sofa-set",
@@ -5220,7 +5220,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4110-the-arah-6-seater-sofa-set",
@@ -5233,7 +5233,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4110-the-arah-6-seater-sofa-set",
@@ -5246,7 +5246,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4108-diya-7-seater-sofa-set",
@@ -5259,7 +5259,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4108-diya-7-seater-sofa-set",
@@ -5272,7 +5272,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4108-diya-7-seater-sofa-set",
@@ -5285,7 +5285,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4107-nayra-6-seater-sofa-set",
@@ -5298,7 +5298,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4107-nayra-6-seater-sofa-set",
@@ -5311,7 +5311,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4107-nayra-6-seater-sofa-set",
@@ -5324,7 +5324,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4106-devine-6-seater-sofa-set",
@@ -5337,7 +5337,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4106-devine-6-seater-sofa-set",
@@ -5350,7 +5350,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4106-devine-6-seater-sofa-set",
@@ -5363,7 +5363,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4104-refine-6-seater-sofa-set",
@@ -5376,7 +5376,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4104-refine-6-seater-sofa-set",
@@ -5389,7 +5389,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4104-refine-6-seater-sofa-set",
@@ -5402,7 +5402,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4103-renzo-7-seater-sofa-set",
@@ -5415,7 +5415,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4103-renzo-7-seater-sofa-set",
@@ -5428,7 +5428,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4103-renzo-7-seater-sofa-set",
@@ -5441,7 +5441,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4102-lush-7-seater-sofa-set",
@@ -5454,7 +5454,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4102-lush-7-seater-sofa-set",
@@ -5467,7 +5467,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4102-lush-7-seater-sofa-set",
@@ -5480,7 +5480,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4101-the-jess-6-seater-sofa-set",
@@ -5493,7 +5493,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4101-the-jess-6-seater-sofa-set",
@@ -5506,7 +5506,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4101-the-jess-6-seater-sofa-set",
@@ -5519,7 +5519,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4100-taara-4-seater-sofa",
@@ -5532,7 +5532,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4100-taara-4-seater-sofa",
@@ -5545,7 +5545,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4100-taara-4-seater-sofa",
@@ -5558,7 +5558,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4097-shell-7-seater-sofa-set",
@@ -5571,7 +5571,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4097-shell-7-seater-sofa-set",
@@ -5584,7 +5584,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4097-shell-7-seater-sofa-set",
@@ -5597,7 +5597,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4096-milan-6-seater-sofa-set",
@@ -5610,7 +5610,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4096-milan-6-seater-sofa-set",
@@ -5623,7 +5623,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4096-milan-6-seater-sofa-set",
@@ -5636,7 +5636,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4095-poise-6-seater-sofa-set",
@@ -5649,7 +5649,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4095-poise-6-seater-sofa-set",
@@ -5662,7 +5662,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4095-poise-6-seater-sofa-set",
@@ -5675,7 +5675,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4094-gala-6-seater-sofa-set",
@@ -5688,7 +5688,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4094-gala-6-seater-sofa-set",
@@ -5701,7 +5701,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4094-gala-6-seater-sofa-set",
@@ -5714,7 +5714,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4093-odyssey-7-seater-sofa-set-with-tables",
@@ -5727,7 +5727,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4093-odyssey-7-seater-sofa-set-with-tables",
@@ -5740,7 +5740,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4093-odyssey-7-seater-sofa-set-with-tables",
@@ -5753,7 +5753,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4092-ediz-7-seater-sofa-set",
@@ -5766,7 +5766,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4092-ediz-7-seater-sofa-set",
@@ -5779,7 +5779,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4092-ediz-7-seater-sofa-set",
@@ -5792,7 +5792,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4091-solange-corner-sofa-set",
@@ -5805,7 +5805,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4091-solange-corner-sofa-set",
@@ -5818,7 +5818,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4091-solange-corner-sofa-set",
@@ -5831,7 +5831,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4090-chelsea-7-seater-sofa-set",
@@ -5844,7 +5844,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4090-chelsea-7-seater-sofa-set",
@@ -5857,7 +5857,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4090-chelsea-7-seater-sofa-set",
@@ -5870,7 +5870,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4089-ava-6-seater-sofa-set",
@@ -5883,7 +5883,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4089-ava-6-seater-sofa-set",
@@ -5896,7 +5896,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4089-ava-6-seater-sofa-set",
@@ -5909,7 +5909,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4088-lucia-6-seater-sofa-set",
@@ -5922,7 +5922,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4088-lucia-6-seater-sofa-set",
@@ -5935,7 +5935,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4088-lucia-6-seater-sofa-set",
@@ -5948,7 +5948,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4086-suzy-6-seater-sofa-set",
@@ -5961,7 +5961,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4086-suzy-6-seater-sofa-set",
@@ -5974,7 +5974,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4086-suzy-6-seater-sofa-set",
@@ -5987,7 +5987,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4085-floyd-7-seater-sofa-set",
@@ -6000,7 +6000,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4085-floyd-7-seater-sofa-set",
@@ -6013,7 +6013,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4085-floyd-7-seater-sofa-set",
@@ -6026,7 +6026,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4084-boston-7-seater-sofa-set",
@@ -6039,7 +6039,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4084-boston-7-seater-sofa-set",
@@ -6052,7 +6052,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4084-boston-7-seater-sofa-set",
@@ -6065,7 +6065,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4083-spear-4-seater-sofa-set",
@@ -6078,7 +6078,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4083-spear-4-seater-sofa-set",
@@ -6091,7 +6091,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4083-spear-4-seater-sofa-set",
@@ -6104,7 +6104,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4081-arabell-7-seater-sofa-set",
@@ -6117,7 +6117,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4081-arabell-7-seater-sofa-set",
@@ -6130,7 +6130,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4081-arabell-7-seater-sofa-set",
@@ -6143,7 +6143,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4080-kite-6-seater-sofa-set",
@@ -6156,7 +6156,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4080-kite-6-seater-sofa-set",
@@ -6169,7 +6169,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4080-kite-6-seater-sofa-set",
@@ -6182,7 +6182,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4079-ashford-7-seater-sofa-set",
@@ -6195,7 +6195,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4079-ashford-7-seater-sofa-set",
@@ -6208,7 +6208,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4079-ashford-7-seater-sofa-set",
@@ -6221,7 +6221,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4078-willow-8-seater-sofa-set",
@@ -6234,7 +6234,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4078-willow-8-seater-sofa-set",
@@ -6247,7 +6247,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4078-willow-8-seater-sofa-set",
@@ -6260,7 +6260,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4077-noah-6-seater-sofa-set",
@@ -6273,7 +6273,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4077-noah-6-seater-sofa-set",
@@ -6286,7 +6286,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4077-noah-6-seater-sofa-set",
@@ -6299,7 +6299,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4076-golf-7-seater-sofa-set",
@@ -6312,7 +6312,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4076-golf-7-seater-sofa-set",
@@ -6325,7 +6325,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4076-golf-7-seater-sofa-set",
@@ -6338,7 +6338,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4075-anthem-7-seater-sofa-set",
@@ -6351,7 +6351,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4075-anthem-7-seater-sofa-set",
@@ -6364,7 +6364,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4075-anthem-7-seater-sofa-set",
@@ -6377,7 +6377,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4074-supreme-7-seater-sofa-set",
@@ -6390,7 +6390,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4074-supreme-7-seater-sofa-set",
@@ -6403,7 +6403,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4074-supreme-7-seater-sofa-set",
@@ -6416,7 +6416,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4073-rene-7-seater-sofa-set",
@@ -6429,7 +6429,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4073-rene-7-seater-sofa-set",
@@ -6442,7 +6442,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4073-rene-7-seater-sofa-set",
@@ -6455,7 +6455,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4071-solero-7-seater-sofa-set",
@@ -6468,7 +6468,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4071-solero-7-seater-sofa-set",
@@ -6481,7 +6481,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4071-solero-7-seater-sofa-set",
@@ -6494,7 +6494,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4070-heidi-6-seater-sofa-set",
@@ -6507,7 +6507,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4070-heidi-6-seater-sofa-set",
@@ -6520,7 +6520,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4070-heidi-6-seater-sofa-set",
@@ -6533,7 +6533,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4069-the-astrid-6-seater-sofa-set",
@@ -6546,7 +6546,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4069-the-astrid-6-seater-sofa-set",
@@ -6559,7 +6559,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4069-the-astrid-6-seater-sofa-set",
@@ -6572,7 +6572,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4068-the-host-6-seater-sofa-set",
@@ -6585,7 +6585,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4068-the-host-6-seater-sofa-set",
@@ -6598,7 +6598,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4068-the-host-6-seater-sofa-set",
@@ -6611,7 +6611,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4067-boutique-6-seater-sofa-set",
@@ -6624,7 +6624,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4067-boutique-6-seater-sofa-set",
@@ -6637,7 +6637,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4067-boutique-6-seater-sofa-set",
@@ -6650,7 +6650,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4066-jazz-6-seater-sofa-set",
@@ -6663,7 +6663,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4066-jazz-6-seater-sofa-set",
@@ -6676,7 +6676,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4066-jazz-6-seater-sofa-set",
@@ -6689,7 +6689,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4065-hamza-6-seater-sofa-set",
@@ -6702,7 +6702,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4065-hamza-6-seater-sofa-set",
@@ -6715,7 +6715,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4065-hamza-6-seater-sofa-set",
@@ -6728,7 +6728,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4063-altan-7-seater-sofa-set",
@@ -6741,7 +6741,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4063-altan-7-seater-sofa-set",
@@ -6754,7 +6754,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4063-altan-7-seater-sofa-set",
@@ -6767,7 +6767,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4062-attwood-6-seater-sofa-set",
@@ -6780,7 +6780,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4062-attwood-6-seater-sofa-set",
@@ -6793,7 +6793,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4062-attwood-6-seater-sofa-set",
@@ -6806,7 +6806,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4061-the-hera-7-seater-sofa-set",
@@ -6819,7 +6819,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4061-the-hera-7-seater-sofa-set",
@@ -6832,7 +6832,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4061-the-hera-7-seater-sofa-set",
@@ -6845,7 +6845,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4060-bianca-7-seater-sofa-set",
@@ -6858,7 +6858,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4060-bianca-7-seater-sofa-set",
@@ -6871,7 +6871,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4060-bianca-7-seater-sofa-set",
@@ -6884,7 +6884,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4059-rocco-7-seater-sofa-set",
@@ -6897,7 +6897,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4059-rocco-7-seater-sofa-set",
@@ -6910,7 +6910,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4059-rocco-7-seater-sofa-set",
@@ -6923,7 +6923,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4058-bogota-7-seater-sofa-set",
@@ -6936,7 +6936,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4058-bogota-7-seater-sofa-set",
@@ -6949,7 +6949,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4058-bogota-7-seater-sofa-set",
@@ -6962,7 +6962,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4057-the-freya-7-seater-sofa-set",
@@ -6975,7 +6975,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4057-the-freya-7-seater-sofa-set",
@@ -6988,7 +6988,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4057-the-freya-7-seater-sofa-set",
@@ -7001,7 +7001,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4056-macie-6-seater-sofa-set",
@@ -7014,7 +7014,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4056-macie-6-seater-sofa-set",
@@ -7027,7 +7027,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4056-macie-6-seater-sofa-set",
@@ -7040,7 +7040,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4055-grace-6-seater-sofa-set",
@@ -7053,7 +7053,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4055-grace-6-seater-sofa-set",
@@ -7066,7 +7066,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4055-grace-6-seater-sofa-set",
@@ -7079,7 +7079,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4054-medusa-7-seater-sofa-set",
@@ -7092,7 +7092,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4054-medusa-7-seater-sofa-set",
@@ -7105,7 +7105,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4054-medusa-7-seater-sofa-set",
@@ -7118,7 +7118,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4053-diamond-7-seater-sofa-set",
@@ -7131,7 +7131,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4053-diamond-7-seater-sofa-set",
@@ -7144,7 +7144,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4053-diamond-7-seater-sofa-set",
@@ -7157,7 +7157,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4052-costa-rica-7-seater-sofa-set",
@@ -7170,7 +7170,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4052-costa-rica-7-seater-sofa-set",
@@ -7183,7 +7183,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4052-costa-rica-7-seater-sofa-set",
@@ -7196,7 +7196,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4051-the-nelson-6-seater-sofa-set",
@@ -7209,7 +7209,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4051-the-nelson-6-seater-sofa-set",
@@ -7222,7 +7222,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4051-the-nelson-6-seater-sofa-set",
@@ -7235,7 +7235,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4049-the-dilan-7-seater-sofa-set",
@@ -7248,7 +7248,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4049-the-dilan-7-seater-sofa-set",
@@ -7261,7 +7261,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4049-the-dilan-7-seater-sofa-set",
@@ -7274,7 +7274,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4048-ayila-7-seater-sofa-set",
@@ -7287,7 +7287,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4048-ayila-7-seater-sofa-set",
@@ -7300,7 +7300,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4048-ayila-7-seater-sofa-set",
@@ -7313,7 +7313,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4047-the-rezan-7-seater-sofa-set",
@@ -7326,7 +7326,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4047-the-rezan-7-seater-sofa-set",
@@ -7339,7 +7339,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4047-the-rezan-7-seater-sofa-set",
@@ -7352,7 +7352,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4046-3d-pouffe",
@@ -7365,7 +7365,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4046-3d-pouffe",
@@ -7378,7 +7378,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4046-3d-pouffe",
@@ -7391,7 +7391,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4045-hazel-7-seater-sofa-set",
@@ -7404,7 +7404,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4045-hazel-7-seater-sofa-set",
@@ -7417,7 +7417,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4045-hazel-7-seater-sofa-set",
@@ -7430,7 +7430,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4044-guild-7-seater-sofa-set",
@@ -7443,7 +7443,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4044-guild-7-seater-sofa-set",
@@ -7456,7 +7456,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4044-guild-7-seater-sofa-set",
@@ -7469,7 +7469,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4043-giselle-7-seater-sofa-set",
@@ -7482,7 +7482,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4043-giselle-7-seater-sofa-set",
@@ -7495,7 +7495,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4043-giselle-7-seater-sofa-set",
@@ -7508,7 +7508,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4041-hamilton-7-seater-sofa-set",
@@ -7521,7 +7521,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4041-hamilton-7-seater-sofa-set",
@@ -7534,7 +7534,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4041-hamilton-7-seater-sofa-set",
@@ -7547,7 +7547,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4040-tiffany-7-seater-sofa-set",
@@ -7560,7 +7560,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4040-tiffany-7-seater-sofa-set",
@@ -7573,7 +7573,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4040-tiffany-7-seater-sofa-set",
@@ -7586,7 +7586,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4039-the-kamil-7-seater-sofa-set-688bcd",
@@ -7599,7 +7599,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4039-the-kamil-7-seater-sofa-set-688bcd",
@@ -7612,7 +7612,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4039-the-kamil-7-seater-sofa-set-688bcd",
@@ -7625,7 +7625,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "4038-kingsbury-7-seater-sofa-set-c8c8a9",
@@ -7638,7 +7638,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "4038-kingsbury-7-seater-sofa-set-c8c8a9",
@@ -7651,7 +7651,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "4038-kingsbury-7-seater-sofa-set-c8c8a9",
@@ -7664,7 +7664,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "3761-celestine-knitted-blanket-pink-127152-cm",
@@ -7677,7 +7677,7 @@
         64.0,
         100.0
       ],
-      "deltaE76": 67.13910159850671
+      "deltaE76": 67.1391015985067
     },
     {
       "productId": "3710-maras-6-piece-super-king-bedroom-set-with-hydraulic-storage",
@@ -7690,7 +7690,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 49.96538624004075
+      "deltaE76": 49.965386240040736
     },
     {
       "productId": "3708-serenity-6-piece-bedroom-set-200180",
@@ -7729,7 +7729,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 41.859089924193434
+      "deltaE76": 41.85908992419343
     },
     {
       "productId": "3702-prizma-king-180200-bedroom-set",
@@ -7742,7 +7742,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 29.516408278774136
+      "deltaE76": 29.51640827877415
     },
     {
       "productId": "3694-edessa-hydraulic-king-bedroom-set-200x180",
@@ -7755,7 +7755,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 42.48129911011089
+      "deltaE76": 42.481299110110854
     },
     {
       "productId": "3692-garcia-king-bedroom-set-200x180",
@@ -7781,7 +7781,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 39.54654131355014
+      "deltaE76": 39.54654131355015
     },
     {
       "productId": "3650-montana-queen-bedroom-set-4-pcs",
@@ -7794,7 +7794,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 36.074572926952705
+      "deltaE76": 36.07457292695273
     },
     {
       "productId": "3642-nazario-king-bedroom-set",
@@ -7807,7 +7807,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 23.22460219652697
+      "deltaE76": 23.224602196526956
     },
     {
       "productId": "3637-knox-bedroom-set",
@@ -7820,7 +7820,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 32.74473044732887
+      "deltaE76": 32.744730447328884
     },
     {
       "productId": "3399-rosita-king-bedroom-set",
@@ -7846,7 +7846,7 @@
         190.0,
         134.0
       ],
-      "deltaE76": 35.78736164781806
+      "deltaE76": 35.787361647818074
     },
     {
       "productId": "3192-senna-bed",
@@ -7859,7 +7859,7 @@
         158.0,
         107.0
       ],
-      "deltaE76": 45.90668351558596
+      "deltaE76": 45.906683515585925
     },
     {
       "productId": "3059-riverina-queen-size-bed-grey-oak",
@@ -7872,7 +7872,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 23.18197079770618
+      "deltaE76": 23.181970797706136
     },
     {
       "productId": "3053-como-bed-walnut",
@@ -7898,7 +7898,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 39.46735056337462
+      "deltaE76": 39.46735056337458
     },
     {
       "productId": "2965-grevia-plum-blossom-without-vase-pink-78cm",
@@ -7911,7 +7911,7 @@
         83.0,
         97.0
       ],
-      "deltaE76": 65.79430888053054
+      "deltaE76": 65.79430888053048
     },
     {
       "productId": "2963-grevia-pampas-grass-without-vase-beige-44cm",
@@ -7937,7 +7937,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 32.230471853056166
+      "deltaE76": 32.23047185305619
     },
     {
       "productId": "2948-ocean-dresser-with-mirror-walnut-and-grey",
@@ -7950,7 +7950,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 52.507960696752285
+      "deltaE76": 52.507960696752264
     },
     {
       "productId": "2945-alexandia-dresser-with-mirror-walnut",
@@ -7963,7 +7963,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 52.507960696752285
+      "deltaE76": 52.507960696752264
     },
     {
       "productId": "2862-quirrell-kids-dresser-with-mirror",
@@ -7976,7 +7976,7 @@
         162.0,
         115.0
       ],
-      "deltaE76": 29.38999730124435
+      "deltaE76": 29.389997301244353
     },
     {
       "productId": "2800-rosemary-dresser-with-mirror-brown",
@@ -8002,7 +8002,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 49.266915443398695
+      "deltaE76": 49.26691544339869
     },
     {
       "productId": "2793-custom-night-stand",
@@ -8015,7 +8015,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "2786-chestnut-night-table",
@@ -8054,7 +8054,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 40.48268956462722
+      "deltaE76": 40.48268956462719
     },
     {
       "productId": "2766-majestic-night-stand-oak",
@@ -8067,7 +8067,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "2764-rosemary-night-stand-brown",
@@ -8093,7 +8093,7 @@
         165.0,
         126.0
       ],
-      "deltaE76": 44.1479601660754
+      "deltaE76": 44.147960166075386
     },
     {
       "productId": "2760-safari-4-door-wardrobe",
@@ -8106,7 +8106,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 55.75005299635118
+      "deltaE76": 55.750052996351165
     },
     {
       "productId": "2758-ocean-6-door-wardrobe-walnut-grey",
@@ -8119,7 +8119,7 @@
         158.0,
         107.0
       ],
-      "deltaE76": 37.33526761618375
+      "deltaE76": 37.335267616183714
     },
     {
       "productId": "2756-como-4-door-wardrobe-walnut",
@@ -8132,7 +8132,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 36.074572926952705
+      "deltaE76": 36.07457292695273
     },
     {
       "productId": "2754-majestic-3-door-wardrobe-oak",
@@ -8145,7 +8145,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "2753-majestic-6-door-wardrobe-oak",
@@ -8158,7 +8158,7 @@
         111.0,
         81.0
       ],
-      "deltaE76": 27.24645480845426
+      "deltaE76": 27.24645480845424
     },
     {
       "productId": "2750-victoria-6-door-wardrobe-chocolate",
@@ -8171,7 +8171,7 @@
         158.0,
         107.0
       ],
-      "deltaE76": 39.31202648232847
+      "deltaE76": 39.312026482328434
     },
     {
       "productId": "2749-bean-bag-black",
@@ -8184,7 +8184,7 @@
         55.0,
         59.0
       ],
-      "deltaE76": 24.10957625177062
+      "deltaE76": 24.109576251770623
     },
     {
       "productId": "2748-bean-bag-brown",
@@ -8197,7 +8197,7 @@
         255.0,
         255.0
       ],
-      "deltaE76": 82.58109965570708
+      "deltaE76": 82.58109965570706
     },
     {
       "productId": "97-della-6-seater-sofa-set-0c95c9",
@@ -8210,7 +8210,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "97-della-6-seater-sofa-set-0c95c9",
@@ -8223,7 +8223,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "97-della-6-seater-sofa-set-0c95c9",
@@ -8236,7 +8236,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "96-bella-6-seater-sofa-set",
@@ -8249,7 +8249,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "96-bella-6-seater-sofa-set",
@@ -8262,7 +8262,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "96-bella-6-seater-sofa-set",
@@ -8275,7 +8275,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "94-cliff-6-seater-sofa-set",
@@ -8288,7 +8288,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "94-cliff-6-seater-sofa-set",
@@ -8301,7 +8301,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "94-cliff-6-seater-sofa-set",
@@ -8314,7 +8314,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "90-fabian-6-seater-sofa-set",
@@ -8327,7 +8327,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "90-fabian-6-seater-sofa-set",
@@ -8340,7 +8340,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "90-fabian-6-seater-sofa-set",
@@ -8353,7 +8353,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     },
     {
       "productId": "89-elara-6-seater-sofa-set",
@@ -8366,7 +8366,7 @@
         154.0,
         138.0
       ],
-      "deltaE76": 33.60750247065485
+      "deltaE76": 33.607502470654815
     },
     {
       "productId": "89-elara-6-seater-sofa-set",
@@ -8379,7 +8379,7 @@
         70.0,
         63.0
       ],
-      "deltaE76": 32.596399010960056
+      "deltaE76": 32.59639901096005
     },
     {
       "productId": "89-elara-6-seater-sofa-set",
@@ -8392,7 +8392,7 @@
         137.0,
         125.0
       ],
-      "deltaE76": 28.08845929203757
+      "deltaE76": 28.08845929203754
     }
   ],
   "imageDownloadErrors": [],

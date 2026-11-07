@@ -1,6 +1,6 @@
 # Fabric preview QA
 
-Generated: 2026-11-07T17:20:19.471597+00:00
+Generated: 2026-11-07T17:39:31.557088+00:00
 
 ## Counts
 
@@ -8,7 +8,7 @@ Generated: 2026-11-07T17:20:19.471597+00:00
 - **renderedApproved:** 44
 - **officialVariantImages:** 60
 - **previewUnavailable:** 9360
-- **currentCloseupsRepaired:** 7
+- **currentCloseupsRepaired:** 0
 - **catalogueOriginalFallbacks:** 596
 - **materialHexMismatches:** 437
 - **imageDownloadErrors:** 0
