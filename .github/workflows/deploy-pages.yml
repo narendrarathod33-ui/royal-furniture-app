@@ -54,6 +54,25 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  encoded-report:
+    # Short, opt-in reader for a retained compact report when blob downloads
+    # are unavailable locally. It never changes the app or generated catalogue.
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[encoded-report]') }}
+    runs-on: ubuntu-latest
+    env:
+      REPORT_RUN_ID: '42419930350'
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/fabrics/requirements.txt
+      - run: python -m pip install -r scripts/fabrics/requirements.txt
+      - run: gh run download "$REPORT_RUN_ID" -n "fabric-qa-reports-$REPORT_RUN_ID" --dir fabric-report-input
+      - run: python scripts/fabrics/verify_encoded.py --report fabric-report-input/encoded-quality-report.json
+
   fabric-qa:
     # Runs against the reviewed/installed manifest; does not repeat API harvests.
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[fabric-qa]') }}
@@ -156,7 +175,7 @@ jobs:
           retention-days: 30
 
   build:
-    if: ${{ !contains(github.event.head_commit.message, '[fabric-qa]') && !contains(github.event.head_commit.message, '[harvest-fabrics]') && !contains(github.event.head_commit.message, '[catalogue-staging]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[fabric-qa]') && !contains(github.event.head_commit.message, '[harvest-fabrics]') && !contains(github.event.head_commit.message, '[catalogue-staging]') && !contains(github.event.head_commit.message, '[encoded-report]') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -2,10 +2,12 @@
 """Re-render and verify compressed white-base variants without storing them all."""
 from __future__ import annotations
 
+import argparse
 import hashlib
 import io
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -61,7 +63,40 @@ def encoded_metrics(uncompressed: Image.Image, encoded: Image.Image, subject: Im
     return row
 
 
+def command_text(value: Any) -> str:
+    """Escape a GitHub workflow command without exposing multiline log markup."""
+    return str(value).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def print_summary(report: dict[str, Any]) -> None:
+    flagged = [row for row in report.get("variants", []) if row.get("flags")]
+    flag_counts = Counter(flag for row in flagged for flag in row["flags"])
+    summary = {
+        "valid": report.get("valid"),
+        "checkedEncodedVariants": report.get("checkedEncodedVariants", 0),
+        "checkedDynamicVariants": report.get("checkedDynamicVariants", 0),
+        "integrityErrors": len(report.get("originalIntegrityErrors", [])),
+        "flagCounts": dict(flag_counts),
+        "flagged": [{"productId": row["productId"], "angleId": row.get("angleId"), "colourId": row.get("colourId"), "flags": row["flags"]} for row in flagged][:100],
+    }
+    print(json.dumps(summary, indent=2))
+    if report.get("valid"):
+        return
+    print(f"::error::Encoded fabric QA failed: {len(flagged)} flagged frames; {command_text(dict(flag_counts))}")
+    for row in flagged[:10]:
+        identifier = " / ".join(str(row.get(key, "current")) for key in ("productId", "angleId", "colourId"))
+        metrics = {key: row.get(key) for key in ("unmaskedMean", "maskLeakRatio", "backgroundMeanFromPureWhite", "backgroundOver12", "contactShadowMean", "contactShadowOver12", "deltaE76") if key in row}
+        print(f"::error::{command_text(identifier)}: {command_text(row['flags'])}; {command_text(metrics)}")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--report", type=Path, help="Summarize an existing encoded report without rendering")
+    args = parser.parse_args()
+    if args.report:
+        report = json.loads(args.report.read_text())
+        print_summary(report)
+        return 0 if report.get("valid") else 1
     manifest = json.loads((ROOT / "app/data/fabricManifest.json").read_text())
     rows = []
     integrity_errors = []
@@ -101,9 +136,8 @@ def main() -> int:
                     metrics["flags"] = list(dict.fromkeys(render_metrics["flags"] + metrics["flags"]))
                     rows.append({"productId": product["id"], "angleId": angle["angleId"], "kind": "dynamic", "fabricId": fabric["id"], "colourId": colour["id"], "name": colour["name"], **metrics})
         print(f"Encoded QA {product['id']}: {len(angles)} angle(s)", flush=True)
-    flagged = [row for row in rows if row["flags"]]
     report = {
-        "valid": bool(rows) and not integrity_errors and not flagged,
+        "valid": bool(rows) and not integrity_errors and not any(row["flags"] for row in rows),
         "checkedEncodedVariants": len(rows),
         "checkedCurrentBases": sum(row["kind"] == "current" for row in rows),
         "checkedDynamicVariants": sum(row.get("kind") == "dynamic" for row in rows),
@@ -114,7 +148,7 @@ def main() -> int:
     destination = ROOT / "docs/fabric-qa/encoded-quality-report.json"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
-    print(json.dumps({"valid": report["valid"], "checkedEncodedVariants": len(rows), "checkedDynamicVariants": report["checkedDynamicVariants"], "integrityErrors": len(integrity_errors), "flagged": [{"productId": row["productId"], "angleId": row.get("angleId"), "colourId": row.get("colourId"), "flags": row["flags"]} for row in flagged][:100]}, indent=2))
+    print_summary(report)
     return 0 if report["valid"] else 1
 
 
