@@ -131,7 +131,10 @@ async function renderWebRecolour(productId: string, source: string, mask: string
     context.drawImage(layer, 0, 0);
     context.globalCompositeOperation = 'source-over';
     context.globalAlpha = 1;
-    return canvas.toDataURL('image/webp', 0.92);
+    // Lossless pixels are required here: lossy WebP introduced isolated
+    // off-white background pixels and a measurable contact-shadow difference.
+    // The bounded LRU keeps these larger data URLs from growing without limit.
+    return canvas.toDataURL('image/png');
   } catch {
     // CORS or decode failure: the live GPU/CSS mask remains available.
     return null;

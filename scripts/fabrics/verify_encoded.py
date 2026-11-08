@@ -23,10 +23,12 @@ from scripts.fabrics.white_base import build_upholstery_mask, clean_white_base
 
 
 def compressed(image: Image.Image) -> Image.Image:
+    """Match the browser's lossless PNG data URL, including decoded pixels."""
     buffer = io.BytesIO()
-    image.save(buffer, "WEBP", quality=90, method=4)
+    image.save(buffer, "PNG", compress_level=1)
     buffer.seek(0)
-    return Image.open(buffer).convert("RGB")
+    with Image.open(buffer) as encoded:
+        return encoded.convert("RGB")
 
 
 def encoded_metrics(uncompressed: Image.Image, encoded: Image.Image, subject: Image.Image, shadow: Image.Image, alpha: Image.Image, target: Any = None) -> dict[str, Any]:

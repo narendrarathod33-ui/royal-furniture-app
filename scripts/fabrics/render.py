@@ -376,7 +376,10 @@ def prepare_product(product: dict[str, Any], output: Path) -> tuple[list[dict[st
             current_path = output / "assets/variants" / product["id"] / f"current{suffix}.webp"
             current_path.parent.mkdir(parents=True, exist_ok=True)
             current_image, _ = pure_white_at_1200(clean, result["subjectMask"])
-            current_image.save(current_path, "WEBP", quality=90, method=6)
+            # Lossless encoding keeps the pure-white background, protected
+            # non-upholstery pixels and soft contact shadow byte-for-byte after
+            # decoding. Lossy WebP introduced isolated off-white QA outliers.
+            current_image.save(current_path, "WEBP", lossless=True, method=6)
             accepted.append({
                 "angleId": angle["angleId"],
                 "originalBaseImage": angle["originalPath"],
@@ -516,16 +519,50 @@ def write_base_report(output: Path, generated: str, rows: list[dict[str, Any]]) 
     (output / "base-image-report.md").write_text("\n".join(lines) + "\n")
 
 
+def refresh_current_bases(products: list[dict[str, Any]], output: Path) -> None:
+    """Resume a rendered checkpoint with lossless Current images only.
+
+    Existing accepted angle IDs and colour QA decisions are left untouched. The
+    source hash and deterministic mask must still match before a base is written.
+    """
+    for index, product in enumerate(products, 1):
+        angles = product.get("previewAngles", [])
+        if not angles:
+            continue
+        closeup = current_closeup(product, output)
+        for angle in angles:
+            original_path = output / angle["originalBaseImage"]
+            source = next(item for item in product["whiteBaseImages"] if item["angleId"] == angle["angleId"])
+            if hashlib.sha256(original_path.read_bytes()).hexdigest() != source.get("storedSha256"):
+                raise RuntimeError(f"Original base changed for {product['id']} / {angle['angleId']}")
+            base = load(original_path)
+            prepared = build_upholstery_mask(base, closeup)
+            if not prepared.get("accepted"):
+                raise RuntimeError(f"Accepted mask no longer reproduces for {product['id']} / {angle['angleId']}")
+            with Image.open(output / angle["maskImage"]) as mask_image:
+                installed_mask = mask_image.getchannel("A")
+            if not np.array_equal(np.asarray(installed_mask), np.asarray(prepared["upholsteryMask"])):
+                raise RuntimeError(f"Installed mask differs for {product['id']} / {angle['angleId']}")
+            clean = clean_white_base(base, prepared["subjectMask"])
+            current_image, _ = pure_white_at_1200(clean, prepared["subjectMask"])
+            current_image.save(output / angle["baseImage"], "WEBP", lossless=True, method=6)
+        print(f"Lossless Current [{index}/{len(products)}] {product['id']}: {len(angles)} angle(s)", flush=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=ROOT / "fabric-output")
     parser.add_argument("--delay", type=float, default=0.15)
     parser.add_argument("--skip-closeup-repair", action="store_true")
+    parser.add_argument("--current-only", action="store_true", help="Only refresh accepted Current bases as lossless WebP")
     args = parser.parse_args()
     output = args.input.resolve()
     manifest_path = output / "fabric-manifest.json"
     manifest = json.loads(manifest_path.read_text())
     products = [product for product in manifest["products"].values() if product.get("hasOptions")]
+    if args.current_only:
+        refresh_current_bases(products, output)
+        return 0
     errors: list[dict[str, str]] = []
     repaired_closeups = 0
     if not args.skip_closeup_repair:

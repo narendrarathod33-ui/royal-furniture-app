@@ -96,7 +96,7 @@ python3 scripts/fabrics/install.py fabric-output
 python3 scripts/fabrics/verify_encoded.py
 ```
 
-Validation checks original-JPEG hashes, threshold compliance, required front/mask/base assets, close-ups, stock/price structure and the rule that no flagged product/colour exposes a live preview. `verify_encoded.py` reproduces the masks from the untouched sources, re-renders the dynamic combinations, compresses them in memory, and checks the decoded results. It writes `docs/fabric-qa/encoded-quality-report.json` without adding thousands of redundant app assets.
+Validation checks original-JPEG hashes, threshold compliance, required front/mask/base assets, close-ups, stock/price structure and the rule that no flagged product/colour exposes a live preview. `verify_encoded.py` reproduces the masks from the untouched sources, re-renders the dynamic combinations, encodes them in memory, and checks the decoded results. Current bases ship as lossless WebP; generated web frames use lossless PNG so compression cannot introduce off-white pixels or contact-shadow changes. It writes `docs/fabric-qa/encoded-quality-report.json` without adding thousands of redundant app assets.
 
 Make a normal commit without either bracketed gate to deploy the app and QA links.
 

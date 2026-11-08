@@ -113,7 +113,7 @@ test('white-mask colours preserve the base outside upholstery and keep borders w
       for (const colour of rendered) {
         const id = await chooseColour(page, colour);
         const preview = page.getByTestId(`fabric-preview-${id}`).first();
-        await expect.poll(async () => preview.locator('img').last().getAttribute('src'), { timeout: 45_000 }).toMatch(/^data:image\/webp/);
+        await expect.poll(async () => preview.locator('img').last().getAttribute('src'), { timeout: 45_000 }).toMatch(/^data:image\/png/);
         const source = (await preview.locator('img').last().getAttribute('src'))!;
         const comparison = await compareWhitePreview(page, original, source, mask);
         expect(comparison.backgroundMean).toBeLessThan(4); expect(comparison.backgroundOver12).toBeLessThan(0.02); expect(comparison.backgroundSamples).toBeGreaterThan(1000); expect(comparison.subjectMean).toBeGreaterThan(0.01); expect(comparison.borderNearWhiteRatio).toBeGreaterThan(0.99);
