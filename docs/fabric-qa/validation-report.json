@@ -8,8 +8,12 @@
     "types": 20,
     "colours": 10062,
     "currentFabrics": 598,
-    "localAssets": 19844,
-    "previewUnavailable": 9360
+    "localAssets": 20252,
+    "previewUnavailable": 6810,
+    "whiteBackgroundProducts": 512,
+    "flaggedBaseProducts": 86,
+    "whiteMaskVariants": 2654,
+    "whiteBackgroundAngles": 1162
   },
   "errors": [],
   "sourceOmissions": [

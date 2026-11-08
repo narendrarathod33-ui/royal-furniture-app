@@ -1,5 +1,5 @@
 {
-  "harvestedAt": "2026-11-07T15:52:17.044515+00:00",
+  "harvestedAt": "2026-11-07T21:48:28.092927+00:00",
   "complete": true,
   "counts": {
     "appProducts": 1360,
@@ -12,9 +12,14 @@
     "coloursIncludingCurrent": 9870,
     "namedColours": 9464,
     "uniqueCloseups": 181,
-    "imagesDownloaded": 253,
-    "cachedItemsReused": 37,
-    "officialVariantImages": 60
+    "imagesDownloaded": 5328,
+    "cachedItemsReused": 31,
+    "officialVariantImages": 60,
+    "whiteBackgroundProducts": 576,
+    "whiteBackgroundAngles": 1568,
+    "flaggedWhiteBackgroundProducts": 24,
+    "galleryCandidatesInspected": 5069,
+    "similarAnglesRecovered": 316
   },
   "unmatched": [
     {
@@ -967,10 +972,12 @@
     }
   ],
   "errors": [],
+  "whiteBaseImageErrors": [],
   "missingCloseups": [],
   "notes": [
     "Null values mean the website did not expose a usable value; nothing was invented.",
-    "Current Fabric uses the original product image and is never recoloured.",
+    "Current Fabric and all live variants require an automatically accepted white-background product image.",
+    "Products without one are flagged and show only official close-ups/swatches; lifestyle photos are never recoloured.",
     "Repeated generic gallery images are not treated as official colour-variant photography.",
     "Products with only generic Selectable/Fabric entries have no selector."
   ]

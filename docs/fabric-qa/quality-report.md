@@ -1,17 +1,25 @@
 # Fabric preview QA
 
-Generated: 2026-11-07T17:39:31.557088+00:00
+Generated: 2026-11-07T23:48:59.429203+00:00
+
+Live variants use audited white bases and aligned upholstery masks on-device; every combination was also rendered for these QA checks. Lifestyle photographs are never recoloured.
 
 ## Counts
 
 - **contactSheets:** 598
-- **renderedApproved:** 44
-- **officialVariantImages:** 60
-- **previewUnavailable:** 9360
+- **whiteBackgroundProducts:** 512
+- **flaggedBaseProducts:** 86
+- **whiteBackgroundAngles:** 1162
+- **renderedApproved:** 2654
+- **renderedVariantChecks:** 10409
+- **officialVariantImages:** 0
+- **previewUnavailable:** 6810
 - **currentCloseupsRepaired:** 0
-- **catalogueOriginalFallbacks:** 596
 - **materialHexMismatches:** 437
 - **imageDownloadErrors:** 0
+- **angleRecoveryErrors:** 0
+
+[Full white-base product table](base-image-report.md)
 
 ## Material swatch / hex mismatches
 

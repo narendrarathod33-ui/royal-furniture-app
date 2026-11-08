@@ -1,9 +1,11 @@
 {
   "matchedProducts": 1202,
-  "staticImageAssets": 247,
+  "staticImageAssets": 2427,
+  "whiteBackgroundProducts": 512,
+  "preservedOriginalBaseImages": 1568,
   "currentEntriesAddedBecauseApiOmittedOriginalRow": 0,
   "duplicateCurrentEntriesRemoved": 0,
   "currentEntriesPresent": 598,
-  "duplicateAssetsRemoved": 15,
-  "duplicateAssetBytesSaved": 807940
+  "duplicateAssetsRemoved": 0,
+  "duplicateAssetBytesSaved": 0
 }
