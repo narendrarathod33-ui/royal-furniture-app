@@ -125,8 +125,11 @@ test('white-mask colours preserve the base outside upholstery and keep borders w
             // already selected the target, move to another colour in the same
             // type so the timing still measures a genuine target commit.
             if (await page.getByTestId(`fabric-swatch-${id}`).getAttribute('aria-checked') === 'true') {
-              const sameType = rendered.find((item) => item.fabricId === colour.fabricId && comboId(item) !== id);
-              if (sameType) await page.getByTestId(`fabric-swatch-${comboId(sameType)}`).click();
+              const sameType = colours(product.id).find((item) => item.fabricId === colour.fabricId && availableNamed(item) && item.closeupPath && comboId(item) !== id);
+              // A singleton type cannot be deselected within its own tab. Its
+              // immediate auto-selection is covered above; do not time a no-op.
+              if (!sameType) continue;
+              await page.getByTestId(`fabric-swatch-${comboId(sameType)}`).click();
             }
             timings[id] = await measureFabricCommit(page, id); expect(timings[id]).toBeLessThan(100); await page.waitForTimeout(200);
           }

@@ -67,9 +67,8 @@ jobs:
       HARVEST_RUN_ID: '42385992930'
       # Explicit new harvest overrides the installed manifest for a schema update.
       QA_HARVEST_RUN_ID: ''
-      # One-time resume of the complete render whose only failures were lossy
-      # encoding artifacts. Clear after the validated catalogue is installed.
-      QA_CHECKPOINT_RUN_ID: '42419930350'
+      # Optional one-time resume checkpoint; empty for normal installed-data QA.
+      QA_CHECKPOINT_RUN_ID: ''
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4

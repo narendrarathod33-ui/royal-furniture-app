@@ -87,10 +87,13 @@ function multiplyOpacity(hex: string) {
 async function renderWebRecolour(productId: string, source: string, mask: string, fabric: Fabric): Promise<string | null> {
   if (typeof document === 'undefined') return null;
   try {
+    // Manifest paths are logical asset keys, not browser URLs. Resolve the
+    // close-up through Expo just like the base and mask before decoding it.
+    const textureUri = uriFor(resolveFabricImage(fabric.textureImage));
     const [base, maskImage, texture] = await Promise.all([
       loadWebImage(source),
       loadWebImage(mask),
-      fabric.textureImage ? loadWebImage(fabric.textureImage) : Promise.resolve(null),
+      textureUri ? loadWebImage(textureUri) : Promise.resolve(null),
     ]);
     const scale = Math.min(1, 1200 / base.naturalWidth);
     const width = Math.max(1, Math.round(base.naturalWidth * scale));
