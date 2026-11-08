@@ -71,7 +71,7 @@ jobs:
           cache-dependency-path: scripts/fabrics/requirements.txt
       - run: python -m pip install -r scripts/fabrics/requirements.txt
       - run: gh run download "$REPORT_RUN_ID" -n "fabric-qa-reports-$REPORT_RUN_ID" --dir fabric-report-input
-      - run: python scripts/fabrics/verify_encoded.py --report fabric-report-input/encoded-quality-report.json
+      - run: python scripts/fabrics/verify_encoded.py --report "$(find fabric-report-input -name encoded-quality-report.json -print -quit)"
 
   fabric-qa:
     # Runs against the reviewed/installed manifest; does not repeat API harvests.
