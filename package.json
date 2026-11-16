@@ -33,6 +33,7 @@
     "baseline:bundle": "node scripts/bundle-baseline.mjs",
     "generate:swatches": "node scripts/build-color-swatches.mjs",
     "generate:colors": "node scripts/generate-color-variants.mjs",
+    "generate:colors:free": "node scripts/generate-color-variants.mjs --engine free-lab",
     "test": "npm run test:jest && npm run test:legacy",
     "test:jest": "jest",
     "test:legacy": "node --test scripts/*.test.mjs",
