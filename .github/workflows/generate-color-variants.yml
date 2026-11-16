@@ -3,13 +3,21 @@ name: Generate AI Color Variants
 on:
   workflow_dispatch:
     inputs:
+      engine:
+        description: 'Generation engine (free-lab = $0 Mask2Former + CIELAB, openai = paid gpt-image-2.6-sunburst)'
+        required: false
+        default: 'free-lab'
+        type: choice
+        options:
+          - free-lab
+          - openai
       slugs:
         description: 'Comma-separated product slugs (leave blank for filter batch, e.g. serafina-corner-sofa)'
         required: false
         default: ''
         type: string
       category:
-        description: 'Category slug filter (e.g. sofas, beds; leave blank for all)'
+        description: 'Category slug filter (e.g. sofas, bedroom; leave blank for all)'
         required: false
         default: ''
         type: string
@@ -26,15 +34,15 @@ on:
       limit:
         description: 'Max uncached variants to generate this run (0 = no cap)'
         required: false
-        default: '20'
+        default: '50'
         type: string
       concurrency:
-        description: 'Parallel OpenAI requests (1-6)'
+        description: 'Parallel OpenAI requests when engine=openai (1-6)'
         required: false
         default: '3'
         type: string
       dry_run:
-        description: 'Dry run only (preview counts & cost estimate without API calls or commits)'
+        description: 'Dry run only (preview counts & cost estimate without generating or committing)'
         required: false
         default: false
         type: boolean
@@ -63,9 +71,9 @@ concurrency:
 
 jobs:
   generate:
-    name: Generate & Cache Variants (gpt-image-2.6-sunburst)
+    name: Generate & Cache Variants (${{ inputs.engine || 'free-lab' }})
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout repository
@@ -78,17 +86,45 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Cache downloaded studio source images
+      - name: Setup Python 3.11 (free-lab engine)
+        if: ${{ !inputs.dry_run && inputs.engine != 'openai' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache Python environment & HuggingFace weights (free-lab engine)
+        if: ${{ !inputs.dry_run && inputs.engine != 'openai' }}
+        id: py-cache
         uses: actions/cache@v4
         with:
-          path: .cache/color-variant-sources
+          path: |
+            .venv
+            ~/.cache/huggingface
+          key: recolor-py-v1-${{ runner.os }}-${{ hashFiles('scripts/requirements-recolor.txt') }}
+          restore-keys: |
+            recolor-py-v1-${{ runner.os }}-
+
+      - name: Install free-lab segmentation & CIELAB dependencies
+        if: ${{ !inputs.dry_run && inputs.engine != 'openai' && steps.py-cache.outputs.cache-hit != 'true' }}
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install --extra-index-url https://download.pytorch.org/whl/cpu -r scripts/requirements-recolor.txt
+
+      - name: Cache downloaded studio photos & segmentation masks
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/color-variant-sources
+            .cache/color-variant-masks
           key: color-source-cache-${{ hashFiles('harvest/product-details.json') }}
           restore-keys: |
             color-source-cache-
 
-      - name: Generate AI color variants
+      - name: Generate color variants
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          INPUT_ENGINE: ${{ inputs.engine }}
           INPUT_SLUGS: ${{ inputs.slugs }}
           INPUT_CATEGORY: ${{ inputs.category }}
           INPUT_MADE_TO_ORDER: ${{ inputs.made_to_order }}
@@ -100,7 +136,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          args=()
+          engine="${INPUT_ENGINE:-free-lab}"
+          args=(--engine "$engine")
           if [ -n "${INPUT_SLUGS// }" ]; then
             args+=(--slugs "$INPUT_SLUGS")
           fi
@@ -124,8 +161,8 @@ jobs:
           fi
           if [ "$INPUT_DRY_RUN" = "true" ]; then
             args+=(--dry-run)
-          elif [ -z "${OPENAI_API_KEY:-}" ]; then
-            echo "::error::Missing OPENAI_API_KEY secret. Add it under Settings -> Secrets and variables -> Actions before running without dry_run."
+          elif [ "$engine" = "openai" ] && [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "::error::Missing OPENAI_API_KEY secret for engine=openai. Switch engine to free-lab ($0) or add OPENAI_API_KEY in Settings -> Secrets and variables -> Actions."
             exit 1
           fi
 
@@ -133,7 +170,7 @@ jobs:
           node scripts/generate-color-variants.mjs "${args[@]}" | tee /tmp/color-variants-run.log
 
           {
-            echo "## AI Color-Variant Generation Summary"
+            echo "## Color-Variant Generation Summary ($engine)"
             echo ""
             echo '```text'
             cat /tmp/color-variants-run.log

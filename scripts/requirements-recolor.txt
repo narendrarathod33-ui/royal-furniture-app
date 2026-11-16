@@ -1,0 +1,10 @@
+# Dependencies for Option 1 ($0 free-lab neural segmentation + CIELAB color transfer).
+# Install with CPU PyTorch wheels:
+#   pip install --extra-index-url https://download.pytorch.org/whl/cpu -r scripts/requirements-recolor.txt
+torch>=2.3,<3
+torchvision>=0.18,<1
+transformers>=4.41,<5
+scipy>=1.11,<2
+pillow>=10.0,<14
+numpy>=1.26,<3
+opencv-python-headless>=4.9,<6

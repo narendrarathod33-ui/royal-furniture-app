@@ -18,14 +18,20 @@
  *   OPENAI_API_KEY=... node scripts/generate-color-variants.mjs --made-to-order --in-stock-only --limit 50
  */
 import { createHash } from 'node:crypto';
+import { execFile as execFileCb } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
+
+const execFile = promisify(execFileCb);
 
 export const S3_PRODUCT_IMAGE_BASE =
   'https://royal-furniture-515966538173-ap-south-1-an.s3.ap-south-1.amazonaws.com/';
 export const DEFAULT_MODEL = 'gpt-image-2.6-sunburst';
+export const DEFAULT_FREE_MODEL = 'mask2former-lab-v1';
+export const DEFAULT_SEG_MODEL = 'facebook/mask2former-swin-base-IN21k-ade-semantic';
 export const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/images/edits';
 
 const SLASH_CODE = /\s*\/\s*([0-9]{3,5}(?:\s*[A-Z]?-?\d+)?)\s*$/i;
@@ -122,7 +128,9 @@ export function computePromptHash({ model, quality, size, sourceImage, prompt })
 }
 
 export function parseArgs(argv = process.argv.slice(2), env = process.env) {
+  let explicitModel = false;
   const opts = {
+    engine: env.COLOR_VARIANT_ENGINE || 'openai',
     dryRun: false,
     rebuildManifestOnly: false,
     force: false,
@@ -135,6 +143,9 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     limit: Infinity,
     concurrency: 2,
     model: env.OPENAI_IMAGE_MODEL || DEFAULT_MODEL,
+    segModel: env.COLOR_SEG_MODEL || DEFAULT_SEG_MODEL,
+    maskMode: 'auto',
+    pythonBin: env.PYTHON_BIN || '',
     size: '1024x1024',
     quality: 'medium',
     outputFormat: 'webp',
@@ -160,6 +171,10 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     else if (arg === '--in-stock-only') opts.inStockOnly = true;
     else if (arg === '--cross-fabrics') opts.crossFabrics = true;
     else if (arg === '--help' || arg === '-h') opts.help = true;
+    else if (arg === '--engine') opts.engine = nextVal(i++, arg).trim().toLowerCase();
+    else if (arg === '--seg-model') opts.segModel = nextVal(i++, arg).trim();
+    else if (arg === '--mask-mode') opts.maskMode = nextVal(i++, arg).trim().toLowerCase();
+    else if (arg === '--python') opts.pythonBin = nextVal(i++, arg).trim();
     else if (arg === '--slugs') {
       opts.slugs = nextVal(i++, arg).split(',').map((s) => s.trim()).filter(Boolean);
     } else if (arg === '--category') {
@@ -172,8 +187,10 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
       const n = Number(nextVal(i++, arg));
       if (!Number.isInteger(n) || n < 1 || n > 6) throw new Error('--concurrency must be 1..6');
       opts.concurrency = n;
-    } else if (arg === '--model') opts.model = nextVal(i++, arg).trim();
-    else if (arg === '--size') opts.size = nextVal(i++, arg).trim();
+    } else if (arg === '--model') {
+      opts.model = nextVal(i++, arg).trim();
+      explicitModel = true;
+    } else if (arg === '--size') opts.size = nextVal(i++, arg).trim();
     else if (arg === '--quality') opts.quality = nextVal(i++, arg).trim();
     else if (arg === '--output-format') opts.outputFormat = nextVal(i++, arg).trim().toLowerCase();
     else if (arg === '--input-fidelity') opts.inputFidelity = nextVal(i++, arg).trim().toLowerCase();
@@ -183,6 +200,15 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     else throw new Error(`Unknown argument: ${arg}`);
   }
 
+  if (!['openai', 'free-lab'].includes(opts.engine)) {
+    throw new Error('--engine must be openai or free-lab');
+  }
+  if (opts.engine === 'free-lab' && !explicitModel) {
+    opts.model = DEFAULT_FREE_MODEL;
+  }
+  if (!['auto', 'mask2former', 'segformer', 'semantic', 'grabcut'].includes(opts.maskMode)) {
+    throw new Error('--mask-mode must be auto, mask2former, segformer, semantic, or grabcut');
+  }
   if (!['webp', 'png', 'jpeg'].includes(opts.outputFormat)) {
     throw new Error('--output-format must be webp, png, or jpeg');
   }
@@ -285,13 +311,22 @@ export function selectVariantJobs({ harvest, catalogBySlug = new Map(), opts }) 
         fabric: cand.fabric,
         category: catSlug,
       });
-      const promptHash = computePromptHash({
-        model: opts.model,
-        quality: opts.quality,
-        size: opts.size,
-        sourceImage,
-        prompt,
-      });
+      const promptHash =
+        opts.engine === 'free-lab'
+          ? computePromptHash({
+              model: `${opts.model}|${opts.segModel || DEFAULT_SEG_MODEL}|${opts.maskMode || 'auto'}`,
+              quality: opts.outputFormat,
+              size: cand.hex || cand.colorName,
+              sourceImage,
+              prompt: cand.fabric || '',
+            })
+          : computePromptHash({
+              model: opts.model,
+              quality: opts.quality,
+              size: opts.size,
+              sourceImage,
+              prompt,
+            });
       const relFile = `${slug}/${cand.variantKey}.${opts.outputFormat}`;
       const imageUrl = prefix ? `${prefix}/${relFile}` : relFile;
       jobs.push({
@@ -335,7 +370,12 @@ export async function loadSourceImage({
   if (sourceDir && !isHttp) {
     const localPath = resolve(sourceDir, clean.replace(/^\/+/, ''));
     if (existsSync(localPath)) {
-      return { buffer: await readFile(localPath), filename: clean.split('/').pop() || 'source.jpg', mimeType: mimeTypeForPath(localPath) };
+      return {
+        buffer: await readFile(localPath),
+        filePath: localPath,
+        filename: clean.split('/').pop() || 'source.jpg',
+        mimeType: mimeTypeForPath(localPath),
+      };
     }
   }
   const url = isHttp ? clean : `${S3_PRODUCT_IMAGE_BASE}${clean.replace(/^\/+/, '')}`;
@@ -345,6 +385,7 @@ export async function loadSourceImage({
   if (existsSync(cachedPath)) {
     return {
       buffer: await readFile(cachedPath),
+      filePath: cachedPath,
       filename: new URL(url).pathname.split('/').pop() || `source${ext}`,
       mimeType: mimeTypeForPath(cachedPath),
     };
@@ -357,6 +398,7 @@ export async function loadSourceImage({
   await writeAtomic(cachedPath, buffer);
   return {
     buffer,
+    filePath: cachedPath,
     filename: new URL(url).pathname.split('/').pop() || `source${ext}`,
     mimeType: mimeTypeForPath(cachedPath),
   };
@@ -379,6 +421,7 @@ export async function editImageWithOpenAI({
   sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
 }) {
   let attempt = 0;
+  const supportsInputFidelity = !/^gpt-image-2/i.test(String(model || ''));
   while (true) {
     attempt++;
     const form = new FormData();
@@ -387,7 +430,7 @@ export async function editImageWithOpenAI({
     form.set('size', size);
     form.set('quality', quality);
     form.set('output_format', outputFormat);
-    if (inputFidelity && inputFidelity !== 'none') {
+    if (supportsInputFidelity && inputFidelity && inputFidelity !== 'none') {
       form.set('input_fidelity', inputFidelity);
     }
     form.append('image', new Blob([sourceBuffer], { type: sourceMimeType }), sourceFilename);
@@ -419,7 +462,8 @@ export async function editImageWithOpenAI({
     }
 
     const errText = await response.text().catch(() => '');
-    const retryable = [429, 500, 502, 503, 504].includes(response.status);
+    const outOfQuota = response.status === 429 && /insufficient_quota|credit_balance_exhausted/i.test(errText);
+    const retryable = !outOfQuota && [429, 500, 502, 503, 504].includes(response.status);
     if (!retryable || attempt > maxRetries) {
       throw new Error(`OpenAI /v1/images/edits failed (${response.status}): ${errText.slice(0, 400)}`);
     }
@@ -490,11 +534,21 @@ export async function isVariantCached({ ledger, job, outDir, force }) {
   }
 }
 
+function resolvePythonBin(root, explicitBin) {
+  if (explicitBin) return explicitBin;
+  const candidates = [
+    resolve(root, '.venv/bin/python'),
+    resolve(root, '.venv/bin/python3'),
+  ];
+  return candidates.find((p) => existsSync(p)) || 'python3';
+}
+
 export async function runBatchGeneration({
   root = resolve(import.meta.dirname, '..'),
   opts,
   apiKey,
   fetchImpl = fetch,
+  pythonRunner = null,
   logger = console,
 }) {
   const harvestPath = resolve(root, 'harvest/product-details.json');
@@ -503,6 +557,7 @@ export async function runBatchGeneration({
   const manifestTsPath = resolve(root, 'app/data/colorVariantManifest.ts');
   const outDir = resolve(root, opts.outDir);
   const cacheDir = resolve(root, '.cache/color-variant-sources');
+  const maskCacheDir = resolve(root, '.cache/color-variant-masks');
 
   let ledger = { version: 1, model: opts.model, variants: {} };
   if (existsSync(ledgerPath)) {
@@ -532,20 +587,30 @@ export async function runBatchGeneration({
 
   if (opts.dryRun) {
     const uniqueProducts = new Set(allJobs.map((j) => j.slug)).size;
-    // Rough ballpark estimate for gpt-image-2.6-sunburst ($30 / 1M output image tokens,
-    // ~1,000-4,000 image tokens per 1024x1024 image depending on quality tier).
-    const perImageLow = opts.quality === 'low' ? 0.01 : opts.quality === 'high' ? 0.04 : 0.02;
-    const perImageHigh = opts.quality === 'low' ? 0.02 : opts.quality === 'high' ? 0.08 : 0.05;
-    logger.log(`Option 2 ("Generate Once, Cache Forever") Dry Run`);
-    logger.log(`  Model:              ${opts.model} (quality=${opts.quality}, size=${opts.size}, format=${opts.outputFormat})`);
-    logger.log(`  Products matched:   ${uniqueProducts}`);
-    logger.log(`  Total swatches:     ${allJobs.length}`);
-    logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
-    logger.log(`  To generate now:    ${limited.length}${skippedByLimit ? ` (${skippedByLimit} deferred by --limit ${opts.limit})` : ''}`);
-    logger.log(`  Est. batch spend:   ~$${(limited.length * perImageLow).toFixed(2)} - $${(limited.length * perImageHigh).toFixed(2)} one-time`);
-    if (limited[0]) {
-      logger.log(`  Sample prompt (${limited[0].slug} / ${limited[0].variantKey}):`);
-      logger.log(`    ${limited[0].prompt}`);
+    if (opts.engine === 'free-lab') {
+      logger.log(`Option 1 ("$0 Segmentation + CIELAB Recolor") Dry Run`);
+      logger.log(`  Engine:             free-lab (segModel=${opts.segModel}, maskMode=${opts.maskMode}, format=${opts.outputFormat})`);
+      logger.log(`  Products matched:   ${uniqueProducts}`);
+      logger.log(`  Total swatches:     ${allJobs.length}`);
+      logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
+      logger.log(`  To generate now:    ${limited.length}${skippedByLimit ? ` (${skippedByLimit} deferred by --limit ${opts.limit})` : ''}`);
+      logger.log(`  Est. batch spend:   $0.00 (open-weights segmentation + CIELAB color transfer)`);
+    } else {
+      // Rough ballpark estimate for gpt-image-2.6-sunburst ($30 / 1M output image tokens,
+      // ~1,000-4,000 image tokens per 1024x1024 image depending on quality tier).
+      const perImageLow = opts.quality === 'low' ? 0.01 : opts.quality === 'high' ? 0.04 : 0.02;
+      const perImageHigh = opts.quality === 'low' ? 0.02 : opts.quality === 'high' ? 0.08 : 0.05;
+      logger.log(`Option 2 ("Generate Once, Cache Forever") Dry Run`);
+      logger.log(`  Model:              ${opts.model} (quality=${opts.quality}, size=${opts.size}, format=${opts.outputFormat})`);
+      logger.log(`  Products matched:   ${uniqueProducts}`);
+      logger.log(`  Total swatches:     ${allJobs.length}`);
+      logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
+      logger.log(`  To generate now:    ${limited.length}${skippedByLimit ? ` (${skippedByLimit} deferred by --limit ${opts.limit})` : ''}`);
+      logger.log(`  Est. batch spend:   ~$${(limited.length * perImageLow).toFixed(2)} - $${(limited.length * perImageHigh).toFixed(2)} one-time`);
+      if (limited[0]) {
+        logger.log(`  Sample prompt (${limited[0].slug} / ${limited[0].variantKey}):`);
+        logger.log(`    ${limited[0].prompt}`);
+      }
     }
     return {
       totalJobs: allJobs.length,
@@ -557,9 +622,9 @@ export async function runBatchGeneration({
     };
   }
 
-  if (!apiKey) {
+  if (opts.engine !== 'free-lab' && !apiKey) {
     throw new Error(
-      'OPENAI_API_KEY environment variable is required to generate new color variants (or pass --dry-run / --rebuild-manifest-only).',
+      'OPENAI_API_KEY environment variable is required to generate new color variants (or pass --engine free-lab / --dry-run / --rebuild-manifest-only).',
     );
   }
 
@@ -574,7 +639,6 @@ export async function runBatchGeneration({
     return writeChain;
   };
 
-  let cursor = 0;
   let generated = 0;
   let failed = 0;
 
@@ -589,6 +653,114 @@ export async function runBatchGeneration({
     return sourcePromiseCache.get(sourceImage);
   };
 
+  if (opts.engine === 'free-lab') {
+    const batchJobs = [];
+    const jobById = new Map();
+    for (let i = 0; i < limited.length; i++) {
+      const job = limited[i];
+      try {
+        const src = await getSource(job.sourceImage);
+        const id = `${i}`;
+        jobById.set(id, job);
+        batchJobs.push({
+          id,
+          sourcePath: src.filePath,
+          outputPath: resolve(outDir, job.relFile),
+          hex: job.hex || '',
+          colorName: job.colorName,
+          fabric: job.fabric || '',
+          category: job.category || '',
+          outputFormat: opts.outputFormat,
+        });
+      } catch (err) {
+        failed++;
+        logger.error(`[error] ${job.slug} (${job.variantKey}): ${err.message}`);
+      }
+    }
+
+    if (batchJobs.length) {
+      await mkdir(cacheDir, { recursive: true });
+      const jobsFile = resolve(cacheDir, `free-lab-jobs-${process.pid}-${Date.now()}.json`);
+      await writeFile(jobsFile, JSON.stringify(batchJobs));
+      try {
+        const workerScript = resolve(root, 'scripts/recolor_color_variants.py');
+        const workerArgs = [
+          workerScript,
+          '--jobs-json',
+          jobsFile,
+          '--seg-model',
+          opts.segModel || DEFAULT_SEG_MODEL,
+          '--mask-mode',
+          opts.maskMode || 'auto',
+          '--mask-cache-dir',
+          maskCacheDir,
+          '--output-format',
+          opts.outputFormat,
+        ];
+
+        let stdoutText;
+        if (pythonRunner) {
+          stdoutText = await pythonRunner({ bin: resolvePythonBin(root, opts.pythonBin), args: workerArgs, batchJobs });
+        } else {
+          const pythonBin = resolvePythonBin(root, opts.pythonBin);
+          try {
+            const out = await execFile(pythonBin, workerArgs, {
+              cwd: root,
+              maxBuffer: 20 * 1024 * 1024,
+            });
+            stdoutText = out.stdout;
+          } catch (execErr) {
+            if (execErr?.stdout) {
+              stdoutText = execErr.stdout;
+            } else {
+              throw new Error(`Python free-lab worker failed: ${execErr?.stderr || execErr?.message}`);
+            }
+          }
+        }
+
+        const parsed = JSON.parse(String(stdoutText || '').trim().split('\n').pop() || '{}');
+        const results = Array.isArray(parsed.results) ? parsed.results : [];
+        for (const res of results) {
+          const job = jobById.get(String(res.id));
+          if (!job) continue;
+          if (!res.ok) {
+            failed++;
+            logger.error(`[error] ${job.slug} (${job.variantKey}): ${res.error || 'recolor failed'}`);
+            continue;
+          }
+          await persistLedger(() => {
+            ledger.variants[job.slug] ||= {};
+            ledger.variants[job.slug][job.variantKey] = {
+              image: job.imageUrl,
+              relFile: job.relFile,
+              colorName: job.colorName,
+              ...(job.hex ? { hex: job.hex } : {}),
+              ...(job.fabric ? { fabric: job.fabric } : {}),
+              ...(job.sku ? { sku: job.sku } : {}),
+              model: opts.model,
+              engine: 'free-lab',
+              segModel: opts.segModel,
+              sourceImage: job.sourceImage,
+              promptHash: job.promptHash,
+              bytes: Number(res.bytes) || 0,
+              generatedAt: new Date().toISOString(),
+            };
+          });
+          generated++;
+          logger.log(`[${generated + failed}/${limited.length}] cached ${job.slug} -> ${job.variantKey} (${((Number(res.bytes) || 0) / 1024).toFixed(1)} KB)`);
+        }
+      } finally {
+        await rm(jobsFile, { force: true }).catch(() => {});
+      }
+    }
+
+    await writeChain;
+    await writeAtomic(manifestTsPath, renderManifestTs(ledger));
+    logger.log(`Done: ${generated} generated, ${cachedHits} reused from cache, ${failed} failed.`);
+    return { totalJobs: allJobs.length, cachedHits, generated, skippedByLimit, failed };
+  }
+
+  let cursor = 0;
   const worker = async () => {
     while (true) {
       const idx = cursor++;
@@ -651,7 +823,8 @@ function printHelp() {
   console.log(`Usage: node scripts/generate-color-variants.mjs [options]
 
 Options:
-  --dry-run                Preview matched SKUs, cache hits, and estimated cost without calling OpenAI
+  --engine <mode>          free-lab ($0 local/CI segmentation + CIELAB) | openai (default)
+  --dry-run                Preview matched SKUs, cache hits, and estimated cost
   --rebuild-manifest-only  Regenerate app/data/colorVariantManifest.ts from harvest/ai-color-variants.json
   --slugs a,b,c            Only process listed product slugs (e.g. serafina-corner-sofa)
   --category <slug>        Filter by category slug (sofas, bedroom, furniture, ...)
@@ -660,11 +833,14 @@ Options:
   --cross-fabrics          Multiply all named fabrics x all colors (default uses each swatch's SKU fabric)
   --limit <n>              Max number of NEW images to generate in this run
   --concurrency <1..6>     Parallel OpenAI edit requests (default: 2)
-  --model <id>             Image edit model (default: gpt-image-2.6-sunburst)
+  --seg-model <id>         HuggingFace ADE20K segmentation model for free-lab
+  --mask-mode <mode>       auto | mask2former | segformer | semantic | grabcut
+  --python <bin>           Python executable for free-lab mode
+  --model <id>             Model identifier (default: gpt-image-2.6-sunburst or mask2former-lab-v1)
   --size <WxH>             1024x1024 (default), 1536x1024, 1024x1536, or auto
   --quality <tier>         low | medium (default) | high | auto
   --output-format <fmt>    webp (default) | png | jpeg
-  --input-fidelity <mode>  high (default) | low | none
+  --input-fidelity <mode>  high | low | none (omitted automatically for gpt-image-2*)
   --out-dir <dir>          Output directory (default: public/ai-color-variants)
   --public-prefix <prefix> URL/path prefix written to manifest (default: /ai-color-variants)
   --source-dir <dir>       Optional local mirror of S3 source product photos
