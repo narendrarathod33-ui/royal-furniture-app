@@ -187,6 +187,16 @@ const STRINGS: Record<string, { en: string; ar: string }> = {
   'pdp.officialFailed': { en: 'Official details couldn’t be loaded. Showing saved catalog information where available.', ar: 'تعذّر تحميل التفاصيل الرسمية. تُعرض بيانات الكتالوج المحفوظة حيثما توفرت.' },
   'pdp.retry': { en: 'Retry', ar: 'إعادة المحاولة' },
   'pdp.retryA11y': { en: 'Retry loading official product details', ar: 'إعادة تحميل التفاصيل الرسمية للمنتج' },
+  'pdp.colorFabricTitle': { en: 'Colour & fabric options', ar: 'خيارات اللون والقماش' },
+  'pdp.fabricLabel': { en: 'Fabric', ar: 'القماش' },
+  'pdp.colorLabel': { en: 'Colour', ar: 'اللون' },
+  'pdp.allFabrics': { en: 'All', ar: 'الكل' },
+  'pdp.aiPreviewBadge': { en: 'AI preview', ar: 'معاينة بالذكاء' },
+  'pdp.previewingColor': { en: 'Previewing: {c}', ar: 'معاينة: {c}' },
+  'pdp.selectedFinish': { en: 'Selected: {c}', ar: 'المختار: {c}' },
+  'pdp.studioFinishNote': { en: 'Made-to-order swatch reference — studio photo shown above.', ar: 'مرجع لون حسب الطلب — تُعرض صورة الاستوديو أعلاه.' },
+  'pdp.resetFinish': { en: 'Original photo', ar: 'الصورة الأصلية' },
+  'pdp.outOfStockBadge': { en: 'Unavailable', ar: 'غير متوفر' },
 
   // Quick view
   'qv.close': { en: 'Close quick view', ar: 'إغلاق العرض السريع' },

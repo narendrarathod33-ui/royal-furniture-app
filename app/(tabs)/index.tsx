@@ -17,6 +17,7 @@ import { SearchContent, NewArrivalsContent, BestSellersContent } from '../../com
 import { MoreContent } from '../../components/catalog/MoreContent';
 import { Header, ProductCard } from '../../components/catalog/ProductCard';
 import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
+import { encodeColorVariantSuffix, stripProductVariantSuffixes } from '../../utils/colorVariants';
 import { ToastHost, showToast } from '../../components/catalog/Toast';
 import { SchemeBackdrop } from '../../components/catalog/SchemeBackdrop';
 import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
@@ -98,10 +99,10 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   }, [tab, selected?.id, pageMotion]);
 
   if (selected) {
-    const sourceId = selected.id.split('::size=')[0];
-    const name = selected.n.replace(/\s+—\s+Size:\s+.*$/, '');
+    const sourceId = stripProductVariantSuffixes(selected.id);
+    const name = selected.n.replace(/\s+—\s+(?:Size|Finish):\s+.*$/, '');
     const sizeOptions = getSizeVariants(sourceId).map((variant) => ({ ...variant, photo: photoForCatalogId(variant.id) }));
-    return <><ProductDetails header={<Header count={cartCount} onCart={() => { closeProduct(); openCart(); }} onAccount={() => { closeProduct(); openAccount(); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={closeProduct} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const cartProduct = { ...selected, paymentProductId: sibling?.id || (variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId), id: variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId, n: variant.size ? `${name} — Size: ${variant.size}` : name, o: variant.price, l: variant.listPrice ?? selected.l }; handleAddToCart(cartProduct); }} isSaved={saved.includes(sourceId)} onOpenProduct={openProduct} /><ToastHost /></>;
+    return <><ProductDetails header={<Header count={cartCount} onCart={() => { closeProduct(); openCart(); }} onAccount={() => { closeProduct(); openAccount(); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={closeProduct} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const sizedId = variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId; const colorSuffix = encodeColorVariantSuffix(variant.color, variant.fabric); const finishLabel = [variant.fabric, variant.color].filter(Boolean).join(' · '); const sizedName = variant.size ? `${name} — Size: ${variant.size}` : name; const fullName = finishLabel ? `${sizedName} — Finish: ${finishLabel}` : sizedName; const cartProduct = { ...selected, paymentProductId: sibling?.id || sizedId, variantImage: variant.previewImage, id: `${sizedId}${colorSuffix}`, n: fullName, o: variant.price, l: variant.listPrice ?? selected.l }; handleAddToCart(cartProduct); }} isSaved={saved.includes(sourceId)} onOpenProduct={openProduct} /><ToastHost /></>;
   }
 
   return (
