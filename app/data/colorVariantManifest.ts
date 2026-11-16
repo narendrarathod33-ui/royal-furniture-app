@@ -398,6 +398,62 @@ export const COLOR_VARIANT_MANIFEST: Readonly<
     }
   },
   "altan-corner-sofa": {
+    "chenille--ivory-white-1906-b-2": {
+      "image": "/ai-color-variants/altan-corner-sofa/chenille--ivory-white-1906-b-2.webp",
+      "colorName": "IVORY WHITE /1906 B-2",
+      "hex": "#FFFFF0",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "3d465dd0920ebacc"
+    },
+    "chenille--pale-mint-1906-b-1": {
+      "image": "/ai-color-variants/altan-corner-sofa/chenille--pale-mint-1906-b-1.webp",
+      "colorName": "PALE MINT /1906 B-1",
+      "hex": "#DDE6E3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "40067ffc05e7ab89"
+    },
+    "chenille--pebble-beige-1906-b-3": {
+      "image": "/ai-color-variants/altan-corner-sofa/chenille--pebble-beige-1906-b-3.webp",
+      "colorName": "PEBBLE BEIGE /1906 B-3",
+      "hex": "#B0ADA3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "2b9615efb3240f75"
+    },
+    "suede--champagne-beige-2962-5": {
+      "image": "/ai-color-variants/altan-corner-sofa/suede--champagne-beige-2962-5.webp",
+      "colorName": "CHAMPAGNE BEIGE /2962-5",
+      "hex": "#D1CBC0",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "1b4ca5b59afee013"
+    },
+    "suede--frost-ivory-2962-4": {
+      "image": "/ai-color-variants/altan-corner-sofa/suede--frost-ivory-2962-4.webp",
+      "colorName": "FROST IVORY /2962-4",
+      "hex": "#D5D9D2",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "8da63fab82d6c7e6"
+    },
+    "suede--ivory-mist-2962-2": {
+      "image": "/ai-color-variants/altan-corner-sofa/suede--ivory-mist-2962-2.webp",
+      "colorName": "IVORY MIST /2962-2",
+      "hex": "#D7DBD4",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "ebc2f98c2a2f10c7"
+    },
+    "suede--pearl-white-2962-1": {
+      "image": "/ai-color-variants/altan-corner-sofa/suede--pearl-white-2962-1.webp",
+      "colorName": "PEARL WHITE /2962-1",
+      "hex": "#C6CAC5",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "07f6875fd312ec02"
+    },
     "velvet--cream-white-1882-1": {
       "image": "/ai-color-variants/altan-corner-sofa/velvet--cream-white-1882-1.webp",
       "colorName": "CREAM WHITE /1882-1",
@@ -429,6 +485,364 @@ export const COLOR_VARIANT_MANIFEST: Readonly<
       "fabric": "VELVET",
       "model": "mask2former-lab-v1",
       "promptHash": "643453eef17092d9"
+    }
+  },
+  "altan-sofa-2-seater": {
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/altan-sofa-2-seater/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "006cfebba9cc2127"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/altan-sofa-2-seater/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "3121a219688d4853"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/altan-sofa-2-seater/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "28eab7d35a690368"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/altan-sofa-2-seater/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "48c8035a0e614db4"
+    }
+  },
+  "alvaro-6-seater-sofa-set": {
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/alvaro-6-seater-sofa-set/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "843f82d8d9d14fed"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/alvaro-6-seater-sofa-set/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "fdf819e40dbf553d"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/alvaro-6-seater-sofa-set/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "5674224a5513eafa"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/alvaro-6-seater-sofa-set/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "64e23fc1f29d985e"
+    }
+  },
+  "amala-2-seater-sofa": {
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/amala-2-seater-sofa/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "106518c038a9451d"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/amala-2-seater-sofa/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "0925897a9882b99f"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/amala-2-seater-sofa/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "098b52a4419e08e5"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/amala-2-seater-sofa/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "e620bf6c8bc4b98b"
+    }
+  },
+  "amala-3-seater-sofa": {
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/amala-3-seater-sofa/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "d89807c22f384b24"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/amala-3-seater-sofa/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "e4f31f2ae9680be5"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/amala-3-seater-sofa/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "bcb2f368d30e72aa"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/amala-3-seater-sofa/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "39dd8c06b28a7dd9"
+    }
+  },
+  "amaze-corner-sofa-bed-with-storage": {
+    "chenille--ivory-white-1906-b-2": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/chenille--ivory-white-1906-b-2.webp",
+      "colorName": "IVORY WHITE /1906 B-2",
+      "hex": "#FFFFF0",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "f44a4c9f185d486a"
+    },
+    "chenille--pale-mint-1906-b-1": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/chenille--pale-mint-1906-b-1.webp",
+      "colorName": "PALE MINT /1906 B-1",
+      "hex": "#DDE6E3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "8ff546c039566f23"
+    },
+    "chenille--pebble-beige-1906-b-3": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/chenille--pebble-beige-1906-b-3.webp",
+      "colorName": "PEBBLE BEIGE /1906 B-3",
+      "hex": "#B0ADA3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "7f7bd8ebc88b0a2c"
+    },
+    "suede--champagne-beige-2962-5": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/suede--champagne-beige-2962-5.webp",
+      "colorName": "CHAMPAGNE BEIGE /2962-5",
+      "hex": "#D1CBC0",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "b14d6c0b6fc24635"
+    },
+    "suede--frost-ivory-2962-4": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/suede--frost-ivory-2962-4.webp",
+      "colorName": "FROST IVORY /2962-4",
+      "hex": "#D5D9D2",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "933e06c063012268"
+    },
+    "suede--ivory-mist-2962-2": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/suede--ivory-mist-2962-2.webp",
+      "colorName": "IVORY MIST /2962-2",
+      "hex": "#D7DBD4",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "5d0c73e6874d2140"
+    },
+    "suede--pearl-white-2962-1": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/suede--pearl-white-2962-1.webp",
+      "colorName": "PEARL WHITE /2962-1",
+      "hex": "#C6CAC5",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "03461df7c7a42833"
+    },
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "082097e44464daa0"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "2c9883afea9db969"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "c65f2590ec25fca1"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/amaze-corner-sofa-bed-with-storage/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "f0fa31e6b3240f91"
+    }
+  },
+  "amirah-corner-sofa-4726cb": {
+    "chenille--ivory-white-1906-b-2": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/chenille--ivory-white-1906-b-2.webp",
+      "colorName": "IVORY WHITE /1906 B-2",
+      "hex": "#FFFFF0",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "899c48cee1a1fa7c"
+    },
+    "chenille--pale-mint-1906-b-1": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/chenille--pale-mint-1906-b-1.webp",
+      "colorName": "PALE MINT /1906 B-1",
+      "hex": "#DDE6E3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "7beca476d694fe94"
+    },
+    "chenille--pebble-beige-1906-b-3": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/chenille--pebble-beige-1906-b-3.webp",
+      "colorName": "PEBBLE BEIGE /1906 B-3",
+      "hex": "#B0ADA3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "e3c0f4030ab1a0d7"
+    },
+    "suede--champagne-beige-2962-5": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/suede--champagne-beige-2962-5.webp",
+      "colorName": "CHAMPAGNE BEIGE /2962-5",
+      "hex": "#D1CBC0",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "f522bc26cc7123cf"
+    },
+    "suede--frost-ivory-2962-4": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/suede--frost-ivory-2962-4.webp",
+      "colorName": "FROST IVORY /2962-4",
+      "hex": "#D5D9D2",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "2334538ce31f6283"
+    },
+    "suede--ivory-mist-2962-2": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/suede--ivory-mist-2962-2.webp",
+      "colorName": "IVORY MIST /2962-2",
+      "hex": "#D7DBD4",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "77eec2972358d3cd"
+    },
+    "suede--pearl-white-2962-1": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/suede--pearl-white-2962-1.webp",
+      "colorName": "PEARL WHITE /2962-1",
+      "hex": "#C6CAC5",
+      "fabric": "SUEDE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "7b09e5c386fe44ec"
+    },
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "4baa996512096918"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "bf5497191149284a"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "5cf7f6573c945680"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/amirah-corner-sofa-4726cb/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "3f0e7be8703eb8ed"
+    }
+  },
+  "amna-corner-sofa": {
+    "chenille--pale-mint-1906-b-1": {
+      "image": "/ai-color-variants/amna-corner-sofa/chenille--pale-mint-1906-b-1.webp",
+      "colorName": "PALE MINT /1906 B-1",
+      "hex": "#DDE6E3",
+      "fabric": "CHENILLE",
+      "model": "mask2former-lab-v1",
+      "promptHash": "e5b640baafae60aa"
+    },
+    "velvet--cream-white-1882-1": {
+      "image": "/ai-color-variants/amna-corner-sofa/velvet--cream-white-1882-1.webp",
+      "colorName": "CREAM WHITE /1882-1",
+      "hex": "#F5F1E8",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "8239ad9591f12b1f"
+    },
+    "velvet--light-greige-pearl-grey-1882-2": {
+      "image": "/ai-color-variants/amna-corner-sofa/velvet--light-greige-pearl-grey-1882-2.webp",
+      "colorName": "LIGHT GREIGE/PEARL GREY /1882-2",
+      "hex": "#B0B0AC",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "328576d0860387be"
+    },
+    "velvet--light-warm-grey-beige-1882-4": {
+      "image": "/ai-color-variants/amna-corner-sofa/velvet--light-warm-grey-beige-1882-4.webp",
+      "colorName": "LIGHT WARM GREY BEIGE /1882-4",
+      "hex": "#C8C2B6",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "d4e4fb791b06e61a"
+    },
+    "velvet--warm-beige-light-sand-beige-1882-3": {
+      "image": "/ai-color-variants/amna-corner-sofa/velvet--warm-beige-light-sand-beige-1882-3.webp",
+      "colorName": "WARM BEIGE/LIGHT SAND BEIGE /1882-3",
+      "hex": "#B5B3A3",
+      "fabric": "VELVET",
+      "model": "mask2former-lab-v1",
+      "promptHash": "ff1b5c296194d1f9"
     }
   }
 };
