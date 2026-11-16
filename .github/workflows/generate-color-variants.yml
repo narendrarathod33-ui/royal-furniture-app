@@ -1,0 +1,184 @@
+name: Generate AI Color Variants
+
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: 'Comma-separated product slugs (leave blank for filter batch, e.g. serafina-corner-sofa)'
+        required: false
+        default: ''
+        type: string
+      category:
+        description: 'Category slug filter (e.g. sofas, beds; leave blank for all)'
+        required: false
+        default: ''
+        type: string
+      made_to_order:
+        description: 'Only Made-to-Order items'
+        required: false
+        default: true
+        type: boolean
+      in_stock_only:
+        description: 'Only in-stock swatches'
+        required: false
+        default: true
+        type: boolean
+      limit:
+        description: 'Max uncached variants to generate this run (0 = no cap)'
+        required: false
+        default: '20'
+        type: string
+      concurrency:
+        description: 'Parallel OpenAI requests (1-6)'
+        required: false
+        default: '3'
+        type: string
+      dry_run:
+        description: 'Dry run only (preview counts & cost estimate without API calls or commits)'
+        required: false
+        default: false
+        type: boolean
+      force:
+        description: 'Regenerate even if already cached (ignores forever cache)'
+        required: false
+        default: false
+        type: boolean
+      commit_changes:
+        description: 'Commit generated images, ledger, and manifest back to branch'
+        required: false
+        default: true
+        type: boolean
+      run_full_tests:
+        description: 'Run TypeScript & Jest/Node test suites after generation'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-color-variants-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: Generate & Cache Variants (gpt-image-2.6-sunburst)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache downloaded studio source images
+        uses: actions/cache@v4
+        with:
+          path: .cache/color-variant-sources
+          key: color-source-cache-${{ hashFiles('harvest/product-details.json') }}
+          restore-keys: |
+            color-source-cache-
+
+      - name: Generate AI color variants
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          INPUT_SLUGS: ${{ inputs.slugs }}
+          INPUT_CATEGORY: ${{ inputs.category }}
+          INPUT_MADE_TO_ORDER: ${{ inputs.made_to_order }}
+          INPUT_IN_STOCK_ONLY: ${{ inputs.in_stock_only }}
+          INPUT_LIMIT: ${{ inputs.limit }}
+          INPUT_CONCURRENCY: ${{ inputs.concurrency }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+
+          args=()
+          if [ -n "${INPUT_SLUGS// }" ]; then
+            args+=(--slugs "$INPUT_SLUGS")
+          fi
+          if [ -n "${INPUT_CATEGORY// }" ]; then
+            args+=(--category "$INPUT_CATEGORY")
+          fi
+          if [ "$INPUT_MADE_TO_ORDER" = "true" ]; then
+            args+=(--made-to-order)
+          fi
+          if [ "$INPUT_IN_STOCK_ONLY" = "true" ]; then
+            args+=(--in-stock-only)
+          fi
+          if [[ "$INPUT_LIMIT" =~ ^[0-9]+$ ]] && [ "$INPUT_LIMIT" -gt 0 ]; then
+            args+=(--limit "$INPUT_LIMIT")
+          fi
+          if [[ "$INPUT_CONCURRENCY" =~ ^[1-6]$ ]]; then
+            args+=(--concurrency "$INPUT_CONCURRENCY")
+          fi
+          if [ "$INPUT_FORCE" = "true" ]; then
+            args+=(--force)
+          fi
+          if [ "$INPUT_DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+          elif [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "::error::Missing OPENAI_API_KEY secret. Add it under Settings -> Secrets and variables -> Actions before running without dry_run."
+            exit 1
+          fi
+
+          echo "Running: node scripts/generate-color-variants.mjs ${args[*]}"
+          node scripts/generate-color-variants.mjs "${args[@]}" | tee /tmp/color-variants-run.log
+
+          {
+            echo "## AI Color-Variant Generation Summary"
+            echo ""
+            echo '```text'
+            cat /tmp/color-variants-run.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run secret scan
+        run: python3 scripts/check-secrets.py
+
+      - name: Run TypeScript & test suites (optional)
+        if: ${{ inputs.run_full_tests }}
+        run: |
+          npm install --no-audit --no-fund
+          npm run typecheck
+          npm test
+
+      - name: Upload generated variant artifacts
+        if: ${{ !inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-color-variants-${{ github.run_number }}
+          path: |
+            public/ai-color-variants/**
+            harvest/ai-color-variants.json
+            app/data/colorVariantManifest.ts
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit & push generated variants to branch
+        if: ${{ !inputs.dry_run && inputs.commit_changes }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- harvest/ai-color-variants.json app/data/colorVariantManifest.ts
+          if [ -d public/ai-color-variants ]; then
+            git add -- public/ai-color-variants
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No new color variants to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(ai-colors): cache generated variant previews"
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git push origin "HEAD:${GITHUB_REF_NAME}"

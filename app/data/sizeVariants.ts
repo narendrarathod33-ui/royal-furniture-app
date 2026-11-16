@@ -151,7 +151,7 @@ const datasets = [
   buildDataset(royalFurnitureData.products as unknown as readonly CatalogEntry[]),
 ];
 
-const stripVariantSuffix = (id: string) => id.replace(/::size=.*$/, '');
+const stripVariantSuffix = (id: string) => id.split(/::(?:size|color)=/)[0];
 
 /** Every size of the product, cheapest first — empty when it has a single size. */
 export function getSizeVariants(productId: string): SizeVariant[] {

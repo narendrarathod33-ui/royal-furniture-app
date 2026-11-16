@@ -99,7 +99,7 @@ export function suggestFor(
   limit = 4,
   opts: { complementBonus?: number } = {},
 ): Suggestion[] {
-  const baseId = anchor.id.split('::size=')[0];
+  const baseId = anchor.id.split(/::(?:size|color)=/)[0];
   const reps = collapseSizeFamilies([...catalog]) as unknown as ListedProduct[];
   const complements = new Set(COMPLEMENT_SC[anchor.sc || ''] || []);
   const out: Suggestion[] = [];
@@ -172,9 +172,9 @@ export function suggestForCart(
   catalog: readonly Product[],
   limit = 4,
 ): Suggestion[] {
-  const inCart = new Set(cartItems.map((item) => item.id.split('::size=')[0]));
+  const inCart = new Set(cartItems.map((item) => item.id.split(/::(?:size|color)=/)[0]));
   if (!inCart.size) return [];
-  const anchors = [...inCart].map((baseId) => cartItems.find((item) => item.id.split('::size=')[0] === baseId)!);
+  const anchors = [...inCart].map((baseId) => cartItems.find((item) => item.id.split(/::(?:size|color)=/)[0] === baseId)!);
   const merged = new Map<string, Suggestion>();
   for (const anchor of anchors) {
     // Cart surface: completing the room decisively outranks more of the

@@ -31,7 +31,7 @@ export const useSessionStore = create<SessionState>()((set) => ({
         // Every open path (cards, quick view, rails) funnels through here, so
         // the view history is recorded at this single choke point. Size-variant
         // synthetic ids collapse to their base catalog entry.
-        useRecentlyViewedStore.getState().record(product.id.split('::size=')[0]);
+        useRecentlyViewedStore.getState().record(product.id.split(/::(?:size|color)=/)[0]);
         set({ selected: product });
       },
       closeProduct: () => set({ selected: null }),

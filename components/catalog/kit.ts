@@ -12,7 +12,10 @@ import { GLASS, asTextStyle, glassTilt } from '../../app/ui/glass';
 export type WidenProduct<T> = T extends { id: string; n: string; o: number; l: number }
   ? Omit<T, 'id' | 'n' | 'o' | 'l'> & { id: string; n: string; o: number; l: number }
   : never;
-export type Product = WidenProduct<(typeof royalFurnitureData.products)[number]> & { paymentProductId?: string };
+export type Product = WidenProduct<(typeof royalFurnitureData.products)[number]> & {
+  paymentProductId?: string;
+  variantImage?: string;
+};
 /** A listing product: one card per product, with the number of selectable sizes. */
 export type ListedProduct = Product & { sizeCount?: number; baseName?: string };
 export type Tab = 'customization' | 'home' | 'shop' | 'arrivals' | 'bestSellers' | 'categories' | 'search' | 'more' | 'cart' | 'account';
@@ -81,7 +84,13 @@ export const CAT_AR: Record<string, string> = {
  * subcategory dictionary, then the stored English name). */
 export const catName = (cat: { s: string; n: string }) =>
   useLangStore.getState().lang !== 'ar' ? cat.n : CAT_AR[cat.s] || SCN_AR[cat.n] || cat.n;
-export const photoFor = (product: Product) => { const sourceId = product.id.split('::size=')[0]; return liveCatalogImages[sourceId] || catalogImages[sourceId] || photoByProductId[sourceId] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined); };
+export const photoFor = (product: Product) => {
+  if ((product as Product & { variantImage?: string }).variantImage) {
+    return { uri: (product as Product & { variantImage?: string }).variantImage as string };
+  }
+  const sourceId = product.id.split(/::(?:size|color)=/)[0];
+  return liveCatalogImages[sourceId] || catalogImages[sourceId] || photoByProductId[sourceId] || ((product as Product & { remoteImage?: string }).remoteImage ? { uri: (product as Product & { remoteImage?: string }).remoteImage } : undefined);
+};
 
 /** Photo for a catalogue entry id — used by the official size dropdown. */
 export const catalogEntryById: Map<string, { remoteImage?: string }> = new Map(catalogData.map((product) => [product.id, product]));

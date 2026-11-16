@@ -205,7 +205,7 @@ const RAW_SIZES: Record<string, readonly RawSize[]> = {
  * absent on others, so the hash-stripped form is the fallback.
  */
 export function slugFromProductId(productId: string): string {
-  return productId.split('::size=')[0].replace(/^\d+-/, '');
+  return productId.split(/::(?:size|color)=/)[0].replace(/^\d+-/, '');
 }
 
 function rawSizesFor(productId: string): readonly RawSize[] | undefined {
@@ -245,7 +245,7 @@ const floorCache = new Map<string, OfficialSizeFloor | undefined>();
  * size price would otherwise show shoppers a price no size actually costs.
  */
 export function officialSizeFloor(productId: string): OfficialSizeFloor | undefined {
-  const id = productId.split('::size=')[0];
+  const id = productId.split(/::(?:size|color)=/)[0];
   if (floorCache.has(id)) return floorCache.get(id);
   const priced = (rawSizesFor(id) || []).filter((size) => Number.isFinite(size[1]) && (size[1] as number) > 0);
   let floor: OfficialSizeFloor | undefined;

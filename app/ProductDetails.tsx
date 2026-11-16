@@ -27,10 +27,22 @@ import {
 // through to the DOM, but RN's ViewStyle doesn't model combined values, so the
 // literal is typed through a cast and shared by the two gallery surfaces.
 const WEB_TOUCH_ACTION = { touchAction: 'pan-y pinch-zoom' } as unknown as ViewStyle;
+import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
-import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Star, ZoomIn } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, RefreshCw, ShoppingBag, Sparkles, Star, ZoomIn } from 'lucide-react-native';
 import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
+import { getColorSwatches } from './data/colorSwatches';
+import { getManifestVariants } from './data/colorVariantManifest';
+import {
+  buildProductSwatches,
+  colorFromProductId,
+  findCachedVariantForSelection,
+  formatFabricLabel,
+  normalizeFabrics,
+  stripProductVariantSuffixes,
+  type ResolvedSwatch,
+} from '../utils/colorVariants';
 import { youMayAlsoLike, recentProducts } from './data/discovery';
 import { upgradePicks } from './data/recommend';
 import { catalogData } from './data/catalogData';
@@ -429,7 +441,7 @@ function extractApiSizeOptions(detail: ApiProductDetail | null, country = 'ae'):
 function sizeFromProductId(id: string) {  const encodedSize = id.split('::size=')[1];
   if (!encodedSize) return '';
   try {
-    return decodeURIComponent(encodedSize);
+    return decodeURIComponent(encodedSize.split('::color=')[0]);
   } catch {
     return '';
   }
@@ -474,13 +486,13 @@ export default function ProductDetails({
   sizeVariants?: SizeVariantOption[];
   onBack: () => void;
   onSave: () => void;
-  onAdd: (variant: { size?: string; price: number; listPrice?: number }) => void;
+  onAdd: (variant: { size?: string; price: number; listPrice?: number; color?: string; fabric?: string; previewImage?: string }) => void;
   isSaved: boolean;
   /** Opens a sibling product from the discovery rails (omitted = rails hidden). */
   onOpenProduct?: (product: Product) => void;
 }) {
   const adaptive = useAdaptiveLayout();
-  const sourceId = product.id.split('::size=')[0];
+  const sourceId = stripProductVariantSuffixes(product.id);
   // The API slug is the catalogue id minus its leading number. A trailing hash is
   // part of the slug on some rows (e.g. `azilea-smart-pro-grid-mattress-56bb1d`) and
   // absent on others, so both forms are tried.
@@ -616,7 +628,64 @@ export default function ProductDetails({
 
   // Discovery rails — family-aware, so a size family never shows up here as a
   // single-price card, and the current piece never recommends itself.
-  const catalogId = product.id.split('::size=')[0];
+  const catalogId = stripProductVariantSuffixes(product.id);
+  const cleanProductName = productName.replace(/\s+—\s+Finish:\s+.*$/, '');
+  const webBasePath = (Constants?.expoConfig?.experiments?.baseUrl as string | undefined) || '';
+  const harvestSwatches = useMemo(() => getColorSwatches(product.id), [product.id]);
+  const manifestVariants = useMemo(() => getManifestVariants(product.id), [product.id]);
+  const displayFabrics = useMemo(() => normalizeFabrics(fabrics), [fabrics]);
+  const resolvedSwatches = useMemo(
+    () =>
+      buildProductSwatches({
+        slug: slugBase,
+        harvestSwatches,
+        fallbackColors: displayColors,
+        manifestVariants,
+        webBasePath,
+      }),
+    [slugBase, harvestSwatches, displayColors, manifestVariants, webBasePath],
+  );
+  const cartColorChoice = useMemo(() => colorFromProductId(product.id), [product.id]);
+  const [selectedFabric, setSelectedFabric] = useState<string>(cartColorChoice.fabric || '');
+  const [selectedSwatchName, setSelectedSwatchName] = useState<string>(cartColorChoice.color || '');
+  useEffect(() => {
+    setSelectedFabric(cartColorChoice.fabric || '');
+    setSelectedSwatchName(cartColorChoice.color || '');
+  }, [product.id, cartColorChoice.fabric, cartColorChoice.color]);
+
+  const swatchesBoundToFabrics = useMemo(
+    () =>
+      !!selectedFabric &&
+      resolvedSwatches.some((swatch) => swatch.fabric?.toLowerCase() === selectedFabric.toLowerCase()),
+    [selectedFabric, resolvedSwatches],
+  );
+  const visibleSwatches = useMemo(
+    () =>
+      swatchesBoundToFabrics
+        ? resolvedSwatches.filter((swatch) => swatch.fabric?.toLowerCase() === selectedFabric.toLowerCase())
+        : resolvedSwatches,
+    [swatchesBoundToFabrics, resolvedSwatches, selectedFabric],
+  );
+  const selectedSwatch: ResolvedSwatch | undefined = useMemo(() => {
+    if (!selectedSwatchName) return undefined;
+    return (
+      resolvedSwatches.find(
+        (swatch) =>
+          swatch.name.toLowerCase() === selectedSwatchName.toLowerCase() &&
+          (!selectedFabric || !swatch.fabric || swatch.fabric.toLowerCase() === selectedFabric.toLowerCase()),
+      ) || resolvedSwatches.find((swatch) => swatch.name.toLowerCase() === selectedSwatchName.toLowerCase())
+    );
+  }, [resolvedSwatches, selectedSwatchName, selectedFabric]);
+  const effectiveFabric = selectedFabric || selectedSwatch?.fabric || (displayFabrics.length === 1 ? displayFabrics[0] : '');
+  const cachedVariantMatch = useMemo(
+    () =>
+      selectedSwatch
+        ? findCachedVariantForSelection(manifestVariants, selectedSwatch.name, effectiveFabric, webBasePath)
+        : undefined,
+    [manifestVariants, selectedSwatch, effectiveFabric, webBasePath],
+  );
+  const activeVariantPreviewImage = cachedVariantMatch?.image || selectedSwatch?.previewImage;
+  const activeVariantIsAi = !!cachedVariantMatch?.image || !!selectedSwatch?.isAiPreview;
   const productCategory = (product as { c: string; sc?: string }).c;
   const productSubcategory = (product as { sc?: string }).sc;
   const related = useMemo(
@@ -653,8 +722,18 @@ export default function ProductDetails({
       ? galleryKey.split('|').map((uri, index) => ({ key: `site-${index}`, source: { uri } }))
       : [];
     if (!list.length && displayPhoto) list.push({ key: 'listing', source: displayPhoto });
+    if (activeVariantPreviewImage) {
+      const rest = list.filter((slide) => {
+        const src = slide.source as { uri?: string };
+        return !(src && typeof src === 'object' && src.uri === activeVariantPreviewImage);
+      });
+      return [
+        { key: `ai-variant-${selectedSwatch?.key || 'selected'}`, source: { uri: activeVariantPreviewImage } },
+        ...rest,
+      ];
+    }
     return list;
-  }, [galleryKey, displayPhoto]);
+  }, [galleryKey, displayPhoto, activeVariantPreviewImage, selectedSwatch?.key]);
   const [galleryIndex, setGalleryIndex] = useState(0);
   // Measured on the image frame so a slide is exactly one page wide, at whatever
   // size the layout gives it (the frame keeps its own square sizing).
@@ -724,6 +803,15 @@ export default function ProductDetails({
     };
   }, [sourceId, galleryKey, slides.length, webGalleryOffset]);
 
+  useEffect(() => {
+    if (!activeVariantPreviewImage) return;
+    if (galleryIdleTimer.current) clearTimeout(galleryIdleTimer.current);
+    setGalleryIndex(0);
+    webGalleryOffset.stopAnimation();
+    webGalleryOffset.setValue(slides.length > 1 ? -slideBox.width : 0);
+    galleryRef.current?.scrollTo({ x: slides.length > 1 ? slideBox.width : 0, animated: false });
+  }, [activeVariantPreviewImage]);
+
   const activeSlideRef = useRef(activeSlide);
   activeSlideRef.current = activeSlide;
   useEffect(() => {
@@ -771,13 +859,13 @@ export default function ProductDetails({
   const hasAvailability = !!stockStatus || !!deliveryEstimate || !!deliveryDate || freeDelivery || freeAssembly;
   // The options section is only worth showing when at least one row has content.
   const hasProductOptions = !!madeToOrderText || !!customizationText || !!displaySizes.length || !!fabrics.length
-    || !!displayColors.length || !!titleColors.length || (hasDifferentSizePrices && !hasSizeMenu);
+    || !!resolvedSwatches.length || !!titleColors.length || (hasDifferentSizePrices && !hasSizeMenu);
 
   return (
     <SafeAreaView style={styles.safe}>
       <SchemeBackdrop />
       {header}
-      <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={productName} onClose={() => setPhotoZoomOpen(false)} />
+      <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={cleanProductName} onClose={() => setPhotoZoomOpen(false)} />
       <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={[styles.back, { alignSelf: 'flex-start', minWidth: 44, minHeight: 44 }]}>
           <ChevronLeft color={COLORS.ink} size={22} />
@@ -860,6 +948,42 @@ export default function ProductDetails({
           </ScrollView>
         )}
 
+        {slides.length > 0 && !!selectedSwatch && (
+          <View style={styles.variantBanner} accessibilityLiveRegion="polite">
+            <View style={[styles.swatchPickerDot, { backgroundColor: selectedSwatch.hex || '#D4D0C8' }]} />
+            <View style={styles.variantBannerCopy}>
+              <View style={styles.variantBannerTitleRow}>
+                <Text style={styles.variantBannerTitle}>
+                  {activeVariantPreviewImage
+                    ? t('pdp.previewingColor', { c: selectedSwatch.displayName })
+                    : t('pdp.selectedFinish', { c: selectedSwatch.displayName })}
+                </Text>
+                {activeVariantIsAi && (
+                  <View style={styles.aiBadge}>
+                    <Sparkles size={11} color={COLORS.red} />
+                    <Text style={styles.aiBadgeText}>{t('pdp.aiPreviewBadge')}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.variantBannerSub}>
+                {[
+                  selectedSwatch.code,
+                  effectiveFabric ? formatFabricLabel(effectiveFabric) : undefined,
+                  !activeVariantPreviewImage ? t('pdp.studioFinishNote') : undefined,
+                ].filter(Boolean).join(' · ')}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('pdp.resetFinish')}
+              onPress={() => { setSelectedSwatchName(''); setSelectedFabric(''); }}
+              style={styles.variantResetButton}
+            >
+              <Text style={styles.variantResetText}>{t('pdp.resetFinish')}</Text>
+            </Pressable>
+          </View>
+        )}
+
         {slides.length > 0 && <Text style={styles.imageNote}>{PRODUCT_IMAGE_NOTE}</Text>}
 
         </View><View style={{ width: '100%', flex: adaptive.twoPane ? 1 : undefined, minWidth: 0, maxWidth: adaptive.twoPane ? 680 : undefined }}>
@@ -870,7 +994,7 @@ export default function ProductDetails({
               {labels.slice(0, 4).map((label) => <Text key={label} style={styles.labelPill}>{label}</Text>)}
             </View>
           )}
-          <Text style={styles.name}>{pname({ id: catalogId, n: productName })}</Text>
+          <Text style={styles.name}>{pname({ id: catalogId, n: cleanProductName })}</Text>
           {/* Price and payment share one row: the price on the left, the payment
               figure opposite it, so the two always sit side by side. */}
           <View style={[styles.priceRow, { flexWrap: 'wrap', gap: 12 }]}>
@@ -899,6 +1023,104 @@ export default function ProductDetails({
             </View>
           )}
         </View>
+
+        {/* Interactive Colour & Fabric Swatch Picker (uses cached AI previews when present). */}
+        {(resolvedSwatches.length > 0 || displayFabrics.length > 1) && (
+          <View testID="color-fabric-picker" style={styles.detailsCard}>
+            <View style={styles.pickerHeaderRow}>
+              <Text style={styles.sectionTitle}>{t('pdp.colorFabricTitle')}</Text>
+              {(!!selectedSwatch || !!selectedFabric) && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('pdp.resetFinish')}
+                  onPress={() => { setSelectedSwatchName(''); setSelectedFabric(''); }}
+                  style={styles.pickerClearBtn}
+                >
+                  <Text style={styles.pickerClearText}>{t('pdp.resetFinish')}</Text>
+                </Pressable>
+              )}
+            </View>
+
+            {displayFabrics.length > 1 && (
+              <View style={styles.pickerGroup}>
+                <Text style={styles.pickerSubLabel}>{t('pdp.fabricLabel')}</Text>
+                <View style={styles.pickerRow}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: !selectedFabric }}
+                    onPress={() => setSelectedFabric('')}
+                    style={[styles.fabricChip, !selectedFabric && styles.fabricChipActive]}
+                  >
+                    <Text style={[styles.fabricChipText, !selectedFabric && styles.fabricChipTextActive]}>{t('pdp.allFabrics')}</Text>
+                  </Pressable>
+                  {displayFabrics.map((fabric) => {
+                    const isActive = selectedFabric.toLowerCase() === fabric.toLowerCase();
+                    return (
+                      <Pressable
+                        key={fabric}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${t('pdp.fabricLabel')}: ${formatFabricLabel(fabric)}`}
+                        accessibilityState={{ selected: isActive }}
+                        onPress={() => {
+                          const next = isActive ? '' : fabric;
+                          setSelectedFabric(next);
+                          if (next && selectedSwatch?.fabric && selectedSwatch.fabric.toLowerCase() !== next.toLowerCase()) {
+                            const firstMatch = resolvedSwatches.find((item) => item.fabric?.toLowerCase() === next.toLowerCase());
+                            setSelectedSwatchName(firstMatch?.name || '');
+                          }
+                        }}
+                        style={[styles.fabricChip, isActive && styles.fabricChipActive]}
+                      >
+                        <Text style={[styles.fabricChipText, isActive && styles.fabricChipTextActive]}>{formatFabricLabel(fabric)}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+
+            {visibleSwatches.length > 0 && (
+              <View style={styles.pickerGroup}>
+                <Text style={styles.pickerSubLabel}>
+                  {t('pdp.colorLabel')} ({visibleSwatches.length})
+                </Text>
+                <View style={styles.pickerRow}>
+                  {visibleSwatches.map((swatch) => {
+                    const isActive = selectedSwatch?.key === swatch.key;
+                    const labelParts = [swatch.displayName, swatch.code].filter(Boolean).join(' · ');
+                    return (
+                      <Pressable
+                        key={swatch.key}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${swatch.displayName}${swatch.code ? ` ${swatch.code}` : ''}${swatch.fabric ? `, ${formatFabricLabel(swatch.fabric)}` : ''}${swatch.previewImage ? `, ${t('pdp.aiPreviewBadge')}` : ''}`}
+                        accessibilityState={{ selected: isActive }}
+                        onPress={() => {
+                          if (isActive) {
+                            setSelectedSwatchName('');
+                          } else {
+                            setSelectedSwatchName(swatch.name);
+                            if (swatch.fabric && !selectedFabric) setSelectedFabric(swatch.fabric);
+                          }
+                        }}
+                        style={[
+                          styles.swatchChip,
+                          isActive && styles.swatchChipActive,
+                          swatch.isOutOfStock && styles.swatchChipMuted,
+                        ]}
+                      >
+                        <View style={[styles.swatchPickerDot, { backgroundColor: swatch.hex || '#D4D0C8' }]} />
+                        <Text style={[styles.swatchChipText, isActive && styles.swatchChipTextActive]} numberOfLines={1}>
+                          {labelParts}
+                        </Text>
+                        {!!swatch.previewImage && <Sparkles size={11} color={isActive ? COLORS.red : COLORS.navy} />}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Always open: the piece's own story sits directly under the price. */}
         {!!description && (
@@ -1048,15 +1270,15 @@ export default function ProductDetails({
                 />
               )
             )}
-            {!!fabrics.length && <FactRow label="Fabrics" value={fabrics.join(' · ')} />}
-            {!!displayColors.length ? (
+            {!!fabrics.length && <FactRow label="Fabrics" value={displayFabrics.map(formatFabricLabel).join(' · ')} />}
+            {!!resolvedSwatches.length ? (
               <View style={styles.colorFact}>
                 <Text style={styles.factLabel}>Colors</Text>
                 <View style={styles.colorList}>
-                  {displayColors.map((color) => (
-                    <View key={color.name} style={styles.colorPill}>
-                      {color.image ? (
-                        <Image source={{ uri: productImageUrl(color.image) }} style={styles.swatchImage} resizeMode="cover" />
+                  {resolvedSwatches.map((color) => (
+                    <View key={color.key} style={styles.colorPill}>
+                      {color.previewImage ? (
+                        <Image source={{ uri: color.previewImage }} style={styles.swatchImage} resizeMode="cover" />
                       ) : color.hex ? (
                         <View style={[styles.swatch, { backgroundColor: color.hex }]} />
                       ) : null}
@@ -1127,7 +1349,7 @@ export default function ProductDetails({
         <Pressable accessibilityRole="button" accessibilityLabel={isSaved ? t('pdp.removeSaved') : t('pdp.save')} onPress={onSave} style={styles.saveButton}>
           <Heart size={20} color={isSaved ? COLORS.red : COLORS.ink} fill={isSaved ? COLORS.red : 'transparent'} />
         </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.addToBagA11y', { size: activeSize ? selectedSizeText : 'one size', p: money(displayPrice) })} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice })} style={styles.addButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('pdp.addToBagA11y', { size: activeSize ? selectedSizeText : 'one size', p: money(displayPrice) })} onPress={() => onAdd({ size: hasSizeMenu && activeSize ? selectedSizeText : hasDifferentSizePrices ? selectedSizeOption?.name : undefined, price: displayPrice, listPrice: displayListPrice, color: selectedSwatch?.name, fabric: selectedFabric || selectedSwatch?.fabric || undefined, previewImage: activeVariantPreviewImage })} style={styles.addButton}>
           <ShoppingBag color={COLORS.white} size={18} />
           <Text style={styles.addButtonText}>{t('pdp.addToBag', { p: money(displayPrice) })}</Text>
         </Pressable>
@@ -1291,4 +1513,29 @@ const styles = StyleSheet.create({
   specSection: { marginTop: 12 },
   specHeading: { color: COLORS.ink, fontSize: 12, fontWeight: '800', letterSpacing: 0.7, textTransform: 'uppercase', marginBottom: 2 },
   swatchImage: { width: 24, height: 24, borderRadius: 7, borderWidth: 1, borderColor: '#D0D5DD' },
+  variantBanner: { marginTop: 10, padding: 10, borderRadius: 14, backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.line, flexDirection: 'row', alignItems: 'center', gap: 10, ...GLASS.chip },
+  variantBannerCopy: { flex: 1, minWidth: 0 },
+  variantBannerTitleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  variantBannerTitle: { color: COLORS.ink, fontSize: 12, fontWeight: '800' },
+  variantBannerSub: { color: COLORS.muted, fontSize: 11, lineHeight: 15, marginTop: 2 },
+  aiBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 8, backgroundColor: '#FDE8E9' },
+  aiBadgeText: { color: COLORS.red, fontSize: 9, fontWeight: '800', letterSpacing: 0.4, textTransform: 'uppercase' },
+  variantResetButton: { minHeight: 34, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: COLORS.line, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.white },
+  variantResetText: { color: COLORS.ink, fontSize: 11, fontWeight: '700' },
+  pickerHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  pickerClearBtn: { minHeight: 32, paddingHorizontal: 8, justifyContent: 'center' },
+  pickerClearText: { color: COLORS.red, fontSize: 11, fontWeight: '700' },
+  pickerGroup: { marginTop: 8 },
+  pickerSubLabel: { color: COLORS.muted, fontSize: 11, fontWeight: '700', marginBottom: 8 },
+  pickerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  fabricChip: { minHeight: 34, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 18, borderWidth: 1, borderColor: COLORS.line, backgroundColor: COLORS.white, justifyContent: 'center', ...GLASS.chip },
+  fabricChipActive: { borderColor: COLORS.ink, backgroundColor: COLORS.ink },
+  fabricChipText: { color: COLORS.ink, fontSize: 11, fontWeight: '700' },
+  fabricChipTextActive: { color: COLORS.white },
+  swatchChip: { flexDirection: 'row', alignItems: 'center', gap: 7, minHeight: 36, maxWidth: '100%', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 18, borderWidth: 1, borderColor: COLORS.line, backgroundColor: COLORS.white, ...GLASS.chip },
+  swatchChipActive: { borderColor: COLORS.red, backgroundColor: '#FEF3F2', ...GLASS.chipActive },
+  swatchChipMuted: { opacity: 0.72 },
+  swatchPickerDot: { width: 16, height: 16, borderRadius: 8, borderWidth: 1, borderColor: '#C5C8CE' },
+  swatchChipText: { color: COLORS.ink, fontSize: 11, fontWeight: '600', flexShrink: 1 },
+  swatchChipTextActive: { color: COLORS.red, fontWeight: '800' },
 });
