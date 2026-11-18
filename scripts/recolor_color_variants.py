@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """
-Option 1 ($0 Forever): Neural Furniture Segmentation + CIELAB Upholstery Recoloring.
+Option 1 ($0 Forever): White-Background Verification + Exact-Color CIELAB Recoloring.
 
-Segments furniture pieces with `facebook/mask2former-swin-base-IN21k-ade-semantic`
-(ADE20K semantic segmentation on CPU, zero API cost), isolates the primary
-upholstery cluster in CIELAB space (protecting wood/metal legs, dark contrast
-throw cushions, and printed duvets), refines mask boundaries with a fast Guided
-Filter, and transfers swatch hex + fabric sheen/texture in CIELAB space.
+1. Strictly verifies white-background studio product photos (rejecting room
+   scenes and sparse dimension/measurement diagrams).
+2. Isolates the foreground object cleanly from pure white and soft floor contact
+   shadows, optionally intersects with Mask2Former ADE20K furniture segmentation,
+   and isolates the primary upholstery cluster in float64 CIELAB space so wood
+   legs, dark trim, contrasting throw pillows, and white bed duvets remain
+   untouched.
+3. Transfers the exact swatch hex in float64 CIE L*a*b* with closed-loop median
+   calibration (zero hallucinated hues or saturation boosts).
 
-Supports single-image CLI mode and batch JSON worker mode (`--jobs-json`) called
-by `scripts/generate-color-variants.mjs --engine free-lab`.
+Supports:
+  --inspect-white-bg-json <paths.json>  Batch white-background check
+  --jobs-json <jobs.json>               Batch recolor worker
+  --input ... --output ... --hex ...    Single-image CLI
 """
 from __future__ import annotations
 
@@ -17,7 +23,6 @@ import argparse
 import hashlib
 import json
 import os
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -28,8 +33,11 @@ from PIL import Image
 
 DEFAULT_SEG_MODEL = "facebook/mask2former-swin-base-IN21k-ade-semantic"
 
-# ADE20K semantic label substrings mapped per catalog category so walls, floors,
-# rugs, coffee tables, plants, and curtains are never modified.
+WHITE_BORDER_MIN = 0.90
+MAX_SECONDARY_RATIO = 0.16
+MIN_MAIN_AREA_RATIO = 0.06
+MIN_BBOX_FILL_RATIO = 0.20
+
 CATEGORY_LABELS: dict[str, tuple[str, ...]] = {
     "sofas": ("sofa", "armchair", "chair", "swivel chair", "ottoman", "stool", "bench"),
     "bedroom": ("bed", "ottoman", "bench", "wardrobe", "chest of drawers", "cabinet"),
@@ -58,7 +66,6 @@ DEFAULT_FURNITURE_LABELS: tuple[str, ...] = (
     "bench",
 )
 
-
 FALLBACK_COLOR_NAMES: dict[str, str] = {
     "navy": "#1E3557",
     "emerald": "#1F5747",
@@ -86,6 +93,24 @@ FALLBACK_COLOR_NAMES: dict[str, str] = {
     "yellow": "#D9B45A",
 }
 
+_D65_REF = np.array([0.95047, 1.0, 1.08883], dtype=np.float64)
+_RGB_TO_XYZ = np.array(
+    [
+        [0.4124564, 0.3575761, 0.1804375],
+        [0.2126729, 0.7151522, 0.0721750],
+        [0.0193339, 0.1191920, 0.9503041],
+    ],
+    dtype=np.float64,
+)
+_XYZ_TO_RGB = np.array(
+    [
+        [3.2404542, -1.5371385, -0.4985314],
+        [-0.9692660, 1.8760108, 0.0415560],
+        [0.0556434, -0.2040259, 1.0572252],
+    ],
+    dtype=np.float64,
+)
+
 
 def resolve_hex_color(hex_color: str | None, color_name: str = "") -> str:
     clean = str(hex_color or "").strip().lstrip("#")
@@ -105,29 +130,168 @@ def parse_hex_color(hex_color: str) -> tuple[int, int, int]:
     return (int(clean[0:2], 16), int(clean[2:4], 16), int(clean[4:6], 16))
 
 
+def srgb_to_cie_lab(rgb_f01: np.ndarray) -> np.ndarray:
+    arr = np.asarray(rgb_f01, dtype=np.float64)
+    lin = np.where(arr <= 0.04045, arr / 12.92, ((arr + 0.055) / 1.055) ** 2.4)
+    xyz = (lin @ _RGB_TO_XYZ.T) / _D65_REF
+    eps = (6.0 / 29.0) ** 3
+    kappa = (29.0 / 3.0) ** 3
+    f = np.where(xyz > eps, np.cbrt(xyz), (kappa * xyz + 16.0) / 116.0)
+    l_ch = 116.0 * f[..., 1] - 16.0
+    a_ch = 500.0 * (f[..., 0] - f[..., 1])
+    b_ch = 200.0 * (f[..., 1] - f[..., 2])
+    return np.stack([l_ch, a_ch, b_ch], axis=-1)
+
+
+def cie_lab_to_srgb(lab_f: np.ndarray) -> np.ndarray:
+    l_ch, a_ch, b_ch = lab_f[..., 0], lab_f[..., 1], lab_f[..., 2]
+    fy = (l_ch + 16.0) / 116.0
+    fx = a_ch / 500.0 + fy
+    fz = fy - b_ch / 200.0
+    delta = 6.0 / 29.0
+    xyz = (
+        np.stack(
+            [
+                np.where(fx > delta, fx**3, 3.0 * delta**2 * (fx - 4.0 / 29.0)),
+                np.where(fy > delta, fy**3, 3.0 * delta**2 * (fy - 4.0 / 29.0)),
+                np.where(fz > delta, fz**3, 3.0 * delta**2 * (fz - 4.0 / 29.0)),
+            ],
+            axis=-1,
+        )
+        * _D65_REF
+    )
+    lin = np.clip(xyz @ _XYZ_TO_RGB.T, 0.0, 1.0)
+    srgb = np.where(lin <= 0.0031308, 12.92 * lin, 1.055 * np.power(lin, 1.0 / 2.4) - 0.055)
+    return np.clip(srgb, 0.0, 1.0)
+
+
 def rgb_to_cie_lab(rgb_u8: np.ndarray) -> np.ndarray:
-    lab = cv2.cvtColor(rgb_u8, cv2.COLOR_RGB2LAB).astype(np.float32)
-    lab[..., 0] *= 100.0 / 255.0
-    lab[..., 1] -= 128.0
-    lab[..., 2] -= 128.0
-    return lab
+    return srgb_to_cie_lab(np.asarray(rgb_u8, dtype=np.float64) / 255.0).astype(np.float32)
 
 
 def cie_lab_to_rgb(lab_f: np.ndarray) -> np.ndarray:
-    out = np.empty_like(lab_f, dtype=np.float32)
-    out[..., 0] = np.clip(lab_f[..., 0] * (255.0 / 100.0), 0.0, 255.0)
-    out[..., 1] = np.clip(lab_f[..., 1] + 128.0, 0.0, 255.0)
-    out[..., 2] = np.clip(lab_f[..., 2] + 128.0, 0.0, 255.0)
-    return cv2.cvtColor(out.astype(np.uint8), cv2.COLOR_LAB2RGB)
+    return np.clip(cie_lab_to_srgb(lab_f) * 255.0 + 0.5, 0, 255).astype(np.uint8)
 
 
 def hex_to_cie_lab(hex_color: str) -> np.ndarray:
     r, g, b = parse_hex_color(hex_color)
-    rgb = np.array([[[r, g, b]]], dtype=np.uint8)
-    return rgb_to_cie_lab(rgb)[0, 0]
+    rgb01 = np.array([[[r, g, b]]], dtype=np.float64) / 255.0
+    return srgb_to_cie_lab(rgb01)[0, 0]
 
 
-def guided_filter(guide_gray_f: np.ndarray, src_f: np.ndarray, radius: int = 10, eps: float = 2e-3) -> np.ndarray:
+def near_white_mask(rgb_u8: np.ndarray, min_chan: int = 242, max_chroma: int = 12) -> np.ndarray:
+    vals = np.asarray(rgb_u8, dtype=np.int16)
+    return (vals.min(axis=-1) >= min_chan) & ((vals.max(axis=-1) - vals.min(axis=-1)) <= max_chroma)
+
+
+def floodfill_external_white(rgb_u8: np.ndarray, min_chan: int = 242, max_chroma: int = 12) -> np.ndarray:
+    """Returns boolean mask of near-white pixels connected to any image border."""
+    h, w = rgb_u8.shape[:2]
+    nw = near_white_mask(rgb_u8, min_chan=min_chan, max_chroma=max_chroma).astype(np.uint8)
+    ff = nw.copy()
+    mask_ff = np.zeros((h + 2, w + 2), np.uint8)
+    step = max(1, min(h, w) // 64)
+    for x in range(0, w, step):
+        if ff[0, x] == 1:
+            cv2.floodFill(ff, mask_ff, (x, 0), 2)
+        if ff[h - 1, x] == 1:
+            cv2.floodFill(ff, mask_ff, (x, h - 1), 2)
+    for y in range(0, h, step):
+        if ff[y, 0] == 1:
+            cv2.floodFill(ff, mask_ff, (0, y), 2)
+        if ff[y, w - 1] == 1:
+            cv2.floodFill(ff, mask_ff, (w - 1, y), 2)
+    # Also seed exact 4 corners
+    for cx, cy in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)):
+        if ff[cy, cx] == 1:
+            cv2.floodFill(ff, mask_ff, (cx, cy), 2)
+    return ff == 2
+
+
+def analyse_white_background(rgb_u8: np.ndarray) -> dict[str, Any]:
+    """
+    Strictly verifies that an image is a clean white-background product photo
+    (and NOT a room lifestyle scene or sparse dimension/measurement diagram).
+    """
+    h, w = rgb_u8.shape[:2]
+    scale = min(1.0, 256.0 / max(h, w))
+    if scale < 1.0:
+        small = cv2.resize(rgb_u8, (max(32, int(w * scale)), max(32, int(h * scale))), interpolation=cv2.INTER_AREA)
+    else:
+        small = rgb_u8
+    sh, sw = small.shape[:2]
+    bw = max(2, round(min(sh, sw) * 0.025))
+    border = np.concatenate(
+        [
+            small[:bw].reshape(-1, 3),
+            small[-bw:].reshape(-1, 3),
+            small[bw:-bw, :bw].reshape(-1, 3),
+            small[bw:-bw, -bw:].reshape(-1, 3),
+        ]
+    )
+    border_white_ratio = float(near_white_mask(border).mean())
+
+    bg_ext = floodfill_external_white(small)
+    bg_median = np.median(border.astype(np.float32), axis=0)
+    dist = np.linalg.norm(small.astype(np.float32) - bg_median, axis=2)
+    fg = (~bg_ext) & (dist > 28.0)
+    fg_closed = cv2.morphologyEx(fg.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8)) > 0
+
+    num_cc, cc_labels, cc_stats, _ = cv2.connectedComponentsWithStats(fg_closed.astype(np.uint8))
+    areas = [
+        (cid, int(cc_stats[cid, cv2.CC_STAT_AREA]))
+        for cid in range(1, num_cc)
+        if cc_stats[cid, cv2.CC_STAT_AREA] >= 12
+    ]
+    areas.sort(key=lambda item: item[1], reverse=True)
+
+    reasons: list[str] = []
+    if border_white_ratio < WHITE_BORDER_MIN:
+        reasons.append("border-not-over-90-percent-near-white")
+
+    if not areas:
+        reasons.append("no-foreground-object")
+        return {
+            "whiteBackground": False,
+            "borderWhiteRatio": round(border_white_ratio, 4),
+            "mainObjectAreaRatio": 0.0,
+            "secondaryObjectRatio": 1.0,
+            "bboxFillRatio": 0.0,
+            "reasons": reasons,
+        }
+
+    main_id, main_area = areas[0]
+    total_px = float(sh * sw)
+    main_area_ratio = main_area / total_px
+    secondary_area = sum(a for _, a in areas[1:])
+    secondary_ratio = secondary_area / max(1, main_area)
+
+    bx = int(cc_stats[main_id, cv2.CC_STAT_LEFT])
+    by = int(cc_stats[main_id, cv2.CC_STAT_TOP])
+    bw_box = max(1, int(cc_stats[main_id, cv2.CC_STAT_WIDTH]))
+    bh_box = max(1, int(cc_stats[main_id, cv2.CC_STAT_HEIGHT]))
+    bbox_fill = float((fg[by : by + bh_box, bx : bx + bw_box]).mean())
+
+    if main_area_ratio < MIN_MAIN_AREA_RATIO:
+        reasons.append("foreground-too-small-or-line-drawing")
+    if main_area_ratio > 0.90:
+        reasons.append("foreground-fills-frame")
+    if secondary_ratio > MAX_SECONDARY_RATIO:
+        reasons.append("multiple-objects-or-diagram-callouts")
+    if bbox_fill < MIN_BBOX_FILL_RATIO:
+        reasons.append("sparse-diagram-fill")
+
+    return {
+        "whiteBackground": not reasons,
+        "borderWhiteRatio": round(border_white_ratio, 4),
+        "mainObjectAreaRatio": round(main_area_ratio, 4),
+        "secondaryObjectRatio": round(secondary_ratio, 4),
+        "bboxFillRatio": round(bbox_fill, 4),
+        "reasons": reasons,
+    }
+
+
+def guided_filter(guide_gray_f: np.ndarray, src_f: np.ndarray, radius: int = 8, eps: float = 2e-3) -> np.ndarray:
     k = (2 * radius + 1, 2 * radius + 1)
     mean_i = cv2.boxFilter(guide_gray_f, -1, k)
     mean_p = cv2.boxFilter(src_f, -1, k)
@@ -147,7 +311,6 @@ def target_label_ids(id2label: dict[int | str, str], category: str = "") -> set[
     matched: set[int] = set()
     for raw_id, raw_name in id2label.items():
         name = str(raw_name).lower().strip()
-        # Match whole comma-separated synonyms inside ADE20K label names
         tokens = [part.strip() for part in name.split(",")]
         if any(w == tok or w in tok.split() for tok in tokens for w in wanted):
             matched.add(int(raw_id))
@@ -191,9 +354,11 @@ class SemanticSegmenter:
 
         h, w = rgb_u8.shape[:2]
         if hasattr(self.processor, "post_process_semantic_segmentation"):
-            seg_map = self.processor.post_process_semantic_segmentation(
-                outputs, target_sizes=[(h, w)]
-            )[0].cpu().numpy()
+            seg_map = (
+                self.processor.post_process_semantic_segmentation(outputs, target_sizes=[(h, w)])[0]
+                .cpu()
+                .numpy()
+            )
         else:
             logits = torch.nn.functional.interpolate(
                 outputs.logits, size=(h, w), mode="bilinear", align_corners=False
@@ -203,7 +368,6 @@ class SemanticSegmenter:
         ids = target_label_ids(self.model.config.id2label, category)
         mask = np.isin(seg_map, list(ids)).astype(np.float32)
         if float(mask.mean()) < 0.015:
-            # Fallback to all general furniture classes if category-specific match was tiny
             broad_ids = target_label_ids(self.model.config.id2label, "")
             broad_mask = np.isin(seg_map, list(broad_ids)).astype(np.float32)
             if float(broad_mask.mean()) > float(mask.mean()):
@@ -212,7 +376,6 @@ class SemanticSegmenter:
 
 
 def grabcut_foreground_mask(rgb_u8: np.ndarray) -> np.ndarray:
-    """Fallback center-prior foreground segmentation when neural weights are unavailable."""
     h, w = rgb_u8.shape[:2]
     size = 384
     small = cv2.resize(rgb_u8, (size, size), interpolation=cv2.INTER_AREA)
@@ -225,23 +388,75 @@ def grabcut_foreground_mask(rgb_u8: np.ndarray) -> np.ndarray:
     return cv2.resize(fg, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
+def extract_white_bg_subject(rgb_u8: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Separates product subject pixels from pure white background and soft bottom
+    contact shadows on white-background studio shots.
+    Returns (subject_fg_bool, external_white_bg_bool).
+    """
+    h, w = rgb_u8.shape[:2]
+    bg_ext = floodfill_external_white(rgb_u8, min_chan=240, max_chroma=14)
+    fg = ~bg_ext
+    ys, xs = np.nonzero(fg)
+    if len(ys) < 100:
+        return fg, bg_ext
+    y0, y1 = int(ys.min()), int(ys.max())
+    x0, x1 = int(xs.min()), int(xs.max())
+    box_h = max(1, y1 - y0)
+
+    # Neutral soft studio floor shadow right beneath the furniture feet
+    vals = rgb_u8.astype(np.int16)
+    neutral = (vals.max(axis=2) - vals.min(axis=2)) <= 16
+    light_neutral = (vals.min(axis=2) >= 175) & neutral
+    shadow_zone = np.zeros((h, w), dtype=bool)
+    shadow_top = max(0, y1 - max(6, round(box_h * 0.10)))
+    shadow_zone[shadow_top:, :] = True
+    fg = fg & ~(shadow_zone & light_neutral)
+    return fg, bg_ext
+
+
 def extract_coarse_mask(
     rgb_u8: np.ndarray,
     category: str = "",
     mask_mode: str = "auto",
     segmenter: SemanticSegmenter | None = None,
-) -> np.ndarray:
+) -> tuple[np.ndarray, np.ndarray | None]:
     mode = mask_mode.lower().strip()
+    is_white_bg = analyse_white_background(rgb_u8)["whiteBackground"]
+    bg_ext: np.ndarray | None = None
+
+    if is_white_bg:
+        subject_fg, bg_ext = extract_white_bg_subject(rgb_u8)
+        if mode in ("auto", "mask2former", "segformer", "semantic") and segmenter is not None:
+            try:
+                sem = segmenter.segment_furniture(rgb_u8, category=category)
+                if float((sem > 0.5).mean()) >= 0.02:
+                    # Intersect semantic furniture mask with clean white-bg subject mask
+                    # so white background & shadows never leak, while non-furniture props stay out.
+                    combined = (sem > 0.5) & subject_fg
+                    if float(combined.mean()) >= 0.02:
+                        return combined.astype(np.float32), bg_ext
+            except (ImportError, OSError):
+                if mode != "auto":
+                    raise
+        return subject_fg.astype(np.float32), bg_ext
+
     if mode in ("auto", "mask2former", "segformer", "semantic"):
         if segmenter is None:
             segmenter = SemanticSegmenter()
-        mask = segmenter.segment_furniture(rgb_u8, category=category)
-        if float((mask > 0.5).mean()) >= 0.015:
-            return mask
-        # Small decor pieces (candle holders, trays) sometimes miss ADE20K furniture labels
-        return grabcut_foreground_mask(rgb_u8)
+        try:
+            mask = segmenter.segment_furniture(rgb_u8, category=category)
+            if float((mask > 0.5).mean()) >= 0.015:
+                return mask, None
+        except (ImportError, OSError):
+            if mode != "auto":
+                raise
+        return grabcut_foreground_mask(rgb_u8), None
     if mode == "grabcut":
-        return grabcut_foreground_mask(rgb_u8)
+        return grabcut_foreground_mask(rgb_u8), None
+    if mode == "white-bg":
+        subject_fg, bg_ext = extract_white_bg_subject(rgb_u8)
+        return subject_fg.astype(np.float32), bg_ext
     raise ValueError(f"Unsupported mask mode: {mask_mode}")
 
 
@@ -251,28 +466,27 @@ def refine_upholstery_mask(
     category: str = "",
 ) -> np.ndarray:
     """
-    Isolates primary upholstery inside the furniture mask using weighted CIELAB
-    clustering + edge-aware Guided Filter refinement so contrasting wood legs,
-    black trim, and dark accent cushions remain untouched.
+    Isolates primary upholstery inside the foreground mask using float64 CIELAB
+    clustering + Guided Filter edge refinement so contrasting wood/metal legs,
+    dark accent trim, and white bed duvets/pillows remain untouched.
     """
     fg_bool = coarse_fg > 0.5
     if int(fg_bool.sum()) < 100:
         return np.clip(coarse_fg, 0.0, 1.0).astype(np.float32)
 
     lab = rgb_to_cie_lab(rgb_u8)
+    chroma_map = np.sqrt(lab[..., 1] ** 2 + lab[..., 2] ** 2)
     h, w = rgb_u8.shape[:2]
 
-    # Erode slightly to avoid background edge contamination when sampling upholstery
     erode_k = max(3, int(min(h, w) * 0.01) | 1)
-    core_fg = cv2.erode((coarse_fg > 0.5).astype(np.uint8), np.ones((erode_k, erode_k), np.uint8)) > 0
+    core_fg = cv2.erode(fg_bool.astype(np.uint8), np.ones((erode_k, erode_k), np.uint8)) > 0
     if int(core_fg.sum()) < 120:
         core_fg = fg_bool
 
-    # For beds, sample outer perimeter (headboard/footboard) where upholstery lives
-    # rather than the patterned center duvet.
     sample_mask = core_fg
-    if category.lower().strip() in ("bedroom", "kids-and-teens"):
-        inner_k = max(15, int(min(h, w) * 0.09) | 1)
+    cat_clean = category.lower().strip()
+    if cat_clean in ("bedroom", "kids-and-teens"):
+        inner_k = max(15, int(min(h, w) * 0.08) | 1)
         inner = cv2.erode(core_fg.astype(np.uint8), np.ones((inner_k, inner_k), np.uint8)) > 0
         shell = core_fg & (~inner)
         if int(shell.sum()) >= 200:
@@ -280,8 +494,7 @@ def refine_upholstery_mask(
 
     pts = lab[sample_mask]
     if len(pts) > 15000:
-        idx = np.linspace(0, len(pts) - 1, 15000, dtype=int)
-        pts = pts[idx]
+        pts = pts[np.linspace(0, len(pts) - 1, 15000, dtype=int)]
 
     feat = pts.copy()
     feat[:, 0] *= 0.65
@@ -292,11 +505,15 @@ def refine_upholstery_mask(
     _, labels, centers = cv2.kmeans(feat.astype(np.float32), k, None, criteria, 3, cv2.KMEANS_PP_CENTERS)
     counts = np.bincount(labels.flatten(), minlength=k)
 
-    # Prefer the largest non-black cluster unless the whole piece is dark
     order = np.argsort(-counts)
     dom_idx = int(order[0])
     for ci in order:
-        if (centers[ci, 0] / 0.65) > 22.0:
+        l_val = float(centers[ci, 0] / 0.65)
+        if cat_clean in ("bedroom", "kids-and-teens"):
+            if 20.0 < l_val < 86.0:
+                dom_idx = int(ci)
+                break
+        elif l_val > 22.0:
             dom_idx = int(ci)
             break
 
@@ -320,27 +537,38 @@ def refine_upholstery_mask(
     chroma_tol = max(7.5, min(14.5, ab_spread * 1.45 + 3.5))
     chroma_w = np.exp(-0.5 * (np.maximum(0.0, chroma_dist - 4.0) / chroma_tol) ** 2)
 
-    # Protect dark walnut/black accent cushions & legs when dominant fabric is mid/light
-    if dom_lab[0] > 52.0:
+    if dom_lab[0] > 48.0:
         min_l = dom_lab[0] * 0.44
         dark_w = np.clip((lab[..., 0] - (min_l - 8.0)) / 10.0, 0.0, 1.0)
     else:
-        dark_w = 1.0
+        dark_w = np.ones((h, w), dtype=np.float32)
 
-    # For beds, guard high-contrast printed duvets whose lightness is bright white
-    # while frame upholstery is colored.
-    if category.lower().strip() in ("bedroom", "kids-and-teens") and dom_lab[0] < 76.0:
-        bright_duvet = np.where(lab[..., 0] > max(84.0, dom_lab[0] + 15.0), 0.0, 1.0)
-        dark_w = dark_w * bright_duvet
+    duvet_soft = np.ones((h, w), dtype=np.float32)
+    if cat_clean in ("bedroom", "kids-and-teens") and dom_lab[0] < 82.0:
+        duvet_seed = fg_bool & (lab[..., 0] > max(82.0, dom_lab[0] + 6.0)) & (chroma_map < 9.0)
+        num_cc, cc_labels, cc_stats, _ = cv2.connectedComponentsWithStats(duvet_seed.astype(np.uint8))
+        duvet_main = np.zeros((h, w), dtype=bool)
+        min_cc = max(100, int(0.002 * h * w))
+        for cid in range(1, num_cc):
+            if cc_stats[cid, cv2.CC_STAT_AREA] >= min_cc:
+                duvet_main |= cc_labels == cid
+        if duvet_main.any():
+            close_k = max(15, int(min(h, w) * 0.03) | 1)
+            duvet_closed = (
+                cv2.morphologyEx(duvet_main.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((close_k, close_k), np.uint8)) > 0
+            )
+            duvet_guard = cv2.dilate(duvet_closed.astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
+            duvet_soft = cv2.GaussianBlur((~duvet_guard).astype(np.float32), (0, 0), 1.0)
 
-    raw_mask = np.clip(coarse_fg * chroma_w * dark_w, 0.0, 1.0).astype(np.float32)
+    raw_mask = np.clip(coarse_fg * chroma_w * dark_w * duvet_soft, 0.0, 1.0).astype(np.float32)
 
     gray_f = cv2.cvtColor(rgb_u8, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255.0
-    smooth = guided_filter(gray_f, raw_mask, radius=10, eps=2e-3)
-    # Clamp strictly inside the semantic furniture mask so recoloring never bleeds onto rugs or walls.
-    outer_bound = np.clip(cv2.GaussianBlur(coarse_fg.astype(np.float32), (0, 0), 1.0), 0.0, 1.0)
+    smooth = guided_filter(gray_f, raw_mask, radius=8, eps=2e-3)
+    fg_in = cv2.erode(fg_bool.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(np.float32)
+    if fg_in.sum() < 40:
+        fg_in = fg_bool.astype(np.float32)
 
-    alpha = np.clip((smooth - 0.16) / 0.64, 0.0, 1.0) * outer_bound
+    alpha = np.clip((smooth - 0.18) / 0.62, 0.0, 1.0) * fg_in * duvet_soft
     return np.clip(alpha, 0.0, 1.0).astype(np.float32)
 
 
@@ -349,61 +577,72 @@ def recolor_cie_lab(
     alpha: np.ndarray,
     hex_color: str,
     fabric: str = "",
+    clean_white_mask: np.ndarray | None = None,
 ) -> np.ndarray:
     """
-    Transfers target swatch color & fabric tactile response onto the masked
-    upholstery while preserving relative shading, creases, and studio lighting.
+    Exact-color float64 CIELAB recoloring with closed-loop median calibration so
+    the upholstery matches `hex_color` accurately (zero hue hallucination or
+    highlight blowout) while preserving studio creases and lighting.
     """
-    upholstery = alpha > 0.55
-    if int(upholstery.sum()) < 40:
+    interior = alpha > 0.70
+    if int(interior.sum()) < 40:
+        interior = alpha > 0.45
+    if int(interior.sum()) < 40:
         return rgb_u8
 
-    lab = rgb_to_cie_lab(rgb_u8)
+    lab = srgb_to_cie_lab(rgb_u8.astype(np.float64) / 255.0)
     target_lab = hex_to_cie_lab(hex_color)
     t_l, t_a, t_b = float(target_lab[0]), float(target_lab[1]), float(target_lab[2])
 
     src_l = lab[..., 0]
-    l_med = float(np.percentile(src_l[upholstery], 55))
-    l_iqr = max(6.0, float(np.percentile(src_l[upholstery], 90) - np.percentile(src_l[upholstery], 10)))
+    l_med = float(np.median(src_l[interior]))
+    l_p08 = float(np.percentile(src_l[interior], 8))
+    l_p92 = float(np.percentile(src_l[interior], 92))
     delta_l = src_l - l_med
 
-    if t_l < 45.0:
-        scale = float(np.clip(0.55 + (t_l / 90.0), 0.45, 0.90))
-    elif t_l > 82.0:
-        scale = 0.72
-    else:
-        scale = 0.85
+    up_room = max(2.0, 97.5 - t_l)
+    down_room = max(2.0, t_l - 4.0)
+    scale = min(
+        0.85,
+        (0.70 * up_room) / max(l_p92 - l_med, 6.0),
+        (0.78 * down_room) / max(l_med - l_p08, 6.0),
+    )
+    scale = float(max(0.22, scale))
 
-    new_l = np.clip(t_l + delta_l * scale, 4.0, 98.0)
-    blur_l = cv2.GaussianBlur(src_l, (0, 0), 3.0)
+    new_l = np.clip(t_l + delta_l * scale, 2.0, 98.5)
+    blur_l = cv2.GaussianBlur(src_l.astype(np.float32), (0, 0), 2.5).astype(np.float64)
     tex = src_l - blur_l
 
     fab = (fabric or "").lower().strip()
     if "velvet" in fab:
-        sheen = np.clip((delta_l / max(10.0, l_iqr)) * 4.5, -2.5, 4.5)
-        new_l = np.clip(new_l + sheen + tex * 0.75, 4.0, 98.0)
-        chroma_boost = 1.06
-    elif "suede" in fab:
-        new_l = np.clip(new_l + 1.5 + tex * 0.60, 6.0, 97.0)
-        chroma_boost = 0.94
+        sheen = np.clip(delta_l * 0.06, -1.5, 1.5)
+        new_l = np.clip(new_l + sheen + tex * 0.25, 2.0, 98.5)
     elif "boucle" in fab or "chenille" in fab or "feather" in fab:
-        new_l = np.clip(new_l + tex * 1.15, 4.0, 98.0)
-        chroma_boost = 1.00
+        new_l = np.clip(new_l + tex * 0.40, 2.0, 98.5)
     else:
-        new_l = np.clip(new_l + tex * 0.90, 4.0, 98.0)
-        chroma_boost = 1.00
+        new_l = np.clip(new_l + tex * 0.30, 2.0, 98.5)
 
-    chroma_att = np.clip(1.0 - np.maximum(0.0, new_l - 88.0) / 14.0, 0.35, 1.0)
-    chroma_att *= np.clip(new_l / 22.0, 0.55, 1.0)
-    new_a = t_a * chroma_boost * chroma_att
-    new_b = t_b * chroma_boost * chroma_att
+    l_ratio = np.clip(new_l / max(t_l, 18.0), 0.55, 1.05)
+    new_a = np.full_like(new_l, t_a) * l_ratio
+    new_b = np.full_like(new_l, t_b) * l_ratio
 
-    recolored_lab = np.stack([new_l, new_a, new_b], axis=-1)
-    recolored_rgb = cie_lab_to_rgb(recolored_lab).astype(np.float32)
-    orig_rgb = rgb_u8.astype(np.float32)
-    a3 = alpha[..., None]
-    blended = orig_rgb * (1.0 - a3) + recolored_rgb * a3
-    return np.clip(blended, 0, 255).astype(np.uint8)
+    cand = np.stack([new_l, new_a, new_b], axis=-1)
+
+    # Closed-loop calibration so the rendered upholstery median matches the swatch hex exactly.
+    med_rgb = np.median(cie_lab_to_srgb(cand[interior]), axis=0)
+    med_lab = srgb_to_cie_lab(med_rgb.reshape(1, 1, 3))[0, 0]
+    corr = target_lab - med_lab
+    cand[..., 0] = np.clip(cand[..., 0] + corr[0] * 0.95, 2.0, 98.5)
+    cand[..., 1] += corr[1] * 0.95
+    cand[..., 2] += corr[2] * 0.95
+
+    recolored_rgb = cie_lab_to_srgb(cand) * 255.0
+    orig_rgb = rgb_u8.astype(np.float64)
+    a3 = alpha[..., None].astype(np.float64)
+    out = np.clip(orig_rgb * (1.0 - a3) + recolored_rgb * a3 + 0.5, 0, 255).astype(np.uint8)
+    if clean_white_mask is not None:
+        out[clean_white_mask] = 255
+    return out
 
 
 def save_image(rgb_u8: np.ndarray, output_path: str, output_format: str = "webp", quality: int = 88) -> int:
@@ -430,25 +669,38 @@ def load_or_compute_mask(
     mask_mode: str,
     mask_cache_dir: str | None,
     segmenter: SemanticSegmenter | None,
-) -> np.ndarray:
+) -> tuple[np.ndarray, np.ndarray | None]:
+    _, bg_ext = extract_white_bg_subject(rgb_u8) if analyse_white_background(rgb_u8)["whiteBackground"] else (None, None)
     if mask_cache_dir:
-        digest = hashlib.sha256(f"{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
+        digest = hashlib.sha256(f"v2|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
         cache_file = Path(mask_cache_dir) / f"{digest}.png"
         if cache_file.is_file():
             cached = np.array(Image.open(cache_file).convert("L"), dtype=np.float32) / 255.0
             if cached.shape[:2] == rgb_u8.shape[:2]:
-                return cached
+                return cached, bg_ext
 
-    coarse = extract_coarse_mask(rgb_u8, category=category, mask_mode=mask_mode, segmenter=segmenter)
+    coarse, bg_ext = extract_coarse_mask(rgb_u8, category=category, mask_mode=mask_mode, segmenter=segmenter)
     alpha = refine_upholstery_mask(rgb_u8, coarse, category=category)
 
     if mask_cache_dir:
-        digest = hashlib.sha256(f"{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
+        digest = hashlib.sha256(f"v2|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
         cache_file = Path(mask_cache_dir) / f"{digest}.png"
         cache_file.parent.mkdir(parents=True, exist_ok=True)
         Image.fromarray(np.clip(alpha * 255.0, 0, 255).astype(np.uint8), mode="L").save(cache_file)
 
-    return alpha
+    return alpha, bg_ext
+
+
+def inspect_white_backgrounds(paths: list[str]) -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
+    for p in paths:
+        try:
+            rgb_u8 = np.array(Image.open(p).convert("RGB"))
+            info = analyse_white_background(rgb_u8)
+            results.append({"path": p, "ok": True, **info})
+        except Exception as exc:
+            results.append({"path": p, "ok": False, "whiteBackground": False, "error": str(exc)})
+    return results
 
 
 def process_jobs(
@@ -457,20 +709,27 @@ def process_jobs(
     mask_mode: str = "auto",
     mask_cache_dir: str | None = None,
     output_format: str = "webp",
+    white_background_only: bool = False,
 ) -> list[dict[str, Any]]:
     segmenter = SemanticSegmenter(seg_model) if mask_mode in ("auto", "mask2former", "segformer", "semantic") else None
     results: list[dict[str, Any]] = []
 
-    # Group by source image so each product photo is segmented only once across all swatches.
     by_source: dict[str, list[dict[str, Any]]] = {}
     for job in jobs:
         by_source.setdefault(str(job["sourcePath"]), []).append(job)
 
     for source_path, group in by_source.items():
         rgb_u8: np.ndarray | None = None
-        alpha_by_cat: dict[str, np.ndarray] = {}
+        alpha_by_cat: dict[str, tuple[np.ndarray, np.ndarray | None]] = {}
         try:
             rgb_u8 = np.array(Image.open(source_path).convert("RGB"))
+            if white_background_only:
+                wb = analyse_white_background(rgb_u8)
+                if not wb["whiteBackground"]:
+                    reason = ",".join(wb.get("reasons") or ["not-white-background"])
+                    for job in group:
+                        results.append({"id": job.get("id"), "ok": False, "skippedNonWhite": True, "error": f"Skipped non-white background ({reason})"})
+                    continue
         except Exception as exc:
             for job in group:
                 results.append({"id": job.get("id"), "ok": False, "error": f"Failed to open source {source_path}: {exc}"})
@@ -488,13 +747,14 @@ def process_jobs(
                         mask_cache_dir=mask_cache_dir,
                         segmenter=segmenter,
                     )
-                alpha = alpha_by_cat[cat]
+                alpha, bg_ext = alpha_by_cat[cat]
                 resolved_hex = resolve_hex_color(job.get("hex"), str(job.get("colorName") or ""))
                 recolored = recolor_cie_lab(
                     rgb_u8,
                     alpha=alpha,
                     hex_color=resolved_hex,
                     fabric=str(job.get("fabric") or ""),
+                    clean_white_mask=bg_ext,
                 )
                 fmt = str(job.get("outputFormat") or output_format)
                 bytes_written = save_image(recolored, str(job["outputPath"]), output_format=fmt)
@@ -506,8 +766,10 @@ def process_jobs(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Zero-cost neural furniture segmentation + CIELAB recoloring")
+    parser = argparse.ArgumentParser(description="Zero-cost white-background furniture segmentation + exact CIELAB recoloring")
+    parser.add_argument("--inspect-white-bg-json", help="JSON file of local image paths to classify for strict white background")
     parser.add_argument("--jobs-json", help="JSON file of batch recolor jobs [{id, sourcePath, outputPath, hex, fabric, category}]")
+    parser.add_argument("--white-background-only", action="store_true", help="Reject any source image without a verified white background")
     parser.add_argument("--input", help="Single input image path")
     parser.add_argument("--output", help="Single output image path")
     parser.add_argument("--hex", help="Target 6-digit hex color (e.g. #1B365D)")
@@ -515,10 +777,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fabric", default="", help="Optional fabric name (velvet, chenille, suede, boucle)")
     parser.add_argument("--category", default="", help="Optional category slug (sofas, bedroom, household)")
     parser.add_argument("--seg-model", default=DEFAULT_SEG_MODEL, help="HuggingFace ADE20K segmentation model ID")
-    parser.add_argument("--mask-mode", default="auto", choices=["auto", "mask2former", "segformer", "semantic", "grabcut"])
+    parser.add_argument("--mask-mode", default="auto", choices=["auto", "mask2former", "segformer", "semantic", "grabcut", "white-bg"])
     parser.add_argument("--mask-cache-dir", default=".cache/color-variant-masks")
     parser.add_argument("--output-format", default="webp", choices=["webp", "png", "jpeg"])
     args = parser.parse_args(argv)
+
+    if args.inspect_white_bg_json:
+        paths = json.loads(Path(args.inspect_white_bg_json).read_text(encoding="utf-8"))
+        print(json.dumps({"results": inspect_white_backgrounds([str(p) for p in paths])}))
+        return 0
 
     if args.jobs_json:
         jobs = json.loads(Path(args.jobs_json).read_text(encoding="utf-8"))
@@ -528,6 +795,7 @@ def main(argv: list[str] | None = None) -> int:
             mask_mode=args.mask_mode,
             mask_cache_dir=args.mask_cache_dir,
             output_format=args.output_format,
+            white_background_only=args.white_background_only,
         )
         print(json.dumps({"results": res}))
         return 1 if any(not item.get("ok") for item in res) else 0
@@ -550,11 +818,12 @@ def main(argv: list[str] | None = None) -> int:
             mask_mode=args.mask_mode,
             mask_cache_dir=args.mask_cache_dir,
             output_format=args.output_format,
+            white_background_only=args.white_background_only,
         )
         print(json.dumps(res[0]))
         return 0 if res[0].get("ok") else 1
 
-    parser.error("Provide --jobs-json OR (--input, --output, and --hex/--color-name)")
+    parser.error("Provide --inspect-white-bg-json, --jobs-json, OR (--input, --output, and --hex/--color-name)")
     return 2
 
 

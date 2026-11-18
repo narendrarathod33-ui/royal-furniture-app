@@ -36,6 +36,11 @@ export const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/images/edits';
 
 const SLASH_CODE = /\s*\/\s*([0-9]{3,5}(?:\s*[A-Z]?-?\d+)?)\s*$/i;
 const MADE_TO_ORDER_RE = /\bmade[\s-]+to[\s-]+order\b/i;
+const DIAGRAM_IMAGE_RE = /\/size(?:[-_.\d]|$)|dimension|measurement|chart|diagram/i;
+
+export function isDiagramImagePath(imgPath) {
+  return DIAGRAM_IMAGE_RE.test(String(imgPath || '').trim());
+}
 
 function titleCaseSegment(segment) {
   return segment.toLowerCase().replace(/\b[a-z]/g, (ch) => ch.toUpperCase());
@@ -127,8 +132,28 @@ export function computePromptHash({ model, quality, size, sourceImage, prompt })
     .slice(0, 16);
 }
 
+export function computeJobPromptHash({ opts, sourceImage, cand, prompt }) {
+  if (opts.engine === 'free-lab') {
+    return computePromptHash({
+      model: `${opts.model}|v2-whitebg-exactlab|${opts.segModel || DEFAULT_SEG_MODEL}|${opts.maskMode || 'auto'}`,
+      quality: opts.outputFormat,
+      size: cand.hex || cand.colorName,
+      sourceImage,
+      prompt: cand.fabric || '',
+    });
+  }
+  return computePromptHash({
+    model: opts.model,
+    quality: opts.quality,
+    size: opts.size,
+    sourceImage,
+    prompt,
+  });
+}
+
 export function parseArgs(argv = process.argv.slice(2), env = process.env) {
   let explicitModel = false;
+  let explicitWhiteBg = null;
   const opts = {
     engine: env.COLOR_VARIANT_ENGINE || 'openai',
     dryRun: false,
@@ -138,6 +163,7 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     madeToOrder: false,
     inStockOnly: false,
     crossFabrics: false,
+    whiteBackgroundOnly: false,
     slugs: [],
     category: '',
     limit: Infinity,
@@ -170,6 +196,8 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     else if (arg === '--made-to-order') opts.madeToOrder = true;
     else if (arg === '--in-stock-only') opts.inStockOnly = true;
     else if (arg === '--cross-fabrics') opts.crossFabrics = true;
+    else if (arg === '--white-background-only') explicitWhiteBg = true;
+    else if (arg === '--allow-scene-background') explicitWhiteBg = false;
     else if (arg === '--help' || arg === '-h') opts.help = true;
     else if (arg === '--engine') opts.engine = nextVal(i++, arg).trim().toLowerCase();
     else if (arg === '--seg-model') opts.segModel = nextVal(i++, arg).trim();
@@ -206,8 +234,9 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
   if (opts.engine === 'free-lab' && !explicitModel) {
     opts.model = DEFAULT_FREE_MODEL;
   }
-  if (!['auto', 'mask2former', 'segformer', 'semantic', 'grabcut'].includes(opts.maskMode)) {
-    throw new Error('--mask-mode must be auto, mask2former, segformer, semantic, or grabcut');
+  opts.whiteBackgroundOnly = explicitWhiteBg !== null ? explicitWhiteBg : opts.engine === 'free-lab';
+  if (!['auto', 'mask2former', 'segformer', 'semantic', 'grabcut', 'white-bg'].includes(opts.maskMode)) {
+    throw new Error('--mask-mode must be auto, mask2former, segformer, semantic, grabcut, or white-bg');
   }
   if (!['webp', 'png', 'jpeg'].includes(opts.outputFormat)) {
     throw new Error('--output-format must be webp, png, or jpeg');
@@ -219,6 +248,39 @@ export function parseArgs(argv = process.argv.slice(2), env = process.env) {
     throw new Error('--input-fidelity must be high, low, or none');
   }
   return opts;
+}
+
+export function buildProductDetailsGalleryLookup(pdSource) {
+  const bySlug = new Map();
+  if (!pdSource) return bySlug;
+  const tMarker = 'const T: readonly string[] =';
+  const rMarker = 'const RAW: Record<string, RawDetail> =';
+  const tIdx = pdSource.indexOf(tMarker);
+  const rIdx = pdSource.indexOf(rMarker);
+  if (tIdx < 0 || rIdx <= tIdx) return bySlug;
+
+  const tStart = pdSource.indexOf('[', tIdx + tMarker.length);
+  const tEnd = pdSource.lastIndexOf('];', rIdx);
+  if (tStart < 0 || tEnd <= tStart) return bySlug;
+  const table = JSON.parse(pdSource.slice(tStart, tEnd + 1).replace(/,(\s*[\]}])/g, '$1'));
+
+  const rStart = pdSource.indexOf('{', rIdx + rMarker.length);
+  const rEnd = pdSource.indexOf('\n};', rStart);
+  if (rStart < 0 || rEnd <= rStart) return bySlug;
+  const rawJson = pdSource.slice(rStart, rEnd + 2).replace(/,(\s*[}\]])/g, '$1');
+  const raw = JSON.parse(rawJson);
+
+  for (const [slug, rec] of Object.entries(raw)) {
+    if (!rec || !Array.isArray(rec.p)) continue;
+    const gallery = [];
+    for (const idx of rec.p) {
+      const path = table[idx];
+      if (!path || isDiagramImagePath(path)) continue;
+      if (!gallery.includes(path)) gallery.push(path);
+    }
+    if (gallery.length) bySlug.set(slug, gallery);
+  }
+  return bySlug;
 }
 
 export function buildCatalogLookup(catalogSource) {
@@ -238,7 +300,7 @@ export function buildCatalogLookup(catalogSource) {
   return bySlug;
 }
 
-export function selectVariantJobs({ harvest, catalogBySlug = new Map(), opts }) {
+export function selectVariantJobs({ harvest, catalogBySlug = new Map(), galleryBySlug = new Map(), opts }) {
   const details = harvest?.details || {};
   const slugFilter = opts.slugs?.length ? new Set(opts.slugs) : null;
   const jobs = [];
@@ -260,11 +322,21 @@ export function selectVariantJobs({ harvest, catalogBySlug = new Map(), opts }) 
       MADE_TO_ORDER_RE.test(det.info || '');
     if (opts.madeToOrder && !isMadeToOrder) continue;
 
-    const sourceImage =
-      (Array.isArray(det.images) && det.images[0]) ||
-      pi.thumbnail_image ||
-      catalogEntry?.remoteImage ||
-      '';
+    const rawCandidates = [
+      ...(galleryBySlug.get(slug) || []),
+      ...(galleryBySlug.get(slug.replace(/-[0-9a-f]{6}$/, '')) || []),
+      ...(Array.isArray(det.images) ? det.images : []),
+      pi.thumbnail_image,
+      catalogEntry?.remoteImage,
+    ];
+    const dedupedAll = [];
+    for (const item of rawCandidates) {
+      const clean = String(item || '').trim();
+      if (clean && !dedupedAll.includes(clean)) dedupedAll.push(clean);
+    }
+    const nonDiagram = dedupedAll.filter((p) => !isDiagramImagePath(p));
+    const candidateImages = nonDiagram.length ? nonDiagram : dedupedAll;
+    const sourceImage = candidateImages[0] || '';
     if (!sourceImage) continue;
 
     const fabrics = Array.isArray(det.fabrics) ? det.fabrics : [];
@@ -311,22 +383,7 @@ export function selectVariantJobs({ harvest, catalogBySlug = new Map(), opts }) 
         fabric: cand.fabric,
         category: catSlug,
       });
-      const promptHash =
-        opts.engine === 'free-lab'
-          ? computePromptHash({
-              model: `${opts.model}|${opts.segModel || DEFAULT_SEG_MODEL}|${opts.maskMode || 'auto'}`,
-              quality: opts.outputFormat,
-              size: cand.hex || cand.colorName,
-              sourceImage,
-              prompt: cand.fabric || '',
-            })
-          : computePromptHash({
-              model: opts.model,
-              quality: opts.quality,
-              size: opts.size,
-              sourceImage,
-              prompt,
-            });
+      const promptHash = computeJobPromptHash({ opts, sourceImage, cand, prompt });
       const relFile = `${slug}/${cand.variantKey}.${opts.outputFormat}`;
       const imageUrl = prefix ? `${prefix}/${relFile}` : relFile;
       jobs.push({
@@ -334,6 +391,7 @@ export function selectVariantJobs({ harvest, catalogBySlug = new Map(), opts }) 
         productName,
         category: catSlug,
         sourceImage,
+        candidateImages,
         ...cand,
         prompt,
         promptHash,
@@ -543,21 +601,46 @@ function resolvePythonBin(root, explicitBin) {
   return candidates.find((p) => existsSync(p)) || 'python3';
 }
 
+async function inspectWhiteBgBatch({ root, opts, filePaths, cacheDir, whiteBgInspector }) {
+  if (!filePaths.length) return [];
+  if (whiteBgInspector) {
+    return whiteBgInspector({ filePaths });
+  }
+  const listFile = resolve(cacheDir, `white-bg-inspect-${process.pid}-${Date.now()}.json`);
+  await mkdir(cacheDir, { recursive: true });
+  await writeFile(listFile, JSON.stringify(filePaths));
+  try {
+    const workerScript = resolve(root, 'scripts/recolor_color_variants.py');
+    const pythonBin = resolvePythonBin(root, opts.pythonBin);
+    const out = await execFile(pythonBin, [workerScript, '--inspect-white-bg-json', listFile], {
+      cwd: root,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const parsed = JSON.parse(String(out.stdout || '').trim().split('\n').pop() || '{}');
+    return Array.isArray(parsed.results) ? parsed.results : [];
+  } finally {
+    await rm(listFile, { force: true }).catch(() => {});
+  }
+}
+
 export async function runBatchGeneration({
   root = resolve(import.meta.dirname, '..'),
   opts,
   apiKey,
   fetchImpl = fetch,
   pythonRunner = null,
+  whiteBgInspector = null,
   logger = console,
 }) {
   const harvestPath = resolve(root, 'harvest/product-details.json');
   const catalogPath = resolve(root, 'app/data/catalogData.ts');
+  const productDetailsPath = resolve(root, 'app/data/productDetails.ts');
   const ledgerPath = resolve(root, 'harvest/ai-color-variants.json');
   const manifestTsPath = resolve(root, 'app/data/colorVariantManifest.ts');
   const outDir = resolve(root, opts.outDir);
   const cacheDir = resolve(root, '.cache/color-variant-sources');
   const maskCacheDir = resolve(root, '.cache/color-variant-masks');
+  const whiteBgIndexPath = resolve(cacheDir, 'white-bg-index.json');
 
   let ledger = { version: 1, model: opts.model, variants: {} };
   if (existsSync(ledgerPath)) {
@@ -565,43 +648,78 @@ export async function runBatchGeneration({
     ledger.variants ||= {};
   }
 
+  let whiteBgIndex = {};
+  if (existsSync(whiteBgIndexPath)) {
+    try {
+      whiteBgIndex = JSON.parse(await readFile(whiteBgIndexPath, 'utf8'));
+    } catch {
+      whiteBgIndex = {};
+    }
+  }
+
   if (opts.rebuildManifestOnly) {
     await writeAtomic(manifestTsPath, renderManifestTs(ledger));
-    return { totalJobs: 0, cachedHits: 0, generated: 0, skippedByLimit: 0, failed: 0 };
+    return { totalJobs: 0, cachedHits: 0, generated: 0, skippedByLimit: 0, skippedNoWhiteBgProducts: 0, skippedNoWhiteBgSwatches: 0, failed: 0 };
   }
 
   const harvest = JSON.parse(await readFile(harvestPath, 'utf8'));
   const catalogSource = existsSync(catalogPath) ? await readFile(catalogPath, 'utf8') : '';
   const catalogBySlug = buildCatalogLookup(catalogSource);
-  const allJobs = selectVariantJobs({ harvest, catalogBySlug, opts });
+  const pdSource = existsSync(productDetailsPath) ? await readFile(productDetailsPath, 'utf8') : '';
+  const galleryBySlug = buildProductDetailsGalleryLookup(pdSource);
+  const allJobs = selectVariantJobs({ harvest, catalogBySlug, galleryBySlug, opts });
 
-  const pending = [];
+  const sourcePromiseCache = new Map();
+  const getSource = (sourceImage) => {
+    if (!sourcePromiseCache.has(sourceImage)) {
+      sourcePromiseCache.set(
+        sourceImage,
+        loadSourceImage({ sourceImage, sourceDir: opts.sourceDir, cacheDir, fetchImpl }),
+      );
+    }
+    return sourcePromiseCache.get(sourceImage);
+  };
+
+  let pending = [];
   let cachedHits = 0;
-  for (const job of allJobs) {
-    if (await isVariantCached({ ledger, job, outDir, force: opts.force })) cachedHits++;
-    else pending.push(job);
-  }
-
-  const limited = Number.isFinite(opts.limit) ? pending.slice(0, opts.limit) : pending;
-  const skippedByLimit = Math.max(0, pending.length - limited.length);
+  let limited = [];
+  let skippedByLimit = 0;
+  let skippedNoWhiteBgProducts = 0;
+  let skippedNoWhiteBgSwatches = 0;
+  let ledgerDirty = false;
 
   if (opts.dryRun) {
+    for (const job of allJobs) {
+      if (opts.whiteBackgroundOnly) {
+        const candidates = job.candidateImages || [job.sourceImage];
+        const knownWhite = candidates.find((c) => whiteBgIndex[c]?.whiteBackground === true);
+        const allKnownNonWhite = candidates.every((c) => whiteBgIndex[c]?.whiteBackground === false);
+        if (allKnownNonWhite) continue;
+        if (knownWhite && knownWhite !== job.sourceImage) {
+          job.sourceImage = knownWhite;
+          job.promptHash = computeJobPromptHash({ opts, sourceImage: knownWhite, cand: job, prompt: job.prompt });
+        }
+      }
+      if (await isVariantCached({ ledger, job, outDir, force: opts.force })) cachedHits++;
+      else pending.push(job);
+    }
+    limited = Number.isFinite(opts.limit) ? pending.slice(0, opts.limit) : pending;
+    skippedByLimit = Math.max(0, pending.length - limited.length);
+
     const uniqueProducts = new Set(allJobs.map((j) => j.slug)).size;
     if (opts.engine === 'free-lab') {
       logger.log(`Option 1 ("$0 Segmentation + CIELAB Recolor") Dry Run`);
-      logger.log(`  Engine:             free-lab (segModel=${opts.segModel}, maskMode=${opts.maskMode}, format=${opts.outputFormat})`);
+      logger.log(`  Engine:             free-lab (segModel=${opts.segModel}, maskMode=${opts.maskMode}, format=${opts.outputFormat}, whiteBgOnly=${opts.whiteBackgroundOnly})`);
       logger.log(`  Products matched:   ${uniqueProducts}`);
       logger.log(`  Total swatches:     ${allJobs.length}`);
       logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
       logger.log(`  To generate now:    ${limited.length}${skippedByLimit ? ` (${skippedByLimit} deferred by --limit ${opts.limit})` : ''}`);
       logger.log(`  Est. batch spend:   $0.00 (open-weights segmentation + CIELAB color transfer)`);
     } else {
-      // Rough ballpark estimate for gpt-image-2.6-sunburst ($30 / 1M output image tokens,
-      // ~1,000-4,000 image tokens per 1024x1024 image depending on quality tier).
       const perImageLow = opts.quality === 'low' ? 0.01 : opts.quality === 'high' ? 0.04 : 0.02;
       const perImageHigh = opts.quality === 'low' ? 0.02 : opts.quality === 'high' ? 0.08 : 0.05;
       logger.log(`Option 2 ("Generate Once, Cache Forever") Dry Run`);
-      logger.log(`  Model:              ${opts.model} (quality=${opts.quality}, size=${opts.size}, format=${opts.outputFormat})`);
+      logger.log(`  Model:              ${opts.model} (quality=${opts.quality}, size=${opts.size}, format=${opts.outputFormat}, whiteBgOnly=${opts.whiteBackgroundOnly})`);
       logger.log(`  Products matched:   ${uniqueProducts}`);
       logger.log(`  Total swatches:     ${allJobs.length}`);
       logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
@@ -618,6 +736,8 @@ export async function runBatchGeneration({
       generated: 0,
       pendingCount: limited.length,
       skippedByLimit,
+      skippedNoWhiteBgProducts,
+      skippedNoWhiteBgSwatches,
       failed: 0,
     };
   }
@@ -626,6 +746,134 @@ export async function runBatchGeneration({
     throw new Error(
       'OPENAI_API_KEY environment variable is required to generate new color variants (or pass --engine free-lab / --dry-run / --rebuild-manifest-only).',
     );
+  }
+
+  if (opts.whiteBackgroundOnly && (!pythonRunner || whiteBgInspector)) {
+    const bySlug = new Map();
+    for (const job of allJobs) {
+      if (!bySlug.has(job.slug)) bySlug.set(job.slug, []);
+      bySlug.get(job.slug).push(job);
+    }
+
+    const activeProducts = [];
+    for (const [slug, prodJobs] of bySlug.entries()) {
+      activeProducts.push({
+        slug,
+        prodJobs,
+        candidates: prodJobs[0].candidateImages || [prodJobs[0].sourceImage],
+        nextIdx: 0,
+        verifiedSource: null,
+      });
+    }
+
+    const resolveBatchWave = async (wave) => {
+      const toDownload = [];
+      for (const prod of wave) {
+        while (prod.nextIdx < prod.candidates.length) {
+          const cand = prod.candidates[prod.nextIdx];
+          const cached = whiteBgIndex[cand];
+          if (cached?.whiteBackground === true) {
+            prod.verifiedSource = cand;
+            break;
+          }
+          if (cached?.whiteBackground === false) {
+            prod.nextIdx++;
+            continue;
+          }
+          toDownload.push({ prod, cand });
+          break;
+        }
+      }
+      if (!toDownload.length) return;
+
+      const downloaded = [];
+      for (const item of toDownload) {
+        try {
+          const src = await getSource(item.cand);
+          downloaded.push({ ...item, filePath: src.filePath });
+        } catch {
+          whiteBgIndex[item.cand] = { whiteBackground: false, reasons: ['fetch-failed'] };
+          item.prod.nextIdx++;
+        }
+      }
+
+      if (downloaded.length) {
+        const verdicts = await inspectWhiteBgBatch({
+          root,
+          opts,
+          filePaths: downloaded.map((d) => d.filePath),
+          cacheDir,
+          whiteBgInspector,
+        });
+        for (let i = 0; i < downloaded.length; i++) {
+          const item = downloaded[i];
+          const v = verdicts[i] || { whiteBackground: false, reasons: ['inspect-failed'] };
+          whiteBgIndex[item.cand] = {
+            whiteBackground: Boolean(v.whiteBackground),
+            ...(v.borderWhiteRatio !== undefined ? { borderWhiteRatio: v.borderWhiteRatio } : {}),
+            ...(Array.isArray(v.reasons) && v.reasons.length ? { reasons: v.reasons } : {}),
+          };
+          if (v.whiteBackground) {
+            item.prod.verifiedSource = item.cand;
+          } else {
+            item.prod.nextIdx++;
+          }
+        }
+        await writeAtomic(whiteBgIndexPath, JSON.stringify(whiteBgIndex, null, 2) + '\n');
+      }
+    };
+
+    // Inspect product galleries in waves until every product is resolved or limit is filled
+    let pIdx = 0;
+    while (pIdx < activeProducts.length && limited.length < opts.limit) {
+      const wave = activeProducts.slice(pIdx, pIdx + 12);
+      pIdx += 12;
+      while (wave.some((p) => !p.verifiedSource && p.nextIdx < p.candidates.length)) {
+        await resolveBatchWave(wave);
+      }
+      for (const prod of wave) {
+        if (!prod.verifiedSource) {
+          skippedNoWhiteBgProducts++;
+          skippedNoWhiteBgSwatches += prod.prodJobs.length;
+          if (ledger.variants[prod.slug]) {
+            delete ledger.variants[prod.slug];
+            await rm(resolve(outDir, prod.slug), { recursive: true, force: true }).catch(() => {});
+            ledgerDirty = true;
+          }
+          logger.log(`[skip] ${prod.slug}: no verified white-background photo across ${prod.candidates.length} gallery image(s)`);
+          continue;
+        }
+        for (const job of prod.prodJobs) {
+          job.sourceImage = prod.verifiedSource;
+          job.promptHash = computeJobPromptHash({
+            opts,
+            sourceImage: prod.verifiedSource,
+            cand: job,
+            prompt: job.prompt,
+          });
+          if (await isVariantCached({ ledger, job, outDir, force: opts.force })) {
+            cachedHits++;
+          } else if (limited.length < opts.limit) {
+            limited.push(job);
+          } else {
+            skippedByLimit++;
+          }
+        }
+      }
+    }
+
+    if (pIdx < activeProducts.length) {
+      for (const prod of activeProducts.slice(pIdx)) {
+        skippedByLimit += prod.prodJobs.length;
+      }
+    }
+  } else {
+    for (const job of allJobs) {
+      if (await isVariantCached({ ledger, job, outDir, force: opts.force })) cachedHits++;
+      else pending.push(job);
+    }
+    limited = Number.isFinite(opts.limit) ? pending.slice(0, opts.limit) : pending;
+    skippedByLimit = Math.max(0, pending.length - limited.length);
   }
 
   let writeChain = Promise.resolve();
@@ -639,19 +887,12 @@ export async function runBatchGeneration({
     return writeChain;
   };
 
+  if (ledgerDirty) {
+    await persistLedger(() => {});
+  }
+
   let generated = 0;
   let failed = 0;
-
-  const sourcePromiseCache = new Map();
-  const getSource = (sourceImage) => {
-    if (!sourcePromiseCache.has(sourceImage)) {
-      sourcePromiseCache.set(
-        sourceImage,
-        loadSourceImage({ sourceImage, sourceDir: opts.sourceDir, cacheDir, fetchImpl }),
-      );
-    }
-    return sourcePromiseCache.get(sourceImage);
-  };
 
   if (opts.engine === 'free-lab') {
     const batchJobs = [];
@@ -696,6 +937,7 @@ export async function runBatchGeneration({
           maskCacheDir,
           '--output-format',
           opts.outputFormat,
+          ...(opts.whiteBackgroundOnly ? ['--white-background-only'] : []),
         ];
 
         let stdoutText;
@@ -756,8 +998,16 @@ export async function runBatchGeneration({
 
     await writeChain;
     await writeAtomic(manifestTsPath, renderManifestTs(ledger));
-    logger.log(`Done: ${generated} generated, ${cachedHits} reused from cache, ${failed} failed.`);
-    return { totalJobs: allJobs.length, cachedHits, generated, skippedByLimit, failed };
+    logger.log(`Done: ${generated} generated, ${cachedHits} reused from cache, ${skippedNoWhiteBgProducts} products skipped (no white background), ${failed} failed.`);
+    return {
+      totalJobs: allJobs.length,
+      cachedHits,
+      generated,
+      skippedByLimit,
+      skippedNoWhiteBgProducts,
+      skippedNoWhiteBgSwatches,
+      failed,
+    };
   }
 
   let cursor = 0;
@@ -834,7 +1084,9 @@ Options:
   --limit <n>              Max number of NEW images to generate in this run
   --concurrency <1..6>     Parallel OpenAI edit requests (default: 2)
   --seg-model <id>         HuggingFace ADE20K segmentation model for free-lab
-  --mask-mode <mode>       auto | mask2former | segformer | semantic | grabcut
+  --mask-mode <mode>       auto | mask2former | segformer | semantic | grabcut | white-bg
+  --white-background-only  Skip products without a verified white-background photo (default for free-lab)
+  --allow-scene-background Allow lifestyle/room scene photos instead of strict white background
   --python <bin>           Python executable for free-lab mode
   --model <id>             Model identifier (default: gpt-image-2.6-sunburst or mask2former-lab-v1)
   --size <WxH>             1024x1024 (default), 1536x1024, 1024x1536, or auto
