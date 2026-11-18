@@ -8,10 +8,14 @@ import numpy as np
 from PIL import Image
 
 from scripts.recolor_color_variants import (
+    analyse_white_background,
+    extract_coarse_mask,
+    hex_to_cie_lab,
     process_jobs,
     recolor_cie_lab,
     refine_upholstery_mask,
     resolve_hex_color,
+    srgb_to_cie_lab,
     target_label_ids,
 )
 
@@ -97,6 +101,78 @@ class RecolorColorVariantsTests(unittest.TestCase):
             self.assertTrue(out_path.is_file())
             self.assertGreater(res[0]["bytes"], 100)
             self.assertTrue(any(mask_dir.glob("*.png")))
+
+    def test_analyse_white_background_accepts_studio_and_rejects_scene_and_diagram(self) -> None:
+        # 1. Clean white studio furniture photo -> accepted
+        studio = np.full((240, 240, 3), 255, dtype=np.uint8)
+        studio[70:180, 40:200] = (182, 174, 162)
+        studio[180:195, 50:62] = (42, 30, 22)
+        res_studio = analyse_white_background(studio)
+        self.assertTrue(res_studio["whiteBackground"], res_studio)
+
+        # 2. Lifestyle room scene (colored walls/floor) -> rejected
+        scene = np.full((240, 240, 3), (218, 206, 188), dtype=np.uint8)
+        scene[150:, :] = (165, 138, 108)
+        scene[80:180, 50:190] = (120, 125, 130)
+        res_scene = analyse_white_background(scene)
+        self.assertFalse(res_scene["whiteBackground"])
+        self.assertIn("border-not-over-90-percent-near-white", res_scene["reasons"])
+
+        # 3. Sparse dimension diagram on white background -> rejected
+        diagram = np.full((240, 240, 3), 255, dtype=np.uint8)
+        diagram[50:200, 30:32] = (40, 40, 40)
+        diagram[50:52, 30:210] = (40, 40, 40)
+        diagram[198:200, 30:210] = (40, 40, 40)
+        diagram[50:200, 208:210] = (40, 40, 40)
+        res_diag = analyse_white_background(diagram)
+        self.assertFalse(res_diag["whiteBackground"])
+
+    def test_exact_hex_accuracy_and_pure_white_background_on_studio_sofa(self) -> None:
+        img = np.full((240, 240, 3), 255, dtype=np.uint8)
+        img[70:175, 36:204] = (206, 198, 186)
+        img[122:130, 42:198] = (176, 168, 156)
+        img[175:195, 48:62] = (42, 28, 20)
+
+        coarse, bg_ext = extract_coarse_mask(img, category="sofas", mask_mode="white-bg")
+        self.assertIsNotNone(bg_ext)
+        alpha = refine_upholstery_mask(img, coarse, category="sofas")
+
+        for target_hex in ("#1B365D", "#DDE6E3", "#F5F1E8", "#B66047"):
+            out = recolor_cie_lab(img, alpha, target_hex, fabric="velvet", clean_white_mask=bg_ext)
+            interior = alpha > 0.80
+            rendered_med = np.median(out[interior], axis=0).astype(np.float64) / 255.0
+            rendered_lab = srgb_to_cie_lab(rendered_med.reshape(1, 1, 3))[0, 0]
+            target_lab = hex_to_cie_lab(target_hex)
+            delta_e = float(np.linalg.norm(rendered_lab - target_lab))
+            self.assertLessEqual(delta_e, 2.0, f"{target_hex} drifted: deltaE={delta_e:.2f}")
+            np.testing.assert_array_equal(out[5, 5], np.array([255, 255, 255], dtype=np.uint8))
+            self.assertLess(int(out[185, 55, 2]), int(out[185, 55, 0]) + 5)
+
+    def test_process_jobs_white_background_only_skips_room_scenes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            scene_path = root / "scene.png"
+            out_path = root / "out" / "navy.webp"
+            scene = np.full((180, 180, 3), (210, 198, 182), dtype=np.uint8)
+            scene[60:140, 30:150] = (140, 145, 150)
+            Image.fromarray(scene).save(scene_path)
+
+            res = process_jobs(
+                [
+                    {
+                        "id": "scene-1",
+                        "sourcePath": str(scene_path),
+                        "outputPath": str(out_path),
+                        "hex": "#1B365D",
+                        "category": "sofas",
+                    }
+                ],
+                mask_mode="grabcut",
+                white_background_only=True,
+            )
+            self.assertFalse(res[0]["ok"])
+            self.assertTrue(res[0].get("skippedNonWhite"))
+            self.assertFalse(out_path.exists())
 
 
 if __name__ == "__main__":

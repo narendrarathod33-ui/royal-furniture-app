@@ -31,6 +31,11 @@ on:
         required: false
         default: true
         type: boolean
+      white_background_only:
+        description: 'Strict white-background photos only (scans full product gallery, skips room scenes)'
+        required: false
+        default: true
+        type: boolean
       limit:
         description: 'Max uncached variants to generate this run (0 = no cap)'
         required: false
@@ -117,9 +122,9 @@ jobs:
           path: |
             .cache/color-variant-sources
             .cache/color-variant-masks
-          key: color-source-cache-${{ hashFiles('harvest/product-details.json') }}
+          key: color-source-cache-v2-${{ hashFiles('harvest/product-details.json', 'app/data/productDetails.ts') }}
           restore-keys: |
-            color-source-cache-
+            color-source-cache-v2-
 
       - name: Generate color variants
         env:
@@ -129,6 +134,7 @@ jobs:
           INPUT_CATEGORY: ${{ inputs.category }}
           INPUT_MADE_TO_ORDER: ${{ inputs.made_to_order }}
           INPUT_IN_STOCK_ONLY: ${{ inputs.in_stock_only }}
+          INPUT_WHITE_BACKGROUND_ONLY: ${{ inputs.white_background_only }}
           INPUT_LIMIT: ${{ inputs.limit }}
           INPUT_CONCURRENCY: ${{ inputs.concurrency }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
@@ -149,6 +155,11 @@ jobs:
           fi
           if [ "$INPUT_IN_STOCK_ONLY" = "true" ]; then
             args+=(--in-stock-only)
+          fi
+          if [ "${INPUT_WHITE_BACKGROUND_ONLY:-true}" = "true" ]; then
+            args+=(--white-background-only)
+          else
+            args+=(--allow-scene-background)
           fi
           if [[ "$INPUT_LIMIT" =~ ^[0-9]+$ ]] && [ "$INPUT_LIMIT" -gt 0 ]; then
             args+=(--limit "$INPUT_LIMIT")
@@ -206,9 +217,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -- harvest/ai-color-variants.json app/data/colorVariantManifest.ts
+          git add -A -- harvest/ai-color-variants.json app/data/colorVariantManifest.ts
           if [ -d public/ai-color-variants ]; then
-            git add -- public/ai-color-variants
+            git add -A -- public/ai-color-variants
           fi
 
           if git diff --cached --quiet; then

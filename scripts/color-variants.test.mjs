@@ -7,7 +7,9 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import {
   buildColorEditPrompt,
+  buildProductDetailsGalleryLookup,
   editImageWithOpenAI,
+  isDiagramImagePath,
   parseArgs,
   renderManifestTs,
   runBatchGeneration,
@@ -299,6 +301,109 @@ test('runBatchGeneration executes free-lab $0 mode without an OpenAI key and cac
     const manifestTs = readFileSync(join(root, 'app/data/colorVariantManifest.ts'), 'utf8');
     assert(manifestTs.includes('mask2former-lab-v1'));
     assert(manifestTs.includes('/ai-color-variants/free-sofa/velvet--cream-white-1882-1.webp'));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('gallery parser filters dimension diagrams and white-background-only selects clean studio angles while skipping scene-only products', async () => {
+  assert.equal(isDiagramImagePath('images/web/SIZE-17_5c3d62e8.webp'), true);
+  assert.equal(isDiagramImagePath('images/web/AYILIN-SOFA-size-2.webp'), false);
+
+  const mockPdTs = `
+const T: readonly string[] = [
+  "images/web/SOFA-ROOM.webp",
+  "images/web/SIZE-17_abc.webp",
+  "images/web/SOFA-WHITE.webp",
+  "images/web/SCENE-ONLY.webp"
+];
+const RAW: Record<string, RawDetail> = {
+  "multi-angle-sofa": {"p": [0, 1, 2]},
+  "scene-only-sofa": {"p": [3]},
+};
+`;
+  const gallery = buildProductDetailsGalleryLookup(mockPdTs);
+  assert.deepEqual(gallery.get('multi-angle-sofa'), ['images/web/SOFA-ROOM.webp', 'images/web/SOFA-WHITE.webp']);
+  assert.deepEqual(gallery.get('scene-only-sofa'), ['images/web/SCENE-ONLY.webp']);
+
+  const root = mkdtempSync(join(tmpdir(), 'rf-whitebg-'));
+  try {
+    mkdirSync(join(root, 'harvest'), { recursive: true });
+    mkdirSync(join(root, 'app/data'), { recursive: true });
+    mkdirSync(join(root, 'public/ai-color-variants/scene-only-sofa'), { recursive: true });
+    writeFileSync(join(root, 'public/ai-color-variants/scene-only-sofa/navy.webp'), Buffer.from('stale'));
+    writeFileSync(join(root, 'app/data/productDetails.ts'), mockPdTs);
+    writeFileSync(join(root, 'app/data/catalogData.ts'), 'export const catalogData = [];\n');
+    writeFileSync(
+      join(root, 'harvest/ai-color-variants.json'),
+      JSON.stringify({
+        version: 1,
+        model: 'mask2former-lab-v1',
+        variants: {
+          'scene-only-sofa': {
+            navy: {
+              image: '/ai-color-variants/scene-only-sofa/navy.webp',
+              relFile: 'scene-only-sofa/navy.webp',
+              colorName: 'NAVY',
+            },
+          },
+        },
+      }),
+    );
+    writeFileSync(
+      join(root, 'harvest/product-details.json'),
+      JSON.stringify({
+        details: {
+          'multi-angle-sofa': {
+            pi: { name: 'Multi Angle Sofa', category: { slug: 'sofas' } },
+            images: ['images/web/SOFA-ROOM.webp'],
+            fabrics: ['VELVET'],
+            colors: [{ n: 'NAVY', hex: '#1B365D', img: null, sku: 'm-1', stock: 'in_stock' }],
+          },
+          'scene-only-sofa': {
+            pi: { name: 'Scene Only Sofa', category: { slug: 'sofas' } },
+            images: ['images/web/SCENE-ONLY.webp'],
+            fabrics: ['VELVET'],
+            colors: [{ n: 'NAVY', hex: '#1B365D', img: null, sku: 's-1', stock: 'in_stock' }],
+          },
+        },
+      }),
+    );
+
+    const mockFetch = async (url) => {
+      const name = String(url).split('/').pop();
+      return new Response(Buffer.from(`img:${name}`), { status: 200 });
+    };
+    const mockWhiteBgInspector = async ({ filePaths }) =>
+      filePaths.map((p) => ({
+        path: p,
+        ok: true,
+        whiteBackground: readFileSync(p, 'utf8').includes('SOFA-WHITE'),
+        reasons: readFileSync(p, 'utf8').includes('SOFA-WHITE') ? [] : ['border-not-over-90-percent-near-white'],
+      }));
+    const mockPythonRunner = async ({ batchJobs }) => {
+      assert.equal(batchJobs.length, 1);
+      assert(readFileSync(batchJobs[0].sourcePath, 'utf8').includes('SOFA-WHITE'));
+      mkdirSync(join(root, 'public/ai-color-variants/multi-angle-sofa'), { recursive: true });
+      writeFileSync(batchJobs[0].outputPath, Buffer.from('RIFF....WHITEWEBP'));
+      return JSON.stringify({ results: [{ id: batchJobs[0].id, ok: true, bytes: 17 }] });
+    };
+
+    const res = await runBatchGeneration({
+      root,
+      opts: parseArgs(['--engine', 'free-lab', '--white-background-only'], {}),
+      fetchImpl: mockFetch,
+      whiteBgInspector: mockWhiteBgInspector,
+      pythonRunner: mockPythonRunner,
+      logger: { log() {}, error() {} },
+    });
+
+    assert.equal(res.generated, 1);
+    assert.equal(res.skippedNoWhiteBgProducts, 1);
+    assert.equal(existsSync(join(root, 'public/ai-color-variants/scene-only-sofa/navy.webp')), false);
+    const ledger = JSON.parse(readFileSync(join(root, 'harvest/ai-color-variants.json'), 'utf8'));
+    assert.equal(ledger.variants['scene-only-sofa'], undefined);
+    assert.equal(ledger.variants['multi-angle-sofa']['velvet--navy'].sourceImage, 'images/web/SOFA-WHITE.webp');
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

@@ -2,7 +2,7 @@
 
 `royal-furniture-app` ships an offline/batch color-variant pipeline with two engines sharing the same forever-cache ledger (`harvest/ai-color-variants.json`) and manifest (`app/data/colorVariantManifest.ts`), so every shopper browses cached `.webp` previews at **$0 marginal runtime cost** across static Web (GitHub Pages), Node production (`npm start`), iOS, and Android:
 
-1. **`--engine free-lab` ($0 Forever, Default in GitHub Actions):** Uses open-weights **`facebook/mask2former-swin-base-IN21k-ade-semantic`** on CPU to isolate furniture pieces (excluding walls, floors, rugs, tables, and plants), clusters primary upholstery in CIELAB (`L*a*b*`) space to protect contrasting wood/metal legs, dark throw pillows, and patterned bed duvets, refines edges with a Guided Filter, and renders swatch hex colors & fabric weave sheen (`scripts/recolor_color_variants.py`).
+1. **`--engine free-lab` ($0 Forever, Default in GitHub Actions):** Scans each product's full non-diagram gallery in `app/data/productDetails.ts` (filtering out `SIZE-*` measurement diagrams), enforces **`--white-background-only`** (selecting only verified studio white-background photos and skipping room-scene-only products), intersects open-weights **`facebook/mask2former-swin-base-IN21k-ade-semantic`** with clean white-background subject & shadow extraction, clusters primary upholstery in float64 CIELAB (`L*a*b*`) space to protect contrasting wood/metal legs, dark throw pillows, and white bed duvets, and transfers the **exact swatch `hex` color** via closed-loop median CIELAB calibration (`scripts/recolor_color_variants.py`).
 2. **`--engine openai` (Optional Paid Tier):** Uses OpenAI **`gpt-image-2.6-sunburst`** (`POST /v1/images/edits`) when `OPENAI_API_KEY` has billing credits.
 
 ---
