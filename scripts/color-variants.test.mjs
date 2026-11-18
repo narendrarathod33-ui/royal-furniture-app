@@ -404,6 +404,33 @@ const RAW: Record<string, RawDetail> = {
     const ledger = JSON.parse(readFileSync(join(root, 'harvest/ai-color-variants.json'), 'utf8'));
     assert.equal(ledger.variants['scene-only-sofa'], undefined);
     assert.equal(ledger.variants['multi-angle-sofa']['velvet--navy'].sourceImage, 'images/web/SOFA-WHITE.webp');
+
+    // Cold-cache --dry-run (even after deleting .cache/white-bg-index.json) must recognize multi-angle cached entries via ledger sourceImage
+    rmSync(join(root, '.cache'), { recursive: true, force: true });
+    const dryCold = await runBatchGeneration({
+      root,
+      opts: parseArgs(['--engine', 'free-lab', '--white-background-only', '--slugs', 'multi-angle-sofa', '--dry-run'], {}),
+      logger: { log() {}, error() {} },
+    });
+    assert.equal(dryCold.cachedHits, 1);
+    assert.equal(dryCold.pendingCount, 0);
+
+    // Cold-cache actual run must reuse ledger sourceImage without downloading S3 photos again
+    let coldFetchCount = 0;
+    const coldRun = await runBatchGeneration({
+      root,
+      opts: parseArgs(['--engine', 'free-lab', '--white-background-only', '--slugs', 'multi-angle-sofa'], {}),
+      fetchImpl: async () => {
+        coldFetchCount++;
+        throw new Error('should not refetch already-cached product');
+      },
+      whiteBgInspector: async () => [],
+      pythonRunner: async () => JSON.stringify({ results: [] }),
+      logger: { log() {}, error() {} },
+    });
+    assert.equal(coldFetchCount, 0);
+    assert.equal(coldRun.cachedHits, 1);
+    assert.equal(coldRun.generated, 0);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

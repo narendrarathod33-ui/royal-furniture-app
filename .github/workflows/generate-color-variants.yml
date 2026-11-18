@@ -37,9 +37,9 @@ on:
         default: true
         type: boolean
       limit:
-        description: 'Max uncached variants to generate this run (0 = no cap)'
+        description: 'Max uncached variants to generate this run (0 = no cap; set e.g. 250 for paid openai)'
         required: false
-        default: '250'
+        default: '0'
         type: string
       concurrency:
         description: 'Parallel OpenAI requests when engine=openai (1-6)'

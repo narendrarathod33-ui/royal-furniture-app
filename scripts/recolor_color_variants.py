@@ -404,14 +404,17 @@ def extract_white_bg_subject(rgb_u8: np.ndarray) -> tuple[np.ndarray, np.ndarray
     x0, x1 = int(xs.min()), int(xs.max())
     box_h = max(1, y1 - y0)
 
-    # Neutral soft studio floor shadow right beneath the furniture feet
+    # Trim only pale floor drop-shadows (>= 226) connected to bg_ext at the bottom 6%
     vals = rgb_u8.astype(np.int16)
-    neutral = (vals.max(axis=2) - vals.min(axis=2)) <= 16
-    light_neutral = (vals.min(axis=2) >= 175) & neutral
+    pale_shadow = (vals.min(axis=2) >= 226) & ((vals.max(axis=2) - vals.min(axis=2)) <= 10)
     shadow_zone = np.zeros((h, w), dtype=bool)
-    shadow_top = max(0, y1 - max(6, round(box_h * 0.10)))
+    shadow_top = max(0, y1 - max(4, round(box_h * 0.06)))
     shadow_zone[shadow_top:, :] = True
-    fg = fg & ~(shadow_zone & light_neutral)
+    seed_mask = (bg_ext | (shadow_zone & pale_shadow)).astype(np.uint8)
+    _, s_lbl = cv2.connectedComponents(seed_mask)
+    ext_ids = np.unique(s_lbl[bg_ext])
+    bg_with_shadow = np.isin(s_lbl, ext_ids[ext_ids > 0])
+    fg = ~bg_with_shadow
     return fg, bg_ext
 
 
@@ -534,17 +537,39 @@ def refine_upholstery_mask(
         ab_spread = 6.0
 
     chroma_dist = np.sqrt((lab[..., 1] - dom_lab[1]) ** 2 + (lab[..., 2] - dom_lab[2]) ** 2)
-    chroma_tol = max(7.5, min(14.5, ab_spread * 1.45 + 3.5))
-    chroma_w = np.exp(-0.5 * (np.maximum(0.0, chroma_dist - 4.0) / chroma_tol) ** 2)
+    dom_chroma = float(np.hypot(dom_lab[1], dom_lab[2]))
+    if dom_chroma >= 6.5:
+        u_a, u_b = float(dom_lab[1]) / dom_chroma, float(dom_lab[2]) / dom_chroma
+        dot = lab[..., 1] * u_a + lab[..., 2] * u_b
+        perp_dist = np.abs(lab[..., 1] * u_b - lab[..., 2] * u_a)
+        # Same hue ray (within ~24 deg) covers specular velvet sheen + deep velvet shadow folds
+        same_hue_ray = (dot >= 0.91 * chroma_map) & (chroma_map >= 4.0)
+        eff_dist = np.where(same_hue_ray, np.minimum(chroma_dist, perp_dist * 1.15 + 2.0), chroma_dist)
+        chroma_tol = max(9.5, min(16.0, ab_spread * 1.45 + 4.0))
+    else:
+        same_hue_ray = np.zeros((h, w), dtype=bool)
+        eff_dist = chroma_dist
+        chroma_tol = max(11.5, min(16.5, ab_spread * 1.60 + 5.0))
+    chroma_w = np.exp(-0.5 * (np.maximum(0.0, eff_dist - 4.0) / chroma_tol) ** 2)
 
-    if dom_lab[0] > 48.0:
-        min_l = dom_lab[0] * 0.44
+    if dom_chroma >= 6.5:
+        # Protect dark black/charcoal trim (low chroma & L < 22) while keeping deep same-hue velvet folds
+        keep_dark_fold = same_hue_ray & (chroma_map >= 8.0)
+        dark_w = np.where(
+            keep_dark_fold,
+            np.clip((lab[..., 0] - 4.0) / 6.0, 0.0, 1.0),
+            np.clip((lab[..., 0] - max(12.0, dom_lab[0] * 0.34 - 8.0)) / 10.0, 0.0, 1.0)
+            if dom_lab[0] > 48.0
+            else np.ones((h, w), dtype=np.float32),
+        )
+    elif dom_lab[0] > 48.0:
+        min_l = max(18.0, dom_lab[0] * 0.32)
         dark_w = np.clip((lab[..., 0] - (min_l - 8.0)) / 10.0, 0.0, 1.0)
     else:
         dark_w = np.ones((h, w), dtype=np.float32)
 
     duvet_soft = np.ones((h, w), dtype=np.float32)
-    if cat_clean in ("bedroom", "kids-and-teens") and dom_lab[0] < 82.0:
+    if cat_clean in ("bedroom", "kids-and-teens") and dom_lab[0] < 84.0:
         duvet_seed = fg_bool & (lab[..., 0] > max(82.0, dom_lab[0] + 6.0)) & (chroma_map < 9.0)
         num_cc, cc_labels, cc_stats, _ = cv2.connectedComponentsWithStats(duvet_seed.astype(np.uint8))
         duvet_main = np.zeros((h, w), dtype=bool)
@@ -553,9 +578,25 @@ def refine_upholstery_mask(
             if cc_stats[cid, cv2.CC_STAT_AREA] >= min_cc:
                 duvet_main |= cc_labels == cid
         if duvet_main.any():
+            # Grow into adjacent shaded white mattress top/front within the mattress bounding window
+            dys, dxs = np.nonzero(duvet_main)
+            dy0 = int(dys.min())
+            dy1 = min(h, int(dys.max()) + 1 + max(8, round(0.14 * h)))
+            dx0 = max(0, int(dxs.min()) - max(10, round(0.20 * w)))
+            dx1 = min(w, int(dxs.max()) + 1 + max(10, round(0.20 * w)))
+            grow_floor = 75.0 if dom_lab[0] >= 70.0 else max(68.0, float(dom_lab[0]) + 2.0)
+            grow_cand = np.zeros((h, w), dtype=bool)
+            grow_cand[dy0:dy1, dx0:dx1] = (
+                fg_bool[dy0:dy1, dx0:dx1]
+                & (lab[dy0:dy1, dx0:dx1, 0] > grow_floor)
+                & (chroma_map[dy0:dy1, dx0:dx1] < 9.0)
+            )
+            _, g_lbl = cv2.connectedComponents((duvet_main | grow_cand).astype(np.uint8))
+            seed_ids = np.unique(g_lbl[duvet_main])
+            duvet_grown = np.isin(g_lbl, seed_ids[seed_ids > 0])
             close_k = max(15, int(min(h, w) * 0.03) | 1)
             duvet_closed = (
-                cv2.morphologyEx(duvet_main.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((close_k, close_k), np.uint8)) > 0
+                cv2.morphologyEx(duvet_grown.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((close_k, close_k), np.uint8)) > 0
             )
             duvet_guard = cv2.dilate(duvet_closed.astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
             duvet_soft = cv2.GaussianBlur((~duvet_guard).astype(np.float32), (0, 0), 1.0)
@@ -672,7 +713,7 @@ def load_or_compute_mask(
 ) -> tuple[np.ndarray, np.ndarray | None]:
     _, bg_ext = extract_white_bg_subject(rgb_u8) if analyse_white_background(rgb_u8)["whiteBackground"] else (None, None)
     if mask_cache_dir:
-        digest = hashlib.sha256(f"v2|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
+        digest = hashlib.sha256(f"v3|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
         cache_file = Path(mask_cache_dir) / f"{digest}.png"
         if cache_file.is_file():
             cached = np.array(Image.open(cache_file).convert("L"), dtype=np.float32) / 255.0
@@ -683,7 +724,7 @@ def load_or_compute_mask(
     alpha = refine_upholstery_mask(rgb_u8, coarse, category=category)
 
     if mask_cache_dir:
-        digest = hashlib.sha256(f"v2|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
+        digest = hashlib.sha256(f"v3|{source_path}|{category}|{mask_mode}".encode("utf-8")).hexdigest()[:16]
         cache_file = Path(mask_cache_dir) / f"{digest}.png"
         cache_file.parent.mkdir(parents=True, exist_ok=True)
         Image.fromarray(np.clip(alpha * 255.0, 0, 255).astype(np.uint8), mode="L").save(cache_file)
