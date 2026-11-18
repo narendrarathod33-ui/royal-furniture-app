@@ -56,8 +56,8 @@ This repository includes `.github/workflows/generate-color-variants.yml` configu
 1. **Ensure workflow write permissions:** Under **Settings → Actions → General → Workflow permissions**, select **Read and write permissions**.
 2. **Trigger a batch from the Actions tab:**
    - Open **Actions → Generate AI Color Variants → Run workflow**
-   - Keep `engine: free-lab` (**$0**, no secrets required)
-   - Fill in inputs (for example `slugs: serafina-corner-sofa`, `limit: 11`, or leave `slugs` blank with `limit: 50` to batch across Made-to-Order items)
+   - Keep `engine: free-lab` (**$0**, no secrets required) and `limit: 0` (processes all matched products cleanly; set `limit: 250` only if switching to paid `openai`)
+   - Leave `made_to_order` checked for the 396 Made-to-Order products (245 with verified white-background photos / 1,195 variants) or uncheck `made_to_order` to also cover the remaining 131 non-Made-to-Order swatch products
    - When the run finishes, the workflow uploads an artifact archive and commits `public/ai-color-variants/`, `harvest/ai-color-variants.json`, and `app/data/colorVariantManifest.ts` back to the branch.
 
 *(If you ever fund `OPENAI_API_KEY` and add it under **Settings → Secrets and variables → Actions**, you can switch the workflow `engine` dropdown to `openai`.)*

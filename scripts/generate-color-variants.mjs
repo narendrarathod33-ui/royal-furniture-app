@@ -135,7 +135,7 @@ export function computePromptHash({ model, quality, size, sourceImage, prompt })
 export function computeJobPromptHash({ opts, sourceImage, cand, prompt }) {
   if (opts.engine === 'free-lab') {
     return computePromptHash({
-      model: `${opts.model}|v2-whitebg-exactlab|${opts.segModel || DEFAULT_SEG_MODEL}|${opts.maskMode || 'auto'}`,
+      model: `${opts.model}|v3-whitebg-exactlab|${opts.segModel || DEFAULT_SEG_MODEL}|${opts.maskMode || 'auto'}`,
       quality: opts.outputFormat,
       size: cand.hex || cand.colorName,
       sourceImage,
@@ -688,20 +688,54 @@ export async function runBatchGeneration({
   let skippedNoWhiteBgSwatches = 0;
   let ledgerDirty = false;
 
+  const findLedgerSource = (slug, prodJobs) => {
+    const entryMap = ledger?.variants?.[slug];
+    if (!entryMap || typeof entryMap !== 'object') return { sourceImage: null, exactMatch: false };
+    const candidates = prodJobs[0]?.candidateImages || [prodJobs[0]?.sourceImage].filter(Boolean);
+    let fallbackSource = null;
+    for (const job of prodJobs) {
+      const existing = entryMap[job.variantKey];
+      if (!existing?.sourceImage || !candidates.includes(existing.sourceImage)) continue;
+      if (!fallbackSource) fallbackSource = existing.sourceImage;
+      const expectedHash = computeJobPromptHash({
+        opts,
+        sourceImage: existing.sourceImage,
+        cand: job,
+        prompt: job.prompt,
+      });
+      if (existing.promptHash === expectedHash) {
+        return { sourceImage: existing.sourceImage, exactMatch: true };
+      }
+    }
+    return { sourceImage: fallbackSource, exactMatch: false };
+  };
+
   if (opts.dryRun) {
+    let upgradableHits = 0;
     for (const job of allJobs) {
+      const existingEntry = ledger?.variants?.[job.slug]?.[job.variantKey];
       if (opts.whiteBackgroundOnly) {
         const candidates = job.candidateImages || [job.sourceImage];
-        const knownWhite = candidates.find((c) => whiteBgIndex[c]?.whiteBackground === true);
-        const allKnownNonWhite = candidates.every((c) => whiteBgIndex[c]?.whiteBackground === false);
+        const knownWhite =
+          candidates.find((c) => whiteBgIndex[c]?.whiteBackground === true) ||
+          (existingEntry?.sourceImage && candidates.includes(existingEntry.sourceImage)
+            ? existingEntry.sourceImage
+            : null);
+        const allKnownNonWhite = !knownWhite && candidates.every((c) => whiteBgIndex[c]?.whiteBackground === false);
         if (allKnownNonWhite) continue;
         if (knownWhite && knownWhite !== job.sourceImage) {
           job.sourceImage = knownWhite;
           job.promptHash = computeJobPromptHash({ opts, sourceImage: knownWhite, cand: job, prompt: job.prompt });
         }
       }
-      if (await isVariantCached({ ledger, job, outDir, force: opts.force })) cachedHits++;
-      else pending.push(job);
+      if (await isVariantCached({ ledger, job, outDir, force: opts.force })) {
+        cachedHits++;
+      } else {
+        if (existingEntry?.relFile && existsSync(resolve(outDir, existingEntry.relFile))) {
+          upgradableHits++;
+        }
+        pending.push(job);
+      }
     }
     limited = Number.isFinite(opts.limit) ? pending.slice(0, opts.limit) : pending;
     skippedByLimit = Math.max(0, pending.length - limited.length);
@@ -713,6 +747,9 @@ export async function runBatchGeneration({
       logger.log(`  Products matched:   ${uniqueProducts}`);
       logger.log(`  Total swatches:     ${allJobs.length}`);
       logger.log(`  Already cached:     ${cachedHits} (skipped at $0)`);
+      if (upgradableHits > 0) {
+        logger.log(`  Live v2 to upgrade: ${upgradableHits} (existing previews stay live until regenerated)`);
+      }
       logger.log(`  To generate now:    ${limited.length}${skippedByLimit ? ` (${skippedByLimit} deferred by --limit ${opts.limit})` : ''}`);
       logger.log(`  Est. batch spend:   $0.00 (open-weights segmentation + CIELAB color transfer)`);
     } else {
@@ -733,6 +770,7 @@ export async function runBatchGeneration({
     return {
       totalJobs: allJobs.length,
       cachedHits,
+      upgradableHits,
       generated: 0,
       pendingCount: limited.length,
       skippedByLimit,
@@ -757,12 +795,17 @@ export async function runBatchGeneration({
 
     const activeProducts = [];
     for (const [slug, prodJobs] of bySlug.entries()) {
+      const candidates = prodJobs[0].candidateImages || [prodJobs[0].sourceImage];
+      const ledgerSource = !opts.force ? findLedgerSource(slug, prodJobs).sourceImage : null;
+      if (ledgerSource && !whiteBgIndex[ledgerSource]) {
+        whiteBgIndex[ledgerSource] = { whiteBackground: true };
+      }
       activeProducts.push({
         slug,
         prodJobs,
-        candidates: prodJobs[0].candidateImages || [prodJobs[0].sourceImage],
+        candidates,
         nextIdx: 0,
-        verifiedSource: null,
+        verifiedSource: ledgerSource || null,
       });
     }
 

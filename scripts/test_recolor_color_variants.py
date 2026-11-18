@@ -10,6 +10,7 @@ from PIL import Image
 from scripts.recolor_color_variants import (
     analyse_white_background,
     extract_coarse_mask,
+    extract_white_bg_subject,
     hex_to_cie_lab,
     process_jobs,
     recolor_cie_lab,
@@ -173,6 +174,65 @@ class RecolorColorVariantsTests(unittest.TestCase):
             self.assertFalse(res[0]["ok"])
             self.assertTrue(res[0].get("skippedNonWhite"))
             self.assertFalse(out_path.exists())
+
+    def test_extract_white_bg_subject_keeps_cream_bottom_rail_and_trims_pale_floor_shadow(self) -> None:
+        img = np.full((240, 240, 3), 255, dtype=np.uint8)
+        # Light-grey / cream upholstered bed footboard all the way near y=185
+        img[60:185, 35:205] = (190, 190, 188)
+        # Tiny dark wooden feet at bottom corners (y=185..195)
+        img[185:195, 42:52] = (35, 28, 24)
+        img[185:195, 188:198] = (35, 28, 24)
+        # Pale studio drop shadow underneath touching white floor (y=192..198)
+        img[192:198, 45:195] = (234, 234, 234)
+
+        fg, _ = extract_white_bg_subject(img)
+        # Cream bottom rail (y=170..184) must remain completely inside subject fg
+        self.assertGreater(float(fg[170:184, 50:190].mean()), 0.99)
+        # Pale studio floor shadow right below feet must be trimmed
+        self.assertLess(float(fg[192:197, 80:160].mean()), 0.05)
+
+    def test_refine_mask_covers_dark_velvet_and_cool_shadows_without_touching_wood_or_black_legs(self) -> None:
+        # 1. Burgundy crushed velvet bed: bright lit sheen + deep dark burgundy folds + black legs
+        velvet = np.full((240, 240, 3), 255, dtype=np.uint8)
+        velvet[60:175, 35:205] = (145, 118, 122)  # lit sheen (chroma ~ 10)
+        velvet[120:175, 40:80] = (52, 14, 22)     # deep burgundy shadow fold (L ~ 11, a ~ 17)
+        velvet[175:195, 45:58] = (22, 22, 22)     # black metal legs (low chroma, L < 10)
+
+        coarse_v, _ = extract_white_bg_subject(velvet)
+        alpha_v = refine_upholstery_mask(velvet, coarse_v.astype(np.float32), category="bedroom")
+        self.assertGreater(float(alpha_v[130:165, 50:72].mean()), 0.75)
+        self.assertLess(float(alpha_v[178:192, 47:56].mean()), 0.15)
+
+        # 2. Neutral sofa with cool shadowed upper lid + warm walnut wood frame
+        sofa = np.full((240, 240, 3), 255, dtype=np.uint8)
+        sofa[85:175, 40:200] = (196, 196, 196)    # lit neutral grey upholstery
+        sofa[50:85, 55:185] = (167, 174, 186)     # cool shadowed upper cushion (b* ~ -7)
+        sofa[175:195, 45:65] = (92, 46, 20)       # walnut wood leg trim
+
+        coarse_s, _ = extract_white_bg_subject(sofa)
+        alpha_s = refine_upholstery_mask(sofa, coarse_s.astype(np.float32), category="sofas")
+        self.assertGreater(float(alpha_s[56:80, 70:170].mean()), 0.70)
+        self.assertLess(float(alpha_s[178:192, 48:62].mean()), 0.15)
+
+    def test_bedroom_mattress_protection_covers_shaded_mattress_corners(self) -> None:
+        bed = np.full((240, 240, 3), 255, dtype=np.uint8)
+        # Warm grey-taupe upholstered headboard & footboard
+        bed[40:100, 45:195] = (145, 138, 128)
+        bed[150:190, 35:205] = (145, 138, 128)
+        # White mattress top center + slightly shaded vertical left/right corners
+        bed[95:142, 65:175] = (232, 234, 236)
+        bed[95:142, 45:65] = (190, 192, 195)      # shaded left vertical mattress face (L* ~ 77)
+        bed[95:142, 175:195] = (190, 192, 195)    # shaded right vertical mattress face (L* ~ 77)
+        bed[142:150, 42:198] = (75, 70, 65)       # dark horizontal mattress seam
+
+        coarse_b, _ = extract_white_bg_subject(bed)
+        alpha_b = refine_upholstery_mask(bed, coarse_b.astype(np.float32), category="bedroom")
+        # Both bright center and shaded horizontal corners of white mattress stay protected
+        self.assertLess(float(alpha_b[105:135, 75:165].mean()), 0.15)
+        self.assertLess(float(alpha_b[105:135, 48:62].mean()), 0.20)
+        # Headboard and footboard remain solidly masked for recoloring
+        self.assertGreater(float(alpha_b[48:88, 60:180].mean()), 0.80)
+        self.assertGreater(float(alpha_b[158:182, 55:185].mean()), 0.80)
 
 
 if __name__ == "__main__":
