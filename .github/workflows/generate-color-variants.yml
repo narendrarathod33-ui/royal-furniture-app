@@ -34,7 +34,7 @@ on:
       limit:
         description: 'Max uncached variants to generate this run (0 = no cap)'
         required: false
-        default: '50'
+        default: '250'
         type: string
       concurrency:
         description: 'Parallel OpenAI requests when engine=openai (1-6)'
