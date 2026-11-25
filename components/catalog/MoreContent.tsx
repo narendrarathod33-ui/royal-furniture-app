@@ -4,6 +4,7 @@ import { Bookmark, ChevronRight, Package, UserRound } from 'lucide-react-native'
 import { Header } from './ProductCard';
 import { COLORS, styles } from './kit';
 import { t, switchLang, useLangStore } from '../../app/i18n';
+import { useSavedScrollViewProps } from '../../utils/scrollMemory';
 
 /**
  * The More hub: the destinations that don't need a tab of their own —
@@ -13,12 +14,13 @@ import { t, switchLang, useLangStore } from '../../app/i18n';
  */
 export function MoreContent({ onCart, onAccount, cartCount }: { onCart: () => void; onAccount: () => void; cartCount: number }) {
   const lang = useLangStore.getState().lang;
+  const scrollProps = useSavedScrollViewProps('more', lang);
   const rows: { key: string; label: string; icon: ReactElement; onPress: () => void }[] = [
     { key: 'saved', label: t('more.saved'), icon: <Bookmark color={COLORS.ink} size={18} />, onPress: onCart },
     { key: 'orders', label: t('more.orders'), icon: <Package color={COLORS.ink} size={18} />, onPress: onAccount },
     { key: 'account', label: t('more.account'), icon: <UserRound color={COLORS.ink} size={18} />, onPress: onAccount },
   ];
-  return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+  return <ScrollView {...scrollProps} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
     <Header count={cartCount} onCart={onCart} onAccount={onAccount} />
     <View style={styles.shopHead}>
       <Text style={styles.pageTitle}>{t('more.title')}</Text>

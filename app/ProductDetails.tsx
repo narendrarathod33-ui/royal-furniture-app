@@ -3,6 +3,7 @@ import { attachGalleryPointerNavigation } from '../utils/galleryPointer';
 import { ProductPhotoViewer } from '../components/ProductPhotoViewer';
 import { sortSizesByPrice, selectSizeOption } from '../utils/sizePricing';
 import { wrapSlideIndex, loopSlidePosition, settledSlidePosition } from '../utils/gallery';
+import { useSavedScrollViewProps } from '../utils/scrollMemory';
 import { filterProductResponse } from './privacy/productResponse';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -34,6 +35,7 @@ import { getOfficialSizes } from './data/officialSizes';
 import { PRODUCT_IMAGE_NOTE, PRODUCT_PAYMENT_NOTE, getProductDetails, productImageUrl } from './data/productDetails';
 import { getColorSwatches } from './data/colorSwatches';
 import { getManifestVariants } from './data/colorVariantManifest';
+import { getWebBasePath, preloadWebProductData, subscribeWebData } from './data/webDataLoader';
 import {
   buildProductSwatches,
   colorFromProductId,
@@ -469,6 +471,9 @@ function dedupeRows(rows: DetailRow[]) {
   });
 }
 
+const liveApiCache = new Map<string, ApiProductDetail | null>();
+let liveCorsRejected = false;
+
 export default function ProductDetails({
   product,
   header,
@@ -577,17 +582,35 @@ export default function ProductDetails({
     // The locale/country headers are what make the API return prices, so they are
     // tried first; the plain request is the fallback for when the CORS preflight
     // they trigger is rejected.
+    const fetchWithTimeout = async (url: string, headers: Record<string, string> | undefined) => {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : undefined;
+      const timer = controller ? setTimeout(() => controller.abort(), 3500) : undefined;
+      try {
+        return await fetch(url, {
+          headers,
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer',
+          signal: controller?.signal,
+        });
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+    };
+
     const load = async () => {
+      const headerCandidates: (Record<string, string> | undefined)[] = liveCorsRejected
+        ? [undefined]
+        : [{ locale: 'en', country: 'ae' }, undefined];
       for (const url of urls) {
-        for (const headers of [{ locale: 'en', country: 'ae' }, undefined]) {
+        for (const headers of headerCandidates) {
           try {
-            const response = await fetch(url, { headers, credentials: 'omit', referrerPolicy: 'no-referrer' });
+            const response = await fetchWithTimeout(url, headers);
             if (!response.ok) continue;
             const payload = (await response.json()) as { data?: ApiProductDetail };
             if (!payload.data) continue;
             return filterProductResponse(payload.data) as ApiProductDetail;
           } catch {
-            // try the next combination
+            if (headers) liveCorsRejected = true;
           }
         }
       }
@@ -596,8 +619,17 @@ export default function ProductDetails({
 
     (async () => {
       try {
+        await preloadWebProductData();
+        if (!active) return;
+        const cachedApi = liveApiCache.get(slugBase);
+        const hasBaked = Boolean(getProductDetails(product.id));
+        if (reload === 0 && (cachedApi !== undefined || hasBaked)) {
+          if (cachedApi) setDetail(cachedApi);
+          return;
+        }
         const data = await load();
         if (!active) return;
+        liveApiCache.set(slugBase, data);
         if (data) setDetail(data);
         else setError(true);
       } finally {
@@ -606,11 +638,17 @@ export default function ProductDetails({
     })();
 
     return () => { active = false; };
-  }, [slugBase, slugHashless, reload]);
+  }, [slugBase, slugHashless, reload, product.id]);
+
+  const [webDataTick, setWebDataTick] = useState(0);
+  useEffect(() => {
+    void preloadWebProductData();
+    return subscribeWebData(() => setWebDataTick((tick) => tick + 1));
+  }, []);
 
   // Everything the product page shows is read from the baked harvest first, with
   // the live API as a fallback, and the catalogue itself as the last resort.
-  const baked = useMemo(() => getProductDetails(product.id), [product.id]);
+  const baked = useMemo(() => getProductDetails(product.id), [product.id, webDataTick]);
   const catalogue = product as ProductDetailsProduct & { lb?: unknown; st?: unknown; dl?: unknown; fd?: unknown; fa?: unknown };
   // The API repeats its description in `general_information`, so equal texts are
   // collapsed after normalising line endings and whitespace.
@@ -630,9 +668,9 @@ export default function ProductDetails({
   // single-price card, and the current piece never recommends itself.
   const catalogId = stripProductVariantSuffixes(product.id);
   const cleanProductName = productName.replace(/\s+—\s+Finish:\s+.*$/, '');
-  const webBasePath = (Constants?.expoConfig?.experiments?.baseUrl as string | undefined) || '';
-  const harvestSwatches = useMemo(() => getColorSwatches(product.id), [product.id]);
-  const manifestVariants = useMemo(() => getManifestVariants(product.id), [product.id]);
+  const webBasePath = getWebBasePath() || (Constants?.expoConfig?.experiments?.baseUrl as string | undefined) || '';
+  const harvestSwatches = useMemo(() => getColorSwatches(product.id), [product.id, webDataTick]);
+  const manifestVariants = useMemo(() => getManifestVariants(product.id), [product.id, webDataTick]);
   const displayFabrics = useMemo(() => normalizeFabrics(fabrics), [fabrics]);
   const resolvedSwatches = useMemo(
     () =>
@@ -740,6 +778,7 @@ export default function ProductDetails({
   const [slideBox, setSlideBox] = useState({ width: Dimensions.get('window').width - 32, height: 0 });
   const galleryRef = useRef<ScrollView>(null);
   const pageRef = useRef<ScrollView>(null);
+  const pageScrollProps = useSavedScrollViewProps(`pdp:${stripProductVariantSuffixes(product.id)}`, product.id, pageRef);
   const webGalleryOffset = useRef(new Animated.Value(0)).current;
   const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
   const webGallerySurface = useRef<View>(null);
@@ -866,7 +905,7 @@ export default function ProductDetails({
       <SchemeBackdrop />
       {header}
       <ProductPhotoViewer visible={photoZoomOpen} photos={slides} index={activeSlide} onIndexChange={goToSlide} name={cleanProductName} onClose={() => setPhotoZoomOpen(false)} />
-      <ScrollView ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView {...pageScrollProps} ref={pageRef} nestedScrollEnabled contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={onBack} style={[styles.back, { alignSelf: 'flex-start', minWidth: 44, minHeight: 44 }]}>
           <ChevronLeft color={COLORS.ink} size={22} />
         </Pressable>

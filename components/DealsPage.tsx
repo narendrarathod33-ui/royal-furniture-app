@@ -12,13 +12,44 @@ type Props<T extends DealProduct> = {
   products: readonly T[]; categories: readonly Category[]; header: ReactNode;
   photo: (category: string) => ImageSourcePropType | undefined;
   renderCard: (item: T & { sizeCount?: number; baseName?: string }) => ReactNode;
+  filters?: DealFilters;
+  onFiltersChange?: (filters: DealFilters) => void;
+  query?: string;
+  onQueryChange?: (query: string) => void;
+  restoreScrollOffset?: number;
+  restoreAnchorId?: string;
+  onSaveScroll?: (offset: number, anchorId?: string) => void;
 };
 const RED = '#DA1921';
-export function DealsPage<T extends DealProduct>({ products, categories, header, photo, renderCard }: Props<T>) {
+export function DealsPage<T extends DealProduct>({
+  products,
+  categories,
+  header,
+  photo,
+  renderCard,
+  filters: controlledFilters,
+  onFiltersChange,
+  query: controlledQuery,
+  onQueryChange,
+  restoreScrollOffset,
+  restoreAnchorId,
+  onSaveScroll,
+}: Props<T>) {
   const adaptive = useAdaptiveLayout();
-  const [filters, setFilters] = useState<DealFilters>({ ...DEFAULT_DEAL_FILTERS });
-  const [draft, setDraft] = useState<DealFilters>({ ...DEFAULT_DEAL_FILTERS });
-  const [query, setQuery] = useState('');
+  const [localFilters, setLocalFilters] = useState<DealFilters>({ ...DEFAULT_DEAL_FILTERS });
+  const filters = controlledFilters ?? localFilters;
+  const setFilters = (next: DealFilters | ((current: DealFilters) => DealFilters)) => {
+    const resolved = typeof next === 'function' ? next(filters) : next;
+    if (onFiltersChange) onFiltersChange(resolved);
+    else setLocalFilters(resolved);
+  };
+  const [draft, setDraft] = useState<DealFilters>(filters);
+  const [localQuery, setLocalQuery] = useState('');
+  const query = controlledQuery ?? localQuery;
+  const setQuery = (next: string) => {
+    if (onQueryChange) onQueryChange(next);
+    else setLocalQuery(next);
+  };
   const [open, setOpen] = useState(false);
   const input = useRef<TextInput>(null);
   const trigger = useRef<View>(null);
@@ -77,6 +108,7 @@ export function DealsPage<T extends DealProduct>({ products, categories, header,
   return <View style={{ flex: 1 }}>
     {header}
     <AdaptiveProductList key={JSON.stringify(filters)} testID="deals-results" data={results} keyExtractor={item => item.id}
+      restoreScrollOffset={restoreScrollOffset} restoreAnchorId={restoreAnchorId} onSaveScroll={onSaveScroll}
       contentContainerStyle={s.grid} ListHeaderComponent={listHeader} renderItem={({ item }) => <>{renderCard(item)}</>}
       ListEmptyComponent={<View testID="deals-empty-state" style={s.empty}><View style={s.emptyIcon}><Search size={26} color={RED} /></View><Text style={s.emptyTitle}>A different find awaits.</Text><Text style={s.emptyBody}>No deals match this combination. Try another category or give your budget a little more room.</Text><Pressable accessibilityRole="button" onPress={reset} style={s.primary}><Text style={s.primaryText}>Explore all deals</Text><ArrowRight size={17} color="#FFF" /></Pressable></View>} />
     <Modal transparent visible={open} animationType={Platform.OS === 'web' ? 'fade' : 'slide'} onRequestClose={close} onDismiss={() => trigger.current?.focus()}>

@@ -53,3 +53,6 @@ google_drive/
 .cache/
 .venv/
 __pycache__/
+
+# Generated runtime JSON shards built by scripts/build-web-data.mjs
+public/data/

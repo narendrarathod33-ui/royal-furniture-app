@@ -11,8 +11,10 @@ type Props<T extends MadeToOrderProduct> = {
   products: readonly T[]; categories: readonly {s: string; n: string}[]; header: ReactNode;
   filters: CustomizationFilters; onFiltersChange: (filters: CustomizationFilters) => void;
   onBack: () => void; renderCard: (item: T) => ReactNode;
+  restoreScrollOffset?: number; restoreAnchorId?: string;
+  onSaveScroll?: (offset: number, anchorId?: string) => void;
 };
-export function CustomizationPage<T extends MadeToOrderProduct>({ products, categories, header, filters, onFiltersChange, onBack, renderCard }: Props<T>) {
+export function CustomizationPage<T extends MadeToOrderProduct>({ products, categories, header, filters, onFiltersChange, onBack, renderCard, restoreScrollOffset, restoreAnchorId, onSaveScroll }: Props<T>) {
   const { width } = useAdaptiveLayout();
   const input = useRef<TextInput>(null);
   const eligible = useMemo(() => products.filter(isExplicitlyMadeToOrder), [products]);
@@ -35,12 +37,13 @@ export function CustomizationPage<T extends MadeToOrderProduct>({ products, cate
     </View>
     <View accessibilityRole="radiogroup" accessibilityLabel="Sort made-to-order products" style={s.sorts}>{[['featured','Catalog order'],['priceLow','Price: low to high'],['priceHigh','Price: high to low']].map(([value,label]) => <Pressable key={value} accessibilityRole="radio" aria-checked={filters.sort === value} accessibilityLabel={label} accessibilityState={{ checked: filters.sort === value }} onPress={() => update({ sort: value })} style={[s.sort, filters.sort === value && s.sortSelected]}><Text style={[s.sortText, filters.sort === value && { color: '#A3272E' }]}>{label}</Text></Pressable>)}</View>
   </View>;
+  const customSig = `${filters.category}:${filters.sort}:${filters.query}`;
   return <View style={{ flex: 1 }}>
     {header}
     <View style={s.topbar}><Pressable accessibilityRole="button" accessibilityLabel="Back to home" onPress={onBack} style={s.back}><ChevronLeft size={22} color="#40202B" /></Pressable>
       <Pressable testID="customization-search-field" accessible={false} focusable={false} style={s.search} onPress={() => input.current?.focus()}><Search size={18} color="#81737A" /><TextInput ref={input} accessibilityLabel="Search made-to-order products" placeholder="Find your made-to-order piece" placeholderTextColor="#81737A" value={filters.query} onChangeText={query => update({ query })} caretHidden={false} cursorColor="#DA1921" selectionColor="#DA1921" style={s.input} />{!!filters.query && <Pressable accessibilityRole="button" accessibilityLabel="Clear customization search" onPress={() => update({ query: '' })} style={s.back}><X size={17} color="#81737A" /></Pressable>}</Pressable>
     </View>
-    <AdaptiveProductList key={`${filters.category}:${filters.sort}`} testID="customization-results" data={results} keyExtractor={p => p.id} contentContainerStyle={s.grid} ListHeaderComponent={intro} renderItem={({item}) => <>{renderCard(item)}</>} ListEmptyComponent={<View testID="customization-empty" style={s.empty}><Text style={s.emptyTitle}>Let’s find your kind of piece.</Text><Text style={s.body}>No made-to-order products match these filters. Try another category or search.</Text><Pressable accessibilityRole="button" accessibilityLabel="Reset customization filters" onPress={reset} style={s.reset}><Text style={s.selectedText}>Show all made to order</Text></Pressable></View>} />
+    <AdaptiveProductList key={customSig} testID="customization-results" data={results} keyExtractor={p => p.id} restoreScrollOffset={restoreScrollOffset} restoreAnchorId={restoreAnchorId} onSaveScroll={onSaveScroll} contentContainerStyle={s.grid} ListHeaderComponent={intro} renderItem={({item}) => <>{renderCard(item)}</>} ListEmptyComponent={<View testID="customization-empty" style={s.empty}><Text style={s.emptyTitle}>Let’s find your kind of piece.</Text><Text style={s.body}>No made-to-order products match these filters. Try another category or search.</Text><Pressable accessibilityRole="button" accessibilityLabel="Reset customization filters" onPress={reset} style={s.reset}><Text style={s.selectedText}>Show all made to order</Text></Pressable></View>} />
   </View>;
 }
 const s = StyleSheet.create({

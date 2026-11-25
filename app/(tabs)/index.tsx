@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Platform, Pressable, SafeAreaView, Text, View } from 'react-native';
+import { Animated, BackHandler, Platform, Pressable, SafeAreaView, Text, View } from 'react-native';
 import { royalFurnitureData } from '../data/royalFurnitureData';
 import { catalogData } from '../data/catalogData';
 import { getSizeVariants } from '../data/sizeVariants';
 import ProductDetails from '../ProductDetails';
 import { CustomizationPage } from '../../components/CustomizationPage';
 import type { CustomizationFilters } from '../../utils/madeToOrder';
+import { DEFAULT_DEAL_FILTERS, type DealFilters } from '../../utils/deals';
+import { getScrollMemory, saveScrollMemory } from '../../utils/scrollMemory';
+import { SwipeBackContainer } from '../../components/SwipeBackContainer';
 import { AdaptiveRegion, useAdaptiveLayout } from '../../hooks/useAdaptiveLayout';
 import { SandboxCheckout, SandboxPaymentReturn } from '../../components/SandboxCheckout';
 import { BottomNav } from '../../components/catalog/BottomNav';
@@ -13,7 +16,7 @@ import { HomeContent } from '../../components/catalog/HomeContent';
 import { ShopContent } from '../../components/catalog/ShopContent';
 import { CartContent } from '../../components/catalog/CartContent';
 import { AccountContent } from '../../components/catalog/AccountContent';
-import { SearchContent, NewArrivalsContent, BestSellersContent } from '../../components/catalog/Screens';
+import { SearchContent, NewArrivalsContent, BestSellersContent, type SearchFilterState } from '../../components/catalog/Screens';
 import { MoreContent } from '../../components/catalog/MoreContent';
 import { Header, ProductCard } from '../../components/catalog/ProductCard';
 import { photoFor, photoForCatalogId, styles, type Product } from '../../components/catalog/kit';
@@ -24,9 +27,11 @@ import { useCartStore, useToggleSavedWithToast } from '../../stores/cart';
 import { QuickViewSheet } from '../../components/catalog/QuickView';
 import { useSessionStore } from '../../stores/session';
 import { useLangStore } from '../../app/i18n';
+import { getCachedWebJson, preloadArabicCatalogNames, preloadWebProductData, subscribeWebData } from '../data/webDataLoader';
 
 export default function HomeScreen() {
   const [session, setSession] = useState(0);
+  const [arTick, setArTick] = useState(0);
   // Language changes remount the whole session instantly: every label reads
   // the dictionary at render, and stores (cart/session) survive untouched.
   const lang = useLangStore((state) => state.lang);
@@ -34,7 +39,28 @@ export default function HomeScreen() {
     // Purge the standalone prototype's old history on this origin, if present.
     try { if (typeof window !== 'undefined') window.localStorage?.removeItem('rf'); } catch { /* Storage may be blocked. */ }
   }, []);
-  return <AppSession key={`${session}:${lang}`} onDeleteData={async () => {
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const schedule = (fn: () => void) => {
+      const idle = (globalThis as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+      if (idle) {
+        const id = idle(fn, { timeout: 600 });
+        return () => (globalThis as { cancelIdleCallback?: (handle: number) => void }).cancelIdleCallback?.(id);
+      }
+      const id = setTimeout(fn, 120);
+      return () => clearTimeout(id);
+    };
+    return schedule(() => { void preloadWebProductData(); });
+  }, []);
+  useEffect(() => {
+    if (Platform.OS !== 'web' || lang !== 'ar') return;
+    if (getCachedWebJson('catalog-names-ar.json')) return;
+    void preloadArabicCatalogNames();
+    return subscribeWebData(() => {
+      if (getCachedWebJson('catalog-names-ar.json')) setArTick((tick) => tick + 1);
+    });
+  }, [lang]);
+  return <AppSession key={`${session}:${lang}:${arTick}`} onDeleteData={async () => {
     if (Platform.OS === 'web') {
       const configResponse = await fetch('/api/payments/config');
       const config = configResponse.ok && configResponse.headers.get('content-type')?.includes('application/json') ? await configResponse.json() : null;
@@ -56,10 +82,13 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   // session store, cart/saved in the cart store (persisted). This component
   // only subscribes to the slices it renders.
   const tab = useSessionStore((state) => state.tab);
+  const tabHistory = useSessionStore((state) => state.tabHistory);
   const setTab = useSessionStore((state) => state.setTab);
   const selected = useSessionStore((state) => state.selected);
+  const productStack = useSessionStore((state) => state.productStack);
   const openProduct = useSessionStore((state) => state.openProduct);
   const closeProduct = useSessionStore((state) => state.closeProduct);
+  const goBack = useSessionStore((state) => state.goBack);
   const orders = useSessionStore((state) => state.orders);
   const cart = useCartStore((state) => state.cart);
   const saved = useCartStore((state) => state.saved);
@@ -69,7 +98,12 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   const [category, setCategory] = useState('all');
   const [catalogSort, setCatalogSort] = useState('trending');
   const [customizationFilters, setCustomizationFilters] = useState<CustomizationFilters>({ category: 'all', query: '', sort: 'featured' });
+  const [searchState, setSearchState] = useState<SearchFilterState>({ query: '', category: 'all', subcategory: 'all' });
+  const [dealsFilters, setDealsFilters] = useState<DealFilters>({ ...DEFAULT_DEAL_FILTERS });
+  const [dealsQuery, setDealsQuery] = useState('');
   const pageMotion = useRef(new Animated.Value(1)).current;
+  const historyDepthRef = useRef(0);
+  const skipPopRef = useRef(0);
 
   // Toasts render through the isolated ToastHost: notice updates never touch
   // this component's state, so they cannot re-render the screen tree.
@@ -89,9 +123,49 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
   const openCustomize = useCallback(() => setTab('customization'), [setTab]);
   const openBestSellers = useCallback(() => setTab('bestSellers'), [setTab]);
   const openCategories = useCallback((value: string) => { setCategory(value); setTab('categories'); }, [setTab]);
+  const handleBack = useCallback(() => { goBack(); }, [goBack]);
   const renderCatalogCard = useCallback((item: Product) => <ProductCard product={item} onPress={openProduct} saved={saved.includes(item.id)} onSave={toggleSaved} wide />, [openProduct, saved, toggleSaved]);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const tabDepth = tabHistory.length > 0 ? tabHistory.length : (tab !== 'home' ? 1 : 0);
+  const navDepth = tabDepth + (selected ? 1 + productStack.length : 0);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => useSessionStore.getState().goBack());
+    return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || !window.history?.pushState) return;
+    const onPopState = () => {
+      if (skipPopRef.current > 0) {
+        skipPopRef.current -= 1;
+        return;
+      }
+      historyDepthRef.current = Math.max(0, historyDepthRef.current - 1);
+      useSessionStore.getState().goBack();
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || !window.history?.pushState) return;
+    const current = historyDepthRef.current;
+    if (navDepth > current) {
+      for (let depth = current + 1; depth <= navDepth; depth += 1) {
+        const baseState = window.history.state && typeof window.history.state === 'object' ? window.history.state : {};
+        window.history.pushState({ ...baseState, rfDepth: depth }, '');
+      }
+      historyDepthRef.current = navDepth;
+    } else if (navDepth < current) {
+      const diff = current - navDepth;
+      skipPopRef.current += 1;
+      historyDepthRef.current = navDepth;
+      window.history.go(-diff);
+    }
+  }, [navDepth]);
 
   useEffect(() => {
     pageMotion.setValue(0);
@@ -102,7 +176,7 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
     const sourceId = stripProductVariantSuffixes(selected.id);
     const name = selected.n.replace(/\s+—\s+(?:Size|Finish):\s+.*$/, '');
     const sizeOptions = getSizeVariants(sourceId).map((variant) => ({ ...variant, photo: photoForCatalogId(variant.id) }));
-    return <><ProductDetails header={<Header count={cartCount} onCart={() => { closeProduct(); openCart(); }} onAccount={() => { closeProduct(); openAccount(); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={closeProduct} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const sizedId = variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId; const colorSuffix = encodeColorVariantSuffix(variant.color, variant.fabric); const finishLabel = [variant.fabric, variant.color].filter(Boolean).join(' · '); const sizedName = variant.size ? `${name} — Size: ${variant.size}` : name; const fullName = finishLabel ? `${sizedName} — Finish: ${finishLabel}` : sizedName; const cartProduct = { ...selected, paymentProductId: sibling?.id || sizedId, variantImage: variant.previewImage, id: `${sizedId}${colorSuffix}`, n: fullName, o: variant.price, l: variant.listPrice ?? selected.l }; handleAddToCart(cartProduct); }} isSaved={saved.includes(sourceId)} onOpenProduct={openProduct} /><ToastHost /></>;
+    return <><SwipeBackContainer enabled onBack={handleBack}><ProductDetails header={<Header count={cartCount} onCart={() => { closeProduct(); openCart(); }} onAccount={() => { closeProduct(); openAccount(); }} />} key={selected.id} product={selected} photoSource={photoFor(selected)} sizeVariants={sizeOptions} onBack={handleBack} onSave={() => toggleSaved({ ...selected, id: sourceId })} onAdd={(variant) => { const sibling = getSizeVariants(sourceId).find((item) => [item.label, item.sizeType].filter(Boolean).join(' · ') === variant.size); const sizedId = variant.size ? `${sourceId}::size=${encodeURIComponent(variant.size)}` : sourceId; const colorSuffix = encodeColorVariantSuffix(variant.color, variant.fabric); const finishLabel = [variant.fabric, variant.color].filter(Boolean).join(' · '); const sizedName = variant.size ? `${name} — Size: ${variant.size}` : name; const fullName = finishLabel ? `${sizedName} — Finish: ${finishLabel}` : sizedName; const cartProduct = { ...selected, paymentProductId: sibling?.id || sizedId, variantImage: variant.previewImage, id: `${sizedId}${colorSuffix}`, n: fullName, o: variant.price, l: variant.listPrice ?? selected.l }; handleAddToCart(cartProduct); }} isSaved={saved.includes(sourceId)} onOpenProduct={openProduct} /></SwipeBackContainer><ToastHost /></>;
   }
 
   return (
@@ -111,18 +185,25 @@ function AppSession({ onDeleteData }: { onDeleteData: () => Promise<void> }) {
         <SchemeBackdrop />
         <SandboxPaymentReturn />
         <Animated.View style={[styles.pageTransition, { marginLeft: rail ? 96 : 0, opacity: pageMotion, transform: [{ translateY: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: pageMotion.interpolate({ inputRange: [0, 1], outputRange: [0.985, 1] }) }] }]}>
+        <SwipeBackContainer enabled={tabHistory.length > 0 || tab !== 'home'} onBack={handleBack}>
         <AdaptiveRegion inset={rail ? 96 : 0}>
-        {tab === 'customization' && <CustomizationPage products={catalogData as unknown as readonly Product[]} categories={royalFurnitureData.cats} filters={customizationFilters} onFiltersChange={setCustomizationFilters} onBack={openHome} header={<Header count={cartCount} onCart={openCart} onAccount={openAccount} />} renderCard={renderCatalogCard} />}
+        {tab === 'customization' && (() => {
+          const customSig = `${customizationFilters.category}:${customizationFilters.sort}:${customizationFilters.query}`;
+          const savedCustomScroll = getScrollMemory('customization', customSig);
+          return <CustomizationPage products={catalogData as unknown as readonly Product[]} categories={royalFurnitureData.cats} filters={customizationFilters} onFiltersChange={setCustomizationFilters} onBack={handleBack} restoreScrollOffset={savedCustomScroll?.offset} restoreAnchorId={savedCustomScroll?.anchorId} onSaveScroll={(offset, anchorId) => saveScrollMemory('customization', customSig, offset, anchorId)} header={<Header count={cartCount} onCart={openCart} onAccount={openAccount} />} renderCard={renderCatalogCard} />;
+        })()}
         {tab === 'home' && <HomeContent onCustomize={openCustomize} onCategory={openCategories} onProduct={openProduct} onShop={openShop} onBestSellers={openBestSellers} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'shop' && <ShopContent products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'shop' && <ShopContent products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} dealsFilters={dealsFilters} onDealsFiltersChange={setDealsFilters} dealsQuery={dealsQuery} onDealsQueryChange={setDealsQuery} onProduct={openProduct} saved={saved} onSave={toggleSaved} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'categories' && <ShopContent catalogSort={catalogSort} onCatalogSortChange={setCatalogSort} products={royalFurnitureData.products} query={query} setQuery={setQuery} category={category} setCategory={setCategory} onProduct={openProduct} saved={saved} onSave={toggleSaved} catalogOnly cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
-        {tab === 'search' && <SearchContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
+        {tab === 'search' && <SearchContent searchState={searchState} onSearchStateChange={setSearchState} onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'arrivals' && <NewArrivalsContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'more' && <MoreContent onCart={openCart} onAccount={openAccount} cartCount={cartCount} />}
         {tab === 'bestSellers' && <BestSellersContent onProduct={openProduct} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'account' && <AccountContent onDeleteData={onDeleteData} orders={orders} onBag={openCart} cartCount={cartCount} onCart={openCart} onAccount={openAccount} />}
         {tab === 'cart' && <CartContent onCart={openCart} onAccount={openAccount} onProduct={openProduct} onShop={openShop} />}
-        </AdaptiveRegion></Animated.View>
+        </AdaptiveRegion>
+        </SwipeBackContainer>
+        </Animated.View>
         <BottomNav tab={tab} setTab={setTab} count={cartCount} />
         <QuickViewSheet onAdd={handleAddToCart} onOpenProduct={openProduct} />
         <ToastHost />
