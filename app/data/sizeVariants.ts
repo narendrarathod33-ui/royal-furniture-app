@@ -57,26 +57,32 @@ const cleanBase = (value: string) =>
 
 type ParsedSize = { base: string; label: string; sizeType: string };
 
+const parsedSizeCache = new Map<string, ParsedSize | null>();
+const nameKeyCache = new Map<string, string>();
+
 /** Splits a catalog name into the product family name plus its size. */
 function parseSizeName(name: string): ParsedSize | null {
+  const cached = parsedSizeCache.get(name);
+  if (cached !== undefined) return cached;
+
+  let result: ParsedSize | null = null;
   const dimensions = DIMENSIONS.exec(name);
   if (dimensions) {
     const label = [dimensions[1], dimensions[2], dimensions[3]].filter(Boolean).join('x');
     const sizeType = dimensions[4] ? titleCase(dimensions[4].replace(/\s+/g, ' ').trim()) : '';
     const base = cleanBase(name.slice(0, dimensions.index));
-    if (!base) return null;
-    return { base, label, sizeType };
+    if (base) result = { base, label, sizeType };
+  } else {
+    const word = SIZE_WORD.exec(name);
+    if (word) {
+      const sizeType = titleCase(word[1].replace(/\s+/g, ' ').trim());
+      const base = cleanBase(name.slice(0, word.index));
+      if (base) result = { base, label: sizeType, sizeType: '' };
+    }
   }
 
-  const word = SIZE_WORD.exec(name);
-  if (word) {
-    const sizeType = titleCase(word[1].replace(/\s+/g, ' ').trim());
-    const base = cleanBase(name.slice(0, word.index));
-    if (!base) return null;
-    return { base, label: sizeType, sizeType: '' };
-  }
-
-  return null;
+  parsedSizeCache.set(name, result);
+  return result;
 }
 
 /**
@@ -89,12 +95,17 @@ const familyKey = (size: ParsedSize, entry: { c: string; sc?: string }) =>
   `${size.base.toLocaleLowerCase()}|${entry.c}`;
 
 /** Normalised product name for spotting exact duplicate catalog entries. */
-const nameKey = (name: string) =>
-  name
+const nameKey = (name: string) => {
+  const cached = nameKeyCache.get(name);
+  if (cached !== undefined) return cached;
+  const normalized = name
     .replace(/-[0-9a-f]{6}$/i, '')
     .replace(/[\s\-–—,_]+/g, ' ')
     .trim()
     .toLocaleLowerCase();
+  nameKeyCache.set(name, normalized);
+  return normalized;
+};
 
 function toVariant(entry: CatalogEntry, size: ParsedSize): SizeVariant {
   const listPrice = Number.isFinite(entry.l) && entry.l > entry.o ? entry.l : entry.o;
@@ -143,20 +154,26 @@ function buildDataset(entries: readonly CatalogEntry[]) {
   return familyOfId;
 }
 
-// Each catalog is indexed on its own so a product never borrows the prices of a
-// same-named product from a different catalog.
-const datasets = [
-  buildDataset(catalogData as unknown as readonly CatalogEntry[]),
-  buildDataset(dealsCatalog as unknown as readonly CatalogEntry[]),
-  buildDataset(royalFurnitureData.products as unknown as readonly CatalogEntry[]),
-];
+// Each catalog is indexed lazily on first dropdown lookup so app startup does
+// not parse 2,100+ catalog titles before the first screen paints.
+let cachedDatasets: Map<string, SizeVariant[]>[] | null = null;
+function getDatasets() {
+  if (!cachedDatasets) {
+    cachedDatasets = [
+      buildDataset(catalogData as unknown as readonly CatalogEntry[]),
+      buildDataset(dealsCatalog as unknown as readonly CatalogEntry[]),
+      buildDataset(royalFurnitureData.products as unknown as readonly CatalogEntry[]),
+    ];
+  }
+  return cachedDatasets;
+}
 
 const stripVariantSuffix = (id: string) => id.split(/::(?:size|color)=/)[0];
 
 /** Every size of the product, cheapest first — empty when it has a single size. */
 export function getSizeVariants(productId: string): SizeVariant[] {
   const id = stripVariantSuffix(productId);
-  for (const dataset of datasets) {
+  for (const dataset of getDatasets()) {
     const variants = dataset.get(id);
     if (variants) return variants;
   }

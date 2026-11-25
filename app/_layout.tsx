@@ -21,11 +21,12 @@ bootDirection();
  * heading weights (700-900) still render properly.
  */
 const FONT_STYLESHEET =
-  'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap';
+  'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap';
 
 /** Same stack as the site, plus the same font smoothing ("antialiased"). */
 const FONT_CSS = [
   "html, body, #root { font-family: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }",
+  'html, body { overscroll-behavior-x: contain; }',
   'body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }',
   'input, textarea, select, button { font-family: inherit; }',
   '[data-testid="browse-navigation"] [role="button"]:focus-visible, [data-testid="category-explorer"] [role="button"]:focus-visible { outline: 2px solid #B61117; outline-offset: 2px; }',
@@ -56,11 +57,13 @@ function useWebsiteFont() {
     style.appendChild(document.createTextNode(FONT_CSS));
     document.head.appendChild(style);
 
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.referrerPolicy = 'no-referrer';
-    link.href = FONT_STYLESHEET;
-    document.head.appendChild(link);
+    if (!document.head.querySelector('link[href*="fonts.googleapis.com/css2?family=Montserrat"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.referrerPolicy = 'no-referrer';
+      link.href = FONT_STYLESHEET;
+      document.head.appendChild(link);
+    }
   }, []);
 }
 

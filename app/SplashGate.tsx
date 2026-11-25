@@ -14,22 +14,22 @@ import { GlassBackdrop, useGlassPageBackground, useReducedMotion } from './ui/gl
  */
 export const SPLASH_TIMING = {
   /** How long the logo takes to rotate up into place. */
-  logoIn: 620,
+  logoIn: 320,
   /** How long the brand glow takes to pulse across the glass. */
-  glow: 900,
+  glow: 460,
   /** Duration of the light sweep. */
-  sweep: 620,
+  sweep: 340,
   /** Logo settled before the hand-off (after `logoIn`). */
-  hold: 280,
+  hold: 80,
   /** Crossfade into the app. */
-  out: 420,
+  out: 180,
   /** Whole sequence when motion is reduced to a fade. */
-  reduced: 700,
+  reduced: 260,
 };
 
 /** Intro length before the crossfade starts. */
 const INTRO_MS = SPLASH_TIMING.logoIn + SPLASH_TIMING.hold;
-/** Longest the launch screen can ever stay on screen (~1.3s). */
+/** Longest the launch screen can ever stay on screen (~0.6s). */
 export const SPLASH_TOTAL_MS = INTRO_MS + SPLASH_TIMING.out;
 
 /** Phase timing inside the sequence, as a 0-1 fraction of the intro. */
